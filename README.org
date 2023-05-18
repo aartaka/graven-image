@@ -53,7 +53,7 @@ Improvements are:
 
 =apropos-list= now allows listing exported symbols only (with
 =exported-only=), which was a non-portable privilege of SBCL until
-now. Search oven docs (more intuitive for =apropos(-list)= than mere
+now. Search over docs (more intuitive for =apropos(-list)= than mere
 name search) is possible with =docs-too=.
 
 Based on this foundation, =apropos= lists symbols with their types,
