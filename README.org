@@ -38,8 +38,7 @@ The functions that Graven Image exposes come in two flavors:
 
 Function below will be listed with their CL-imported names, instead of
 Graven Image names. So =y-or-n-p*= from Graven Image is listed as mere
-CL =y-or-n-p=, and =function-name*= added by Graven Image is listed as
-CL-interned =function-name=.
+CL =y-or-n-p=.
 
 ** =y-or-n-p=, =yes-or-no-p= (function) =&optional control &rest arguments -> generalized-boolean=
 
