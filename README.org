@@ -1,0 +1,151 @@
+#+TITLE:Graven Image
+
+Graven Image is a Common Lisp portability library for better
+interaction and debugging of a running Lisp image. It reuses compiler
+internals to improve/redefine the existing standard functions. This
+"improvement" often comes at a cost of changing the API of a function
+(for better customizability) or making it slightly less reliable (due
+to unstable/compiler-internal/hacky implementation).
+
+* Getting started
+
+Clone the Git repository:
+#+begin_src sh
+  git clone --recursive https://github.com/aartaka/graven-image ~/common-lisp/
+#+end_src
+
+And then load ~:graven-image~ in the REPL:
+#+begin_src lisp
+  (asdf:load-system :graven-image)
+  ;; or, if you use Quicklisp
+  (ql:quickload :graven-image)
+#+end_src
+
+Then, if you want to have all the Graven Image star functions
+(=apropos*=, =function-lambda-expression*= etc.) in =:common-lisp=
+package, then just load =:graven-image/import=.
+
+And if you want the default CL constructs replaced by Graven Image
+ones, then load =:graven-image/cl= and =cl:apropos= will magically
+become more useful :D
+
+* Enhanced functions (mostly from ANSI CL [[https://cl-community-spec.github.io/pages/Debugging-Utilities.html][Debugging Utilities]] chapter)
+
+The functions that Graven Image exposes come in two flavors:
+- Safely =:use=-able star-appended functions (i.e. =describe*= instead of
+  =describe=)—in =graven-image= system.
+- Functions shadowing CL symbols in =graven-image/cl= system.
+
+Function below will be listed with their CL-imported names, instead of
+Graven Image names. So =y-or-n-p*= from Graven Image is listed as mere
+CL =y-or-n-p=, and =function-name*= added by Graven Image is listed as
+CL-interned =function-name=.
+
+** =y-or-n-p=, =yes-or-no-p= (function) =&optional control &rest arguments -> generalized-boolean=
+
+Improvements are:
+- Both functions accept options from =graven-image:*yes-or-no-options*=, thus
+  allowing for "nope" or "ay" to be valid responses too.
+- Both functions mean the same now, because it makes no sense in
+  differentiating them.
+- No beeps.
+
+** =apropos-list=, =apropos= (function) =string &optional (package nil) exported-only docs-too=
+
+=apropos-list= now allows listing exported symbols only (with
+=exported-only=), which was a non-portable privilege of SBCL until
+now. Search oven docs (more intuitive for =apropos(-list)= than mere
+name search) is possible with =docs-too=.
+
+Based on this foundation, =apropos= lists symbols with their types,
+values, and documentation, so that implementation-specific formats are
+gone for a better and more unified listing:
+
+#+begin_src
+> (apropos :max)
+Function MAX (Return the greatest of its arguments; among EQUALP greatest, return)
+Variable :MAX = :MAX
+...
+Variable :MAXIMIZING = :MAXIMIZING
+Variable :MAX-LENGTH = :MAX-LENGTH
+Symbol BABEL::MAXP
+Macro ALEXANDRIA:MAXF (Modify-macro for MAX. Sets place designated by the first argument to the)
+...
+Symbol SB-UNICODE::MAX-MATCH
+Variable SB-C::MAX-VOP-TN-REFS = 256
+Class SB-LOOP::LOOP-MINIMAX
+Function SB-IMPL::HEAP-MAXIMUM
+Symbol SB-VM::MAX-EXTENSIONS
+...
+#+end_src
+
+A less noticeable, but still nice improvement: all the suggestions are listed by their "relevance" (i.e. by the number of matches of string in the symbol name/documentation).
+
+** =function-lambda-expression= (generic-function) =function-designator &optional force -> list, list, symbol=
+
+This function tries to read source files, process the definitions of
+functions, and build at least a barebones lambda from the arglist and
+documentation of the function. So that CL =function-lambda-expression=
+returns:
+#+begin_src lisp
+  (function-lambda-expression #'identity)
+  ;; => NIL, T, IDENTITY
+  (function-lambda-expression #'print-object)
+  ;; => NIL, T, PRINT-OBJECT
+#+end_src
+
+While the new Graven Image =function-lambda-expression= now returns:
+#+begin_src lisp
+  (function-lambda-expression #'idenitity)
+  ;; => (LAMBDA (THING) "This function simply returns what was passed to it." THING), NIL, IDENTITY
+  (function-lambda-expression #'print-object)
+  ;; => (LAMBDA (SB-PCL::OBJECT STREAM)), NIL, PRINT-OBJECT
+#+end_src
+
+Which means:
+- =identity= is actually not a closure, and has a reliable source!
+- =print-object= is a generic and thus is not really inspectable, so
+  we build a dummy lambda for it.
+  - This might be a questionable choice, but it at least allows us to
+    get function arglists from =function-lambda-expression= in a
+    portable-ish way. The standard doesn't provide us with much ways
+    to know an arglist of a function beside this.
+
+*** Return values
+
+Things that =function-lambda-expression= now returns are:
+- Lambda expression.
+  - For lambda functions, their source.
+  - For regular functions, their =defun= turned into a =lambda=.
+  - For anything else, a constructed empty =(lambda (arglist...) documentation nil)=.
+  - Or even in some exceptional cases NIL.
+- Whether the thing is a closure
+  - If it is, might return an alist of the actual closed-over values,
+    whenever accessible (not for all implementations).
+  - If it's not, returns NIL.
+- Function name. Mostly falls back to the standard
+  =function-lambda-expression=, but also inspects
+  implementation-specific function objects, if necessary.
+
+** TODO =inspect= (generic-function) =object &key stream omit-empty &allow-other-keys -> (or alist string (values))=
+*** TODO =inspect-object= (generic-function) =object &key omit-empty &allow-other-keys -> alist=
+** TODO =describe= (generic-function) =object &key stream force omit-empty &allow-other-keys=
+*** TODO =describe-object= (generic-function) =object stream &key force omit-empty &allow-other-keys= 
+** TODO =ed= (function)
+** TODO =time= (macro)
+
+* Roadmap
+- [ ] Make =apropos= sorting more customizable.
+- [ ] Add:
+  - [ ] INSPECT,
+  - [ ] DESCRIBE,
+  - [ ] TIME,
+  - [ ] ED.
+- [ ] Improve
+  - [ ] DRIBBLE,
+  - [ ] STEP,
+  - [ ] TRACE/UNTRACE,
+  - [ ] DOCUMENTATION,
+  - [ ] DISASSEMBLE?
+- [ ] Somehow hook into and improve over \*DEBUGGER-HOOK\*.
+- [ ] Test on more implementations.
