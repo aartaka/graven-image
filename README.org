@@ -78,7 +78,7 @@ Symbol SB-VM::MAX-EXTENSIONS
 ...
 #+end_src
 
-A less noticeable, but still nice improvement: all the suggestions are listed by their "relevance" (i.e. by the number of matches of string in the symbol name/documentation).
+Less noticeable, but still nice: all the suggestions are listed by their "relevance" (i.e. by the number of matches of string in the symbol name/documentation).
 
 ** =function-lambda-expression= (generic-function) =function-designator &optional force -> list, list, symbol=
 
