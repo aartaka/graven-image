@@ -5,11 +5,15 @@ Thou shalt not make unto thee any graven image, or any likeness of any thing tha
 #+end_quote
 
 Graven Image is a Common Lisp portability library for better
-interaction and debugging of a running Lisp image. It reuses compiler
-internals to improve/redefine the existing standard functions. This
-"improvement" often comes at a cost of changing the API of a function
-(for better customizability) or making it slightly less reliable (due
-to unstable/compiler-internal/hacky implementation).
+interaction and debugging of a running Lisp image. One can see,
+inspect, and reproduce all the things under heaven and [[https://www.corecursive.com/lisp-in-space-with-ron-garret/][above it]]—all in
+their own REPL-resident Lisp image.
+
+Graven Image reuses compiler internals to improve/redefine the
+existing standard functions. This "improvement" often comes at a cost
+of changing the API of a function (for better customizability) or
+making it slightly less reliable (due to unstable, compiler-internal,
+or otherwise hacky implementation).
 
 * Getting started
 
