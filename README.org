@@ -117,7 +117,7 @@ Things that =function-lambda-expression= now returns are:
   - For lambda functions, their source.
   - For regular functions, their =defun= turned into a =lambda=.
   - For anything else, a constructed empty =(lambda (arglist...) documentation nil)=.
-  - Or even in some exceptional cases NIL.
+  - Or even, in some exceptional cases, NIL.
 - Whether the thing is a closure
   - If it is, might return an alist of the actual closed-over values,
     whenever accessible (not for all implementations).
