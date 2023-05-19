@@ -171,53 +171,58 @@
 (-> function-source-expression (function boolean))
 (defun function-source-expression (function force)
   (declare (ignorable function force))
-  (labels ((maybe-unsafe-read (stream)
-             (when stream
-               (handler-case
-                   (let ((*read-eval* nil))
-                     (read-nolocks stream))
-                 (reader-error ()
-                   (when force
-                     (read-nolocks stream))))))
-           (read-from-position (file position)
-             (when (and position file)
-               (with-open-file (f file)
-                 (loop repeat position
-                       do (read-char f nil nil))
-                 (maybe-unsafe-read f)))))
-    #+ccl
-    (let* ((sources (ccl:find-definition-sources function))
-           ;; Generic function defs don't return the generic definition
-           ;; itself, only the method defs.
-           (note (when (= 1 (length sources)) ; Method defs are useless.
-                   (find #'ccl:source-note-p (first sources))))
-           (position (when note
-                       (ccl:source-note-start-pos note)))
-           (file (when note
-                   (translate-logical-pathname (ccl:source-note-filename note)))))
-      (read-from-position file position))
-    #+ecl
-    (multiple-value-bind (file position)
-        (ext:compiled-function-file function)
-      (when (and file position)
-        (read-from-position file position)))
-    #+sbcl
-    (let* ((sources
-             (or (sb-introspect:find-definition-sources-by-name (function-name function) :function)
-                 (sb-introspect:find-definition-sources-by-name (function-name function) :generic-function)
-                 (sb-introspect:find-definition-sources-by-name (function-name function) :macro)))
-           (file (sb-introspect:definition-source-pathname (first sources)))
-           (form-path (sb-introspect:definition-source-form-path (first sources))))
-      ;; FIXME: Not using form number there, because it's too involved
-      ;; and likely means some macro magic which will bork the lambda
-      ;; expression anyway.
-      (when form-path
-        (with-open-file (f (translate-logical-pathname file))
-          (loop repeat (first (uiop:ensure-list form-path))
-                do (maybe-unsafe-read f))
-          (maybe-unsafe-read f))))
-    #-(or ccl ecl sbcl)
-    (warn "source fetching is not implemented for this CL, help in implementing it!")))
+  (or
+   (labels ((maybe-unsafe-read (stream)
+              (when stream
+                (handler-case
+                    (let ((*read-eval* nil))
+                      (read-nolocks stream))
+                  (reader-error ()
+                    (when force
+                      (read-nolocks stream))))))
+            (read-from-position (file position)
+              (when (and position file)
+                (with-open-file (f file)
+                  (loop repeat position
+                        do (read-char f nil nil))
+                  (maybe-unsafe-read f)))))
+     #+ccl
+     (let* ((sources (ccl:find-definition-sources function))
+            ;; Generic function defs don't return the generic definition
+            ;; itself, only the method defs.
+            (note (when (= 1 (length sources)) ; Method defs are useless.
+                    (find #'ccl:source-note-p (first sources))))
+            (position (when note
+                        (ccl:source-note-start-pos note)))
+            (file (when note
+                    (translate-logical-pathname (ccl:source-note-filename note)))))
+       (read-from-position file position))
+     #+ecl
+     (multiple-value-bind (file position)
+         (ext:compiled-function-file function)
+       (when (and file position)
+         (read-from-position file position)))
+     #+sbcl
+     (let* ((sources
+              (ignore-errors
+               (or (sb-introspect:find-definition-sources-by-name (function-name-symbol function) :function)
+                   (sb-introspect:find-definition-sources-by-name (function-name-symbol function) :generic-function)
+                   (sb-introspect:find-definition-sources-by-name (function-name-symbol function) :macro))))
+            (file (when sources
+                    (sb-introspect:definition-source-pathname (first sources))))
+            (form-path (when sources
+                         (sb-introspect:definition-source-form-path (first sources)))))
+       ;; FIXME: Not using form number there, because it's too involved
+       ;; and likely means some macro magic which will bork the lambda
+       ;; expression anyway.
+       (when form-path
+         (with-open-file (f (translate-logical-pathname file))
+           (loop repeat (first (uiop:ensure-list form-path))
+                 do (maybe-unsafe-read f))
+           (maybe-unsafe-read f))))
+     #-(or ccl ecl sbcl)
+     (warn "source fetching is not implemented for this CL, help in implementing it!"))
+   (function-source-expression-fallback function)))
 
 (-> function-lambda-expression* ((or function symbol) &optional boolean))
 (defun function-lambda-expression* (function &optional force)
@@ -232,9 +237,7 @@
   (let* ((function (typecase function
                      (symbol (symbol-function function))
                      (function function)))
-         (definition (or expression
-                         (function-source-expression function force)
-                         (function-source-expression-fallback function))))
+         (definition (function-source-expression function force)))
     (multiple-value-bind (expression closure-p name)
         (funcall old-function-lambda-expression function)
       (values
