@@ -21,26 +21,7 @@
 Append new value conses to support new `y-or-n-p'/`yes-or-no-p'
 answers.")
 
-(-> y-or-n-p*  (&optional string &rest list) boolean)
-(-> yes-or-no-p*  (&optional string &rest list) boolean)
-(defun y-or-n-p* (&optional control &rest arguments)
-  "Return a boolean for whether the user input is affirmative/negative.
-Prompt for input again if the answer is neither.
-
-Influenced by:
-- `*query-io*' for the input/output.
-- `*yes-or-no-options*' for the possible answer values.
-
-Both `y-or-n-p*' and `yes-or-no-p*' refer to the same function,
-because their answer list is the same—`*yes-or-no-options*'. They also
-are the same in that there's no annoying beeps anymore.
-
-The rationale for no-beep policy is: all the prompts that user
-responds to are equally important (because these won't be prompts if
-they weren't important). Some of these prompts are urgent, but
-attracting user attention is not guaranteed to solve the urgency
-anyway—one might ignore the beeps altogether."
-  ;; Maybe a recursive design for simplicity and better stack traces?
+(defun %y-or-n-p (&optional control &rest arguments)
   (flet ((print-prompt ()
            (when control
              (apply #'format *query-io* (uiop:strcat control " ") arguments))
@@ -53,4 +34,31 @@ anyway—one might ignore the beeps altogether."
           do (print-prompt)
           finally (return value))))
 
-(setf (fdefinition 'yes-or-no-p*) (fdefinition 'y-or-n-p*))
+(defgeneric y-or-n-p* (&optional control &rest arguments)
+  (:method (&optional control &rest arguments)
+    (apply #'%y-or-n-p control arguments))
+  (:documentation "Return a boolean for whether the user input is affirmative/negative.
+Prompt for input again if the answer is neither.
+
+Influenced by:
+- `*query-io*' for the input/output.
+- `*yes-or-no-options*' for the possible answer values."))
+
+(defgeneric yes-or-no-p* (&optional control &rest arguments)
+  (:method (&optional control &rest arguments)
+    (apply #'%y-or-n-p control arguments))
+  (:documentation "Return a boolean for whether the user input is affirmative/negative.
+Prompt for input again if the answer is neither.
+
+Influenced by:
+- `*query-io*' for the input/output.
+- `*yes-or-no-options*' for the possible answer values.
+
+Does not beep anymore. The rationale for no-beep policy is: all the
+prompts that user responds to are equally important (because these
+won't be prompts if they weren't important). Some of these prompts are
+urgent, but attracting user attention is not guaranteed to solve the
+urgency anyway—one might ignore the beeps altogether.
+
+If you want beeps, though, you can always define a :before/:around
+method that beeps as much as you want it to :)"))
