@@ -241,11 +241,10 @@
        (or expression
            (transform-definition-to-lambda definition))
        (cond
-         ((and closure-p (listp closure-p))
-          closure-p)
-         (closure-p
-          (function-closure-p function))
-         (t nil))
+        ;; T is suspicious.
+        ((eq closure-p t) (function-closure-p function))
+        (closure-p closure-p)
+        (t nil))
        (or name
            (function-name function)
            (transform-definition-to-name definition))))))
