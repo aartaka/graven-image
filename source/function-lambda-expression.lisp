@@ -82,12 +82,22 @@
 (defun transform-definition-to-lambda (definition)
   (when definition
     (case (first definition)
-      ;; Other types of definitions like `defmethod' and `defgeneric'
-      ;; are giving incomplete information and are better handled by
-      ;; `function-source-expression-fallback'?
       (lambda definition)
       ((defmacro defun)
        `(lambda ,@(cddr definition)))
+      (defmethod
+          `(lambda ,@(member-if #'listp definition)))
+      (defgeneric
+          (when (= 1 (count :method (cdddr definition)
+                            :key #'first))
+            (let ((single-method (find :method (cdddr definition)
+                                       :key #'first)))
+              (when (equal (second single-method)
+                           (third definition))
+                `(lambda ,(third definition)
+                   ,@(when (documentation (second definition) 'function)
+                       (list (documentation (second definition) 'function)))
+                   ,@(cddr single-method))))))
       (t nil))))
 
 (-> transform-definition-to-name (list) symbol)
