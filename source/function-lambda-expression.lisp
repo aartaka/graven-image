@@ -32,7 +32,7 @@
 ;; FIXME: Phew, that's a long one... Maybe use Slynk after all? Graven
 ;;  Image won't be dependency-free and will have dangerous recursive
 ;;  references to `function-lambda-expression' on some implementations, though.
-(-> function-name (function) symbol)
+(-> function-name (function) t)
 (defun function-name (function)
   (declare (ignorable function))
   #+abcl
@@ -72,6 +72,12 @@
   #-(or abcl allegro ccl clasp cmucl cormanlisp ecl lispworks mkcl sbcl scl)
   (warn "function name fetching is not implemented for this CL, help in implementing it!"))
 
+(-> function-name-symbol (function) symbol)
+(defun function-name-symbol (function)
+  (let ((name (function-name function)))
+    (when (symbolp name)
+      name)))
+
 (-> transform-definition-to-lambda (list) list)
 (defun transform-definition-to-lambda (definition)
   (when definition
@@ -104,65 +110,65 @@
   ;; dangerous recursive reference for us, thus
   ;; `old-function-lambda-expression'.
   (or (ignore-errors (second (funcall old-function-lambda-expression name)))
-      #+abcl
-      (or (sys::arglist name)
-          (when (typep function 'standard-generic-function)
-            (mop::generic-function-lambda-list function)))
-      #+allegro
-      (ignore-errors (excl:arglist name))
-      #+ccl
-      ;; Why `*break-on-signals*' NIL in Slynk?
+      (ignore-errors
+       #+abcl
+       (or (sys::arglist name)
+           (when (typep function 'standard-generic-function)
+             (mop::generic-function-lambda-list function)))
+       #+allegro
+       (excl:arglist name)
+       #+ccl
+       ;; Why `*break-on-signals*' NIL in Slynk?
 
-      (let ((*break-on-signals* nil))
-        (ignore-errors
-         (ccl:arglist name)))
-      #+clasp
-      (sys:function-lambda-list name)
-      #+clisp
-      (ignore-errors (ext:arglist name))
-      #+cmucl
-      ;; Copied from Slynk
-
-      (cond ((eval:interpreted-function-p fun)
-             (eval:interpreted-function-arglist fun))
-            ((pcl::generic-function-p fun)
-             (pcl:generic-function-lambda-list fun))
-            ((c::byte-function-or-closure-p fun)
-             (byte-code-function-arglist fun))
-            ((kernel:%function-arglist (kernel:%function-self fun))
-             (handler-case (read-arglist fun)
-               (error () :not-available)))
-            (t
-             (ignore-errors (debug-function-arglist (di::function-debug-function fun)))))
-      #+cormanlisp
-      (cond
-        ((macro-function name)
-         (ccl::macro-lambda-list function))
-        ((eq (class-of name) cl::the-class-standard-gf)
-         (generic-function-lambda-list name))
-        (ccl:function-lambda-list name))
-      #+ecl
-      (ext:function-lambda-list name)
-      #+lispworks
-      (let ((arglist (lw:function-lambda-list function)))
-        (unless (eq arglist :dont-know)
-          (labels ((to-symbols (thing)
-                     "A primitive rewrite of Slynk's replace-strings-with-symbols."
-                     (typecase thing
-                       (list (mapcar #'to-symbols thing))
-                       (string (intern thing))
-                       (t thing)))))
-          (to-symbols arglist)))
-      #+sbcl
-      (sb-introspect:function-lambda-list name)
-      #+scl
-      (ext:function-arglist name)
+       (let ((*break-on-signals* nil))
+         (ignore-errors
+          (ccl:arglist name)))
+       #+clasp
+       (sys:function-lambda-list name)
+       #+clisp
+       (ignore-errors (ext:arglist name))
+       #+cmucl
+       ;; Copied from Slynk
+       (cond ((eval:interpreted-function-p fun)
+              (eval:interpreted-function-arglist fun))
+             ((pcl::generic-function-p fun)
+              (pcl:generic-function-lambda-list fun))
+             ((c::byte-function-or-closure-p fun)
+              (byte-code-function-arglist fun))
+             ((kernel:%function-arglist (kernel:%function-self fun))
+              (handler-case (read-arglist fun)
+                (error () :not-available)))
+             (t
+              (ignore-errors (debug-function-arglist (di::function-debug-function fun)))))
+       #+cormanlisp
+       (cond
+         ((macro-function name)
+          (ccl::macro-lambda-list function))
+         ((eq (class-of name) cl::the-class-standard-gf)
+          (generic-function-lambda-list name))
+         (ccl:function-lambda-list name))
+       #+ecl
+       (ext:function-lambda-list name)
+       #+lispworks
+       (let ((arglist (lw:function-lambda-list function)))
+         (unless (eq arglist :dont-know)
+           (labels ((to-symbols (thing)
+                      "A primitive rewrite of Slynk's replace-strings-with-symbols."
+                      (typecase thing
+                        (list (mapcar #'to-symbols thing))
+                        (string (intern thing))
+                        (t thing)))))
+           (to-symbols arglist)))
+       #+sbcl
+       (sb-introspect:function-lambda-list name)
+       #+scl
+       (ext:function-arglist name))
       #-(or abcl allegro ccl clasp clisp cmucl cormanlisp ecl ecl lispworks sbcl scl)
       (warn "arglist fetching is not implemented for this CL, help in implementing it!")))
 
 (-> function-source-expression-fallback (function) list)
 (defun function-source-expression-fallback (function)
-  (let* ((name (function-name function))
+  (let* ((name (function-name-symbol function))
          (arglist (function-arglist function name)))
     `(lambda (,@arglist)
        ,@(when (documentation name 'function)
