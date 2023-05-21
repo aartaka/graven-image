@@ -9,6 +9,7 @@
    ;; #:ed* #:inspect*
    ;; #:describe* #:describe-object*
    #:function-lambda-expression*
-   ;; #:time* #:step* #:trace* #:untrace*
+   #:time*
+   ;; #:step* #:trace* #:untrace*
    )
   (:documentation "CL standard debugging utilities improved."))

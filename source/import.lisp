@@ -15,4 +15,6 @@
   (import 'graven-image:apropos*)
   (export 'apropos*)
   (import 'graven-image:function-lambda-expression*)
-  (export 'function-lambda-expression*))
+  (export 'function-lambda-expression*)
+  (import 'graven-image:time*)
+  (export 'time*))

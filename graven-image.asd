@@ -15,7 +15,8 @@
                (:file "graven-image")
                (:file "yes-or-no")
                (:file "apropos")
-               (:file "function-lambda-expression"))
+               (:file "function-lambda-expression")
+               (:file "time"))
   :in-order-to ((test-op "graven-image/tests")))
 
 (defsystem "graven-image/import"
