@@ -1,0 +1,314 @@
+SBCL:
+* (inspect #'identity)
+The object is a FUNCTION named IDENTITY.
+0. Lambda-list: (SB-IMPL::THING)
+1. Ftype: (FUNCTION (T) (VALUES T &OPTIONAL))
+* (inspect #'documentation)
+The object is a SB-MOP:FUNCALLABLE-STANDARD-OBJECT of type STANDARD-GENERIC-FUNCTION.
+0. SOURCE: #S(SB-C:DEFINITION-SOURCE-LOCATION
+              :NAMESTRING "SYS:SRC;PCL;DOCUMENTATION.LISP"
+              :INDICES 262145)
+1. PLIST: NIL
+2. %DOCUMENTATION: "Return the documentation string of Doc-Type for X, or NIL if none
+exists. System doc-types are VARIABLE, FUNCTION, STRUCTURE, TYPE, SETF, and T.
+
+Function documentation is stored separately for function names and objects:
+DEFUN, LAMBDA, &co create function objects with the specified documentation
+strings.
+
+ (SETF (DOCUMENTATION NAME 'FUNCTION) STRING)
+
+sets the documentation string stored under the specified name, and
+
+ (SETF (DOCUMENTATION FUNC T) STRING)
+
+sets the documentation string stored in the function object.
+
+ (DOCUMENTATION NAME 'FUNCTION)
+
+returns the documentation stored under the function name if any, and
+falls back on the documentation in the function object if necessary."
+3. INITIAL-METHODS: NIL
+4. ENCAPSULATIONS: NIL
+5. NAME: DOCUMENTATION
+6. METHODS: (#<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (SYMBOL
+                                                          (EQL
+                                                           OPTIMIZE)) {1000700633}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (PACKAGE
+                                                          (EQL
+                                                           T)) {1000674623}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (SB-MOP:STANDARD-SLOT-DEFINITION
+                                                          (EQL
+                                                           T)) {10008170F3}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (SYMBOL
+                                                          (EQL
+                                                           VARIABLE)) {1000700643}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (SYMBOL
+                                                          (EQL
+                                                           STRUCTURE)) {1000700653}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (SYMBOL
+                                                          (EQL
+                                                           TYPE)) {1000700663}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (SB-PCL::CONDITION-CLASS
+                                                          (EQL
+                                                           TYPE)) {100065BEE3}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (SB-PCL::CONDITION-CLASS
+                                                          (EQL
+                                                           T)) {100065BEF3}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (CLASS
+                                                          (EQL
+                                                           TYPE)) {1000674543}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (CLASS
+                                                          (EQL
+                                                           T)) {1000674553}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (STRUCTURE-CLASS
+                                                          (EQL
+                                                           TYPE)) {10007653A3}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (STRUCTURE-CLASS
+                                                          (EQL
+                                                           T)) {10007653B3}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (STANDARD-METHOD
+                                                          (EQL
+                                                           T)) {1000732FF3}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (SYMBOL
+                                                          (EQL
+                                                           METHOD-COMBINATION)) {1000700673}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (METHOD-COMBINATION
+                                                          (EQL
+                                                           METHOD-COMBINATION)) {10007E0063}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (METHOD-COMBINATION
+                                                          (EQL
+                                                           T)) {10007E0073}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (SYMBOL
+                                                          (EQL
+                                                           SETF)) {1000700683}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (SYMBOL
+                                                          (EQL
+                                                           COMPILER-MACRO)) {1000700693}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (SYMBOL
+                                                          (EQL
+                                                           FUNCTION)) {10007006A3}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (LIST
+                                                          (EQL
+                                                           FUNCTION)) {1000733183}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (LIST
+                                                          (EQL
+                                                           COMPILER-MACRO)) {1000733193}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION #'(EQL
+                                                            FUNCTION) {10006BF943}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION #'(EQL
+                                                            T) {10006BF953}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION :AROUND (T
+                                                                  T) {100060A293}>
+             #<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (T T) {100060A2B3}>)
+7. METHOD-CLASS: #<STANDARD-CLASS COMMON-LISP:STANDARD-METHOD>
+8. %METHOD-COMBINATION: #<SB-PCL::STANDARD-METHOD-COMBINATION STANDARD () {10003116B3}>
+9. DECLARATIONS: NIL
+10. ARG-INFO: #S(SB-PCL::ARG-INFO
+                 :ARG-INFO-LAMBDA-LIST (SB-PCL::OBJECT SB-PCL::DOC-TYPE)
+                 :ARG-INFO-PRECEDENCE (1 0)
+                 :ARG-INFO-METATYPES (CLASS CLASS)
+                 :ARG-INFO-NUMBER-OPTIONAL 0
+                 :ARG-INFO-KEY/REST-P NIL
+                 :ARG-INFO-KEYS NIL
+                 :GF-INFO-SIMPLE-ACCESSOR-TYPE NIL
+                 :GF-PRECOMPUTE-DFUN-AND-EMF-P NIL
+                 :GF-INFO-STATIC-C-A-M-EMF #S(SB-PCL::FAST-METHOD-CALL
+                                              :FUNCTION #<FUNCTION (SB-PCL::FAST-METHOD
+                                                                    COMPUTE-APPLICABLE-METHODS
+                                                                    (GENERIC-FUNCTION
+                                                                     T))>
+                                              :PV NIL
+                                              :NEXT-METHOD-CALL NIL
+                                              :ARG-INFO (2))
+                 :GF-INFO-C-A-M-EMF-STD-P T
+                 :GF-INFO-FAST-MF-P T
+                 :GF-INFO-CNM-CHECKER NIL)
+11. DFUN-STATE: (#<FUNCTION (LAMBDA (SB-PCL::.ARG0. SB-PCL::.ARG1.)
+                              :IN
+                              "SYS:SRC;PCL;DLISP3.LISP") {100AEC553B}>
+                 #<SB-PCL::CACHE 2 keys, value, 1/2 lines (LF 50.0%), depth 0/2 {100AF2C3D3}>
+                 . #<SB-PCL::CACHING {100AF2C413}>)
+12. %LOCK: #<SB-THREAD:MUTEX "GF lock" free owner=0>
+* (inspect #'(lambda (x) x))
+The object is a FUNCTION named (LAMBDA (X)).
+0. Lambda-list: (X)
+1. Ftype: (FUNCTION (T) (VALUES T &OPTIONAL))
+* (inspect (funcall #'(lambda (x) #'(lambda () x)) nil))
+The object is a CLOSURE named (LAMBDA ()).
+0. Lambda-list: NIL
+1. Ftype: (FUNCTION NIL (VALUES T &OPTIONAL))
+2. Closed over values: (NIL)
+
+
+
+CCL:
+* (inspect #'identity)
+[0]     #<Compiled-function IDENTITY #x30000015828F>
+[1]     Name: IDENTITY
+[2]     Arglist (analysis): (CCL::X)
+[3]     Bits: 8388864
+[4]     Plist: (CCL::FUNCTION-SYMBOL-MAP
+         (#(CCL::X) . #(63 17 26))
+         CCL::%FUNCTION-SOURCE-NOTE
+         #<SOURCE-NOTE "ccl:l1;l1-utils.lisp":...)
+[5]     Documentation: "This function simply returns what was passed to it."
+[6]     Source Location: #<SOURCE-NOTE "ccl:l1;l1-utils.lisp":7135-7215 NIL>
+* (inspect #'documentation)
+[0]     #<STANDARD-GENERIC-FUNCTION DOCUMENTATION #x302000327C2F>
+[1]     Name: DOCUMENTATION
+[2]     Arglist (declaration): (CCL::THING CCL::DOC-TYPE)
+[3]     Bits: 134218240
+[4]     Plist: NIL
+        Methods
+[5]     #<CCL::STANDARD-KERNEL-METHOD DOCUMENTATION (SYMBOL (EQL CHARACTER-ENCODING))>
+[6]     #<CCL::STANDARD-KERNEL-METHOD DOCUMENTATION (CHARACTER-ENCODING (EQL T))>
+[7]     #<CCL::STANDARD-KERNEL-METHOD DOCUMENTATION (STRUCTURE-CLASS (EQL T))>
+[8]     #<CCL::STANDARD-KERNEL-METHOD DOCUMENTATION (STRUCTURE-CLASS (EQL TYPE))>
+[9]     #<CCL::STANDARD-KERNEL-METHOD DOCUMENTATION (STANDARD-CLASS (EQL T))>
+[10]    #<CCL::STANDARD-KERNEL-METHOD DOCUMENTATION (STANDARD-CLASS (EQL TYPE))>
+[11]    #<CCL::STANDARD-KERNEL-METHOD DOCUMENTATION (STANDARD-METHOD (EQL T))>
+[12]    #<CCL::STANDARD-KERNEL-METHOD DOCUMENTATION (METHOD-COMBINATION (EQL T))>
+[13]    #<CCL::STANDARD-KERNEL-METHOD DOCUMENTATION (METHOD-COMBINATION
+                                             (EQL METHOD-COMBINATION))>
+[14]    #<CCL::STANDARD-KERNEL-METHOD DOCUMENTATION (CONS (EQL COMPILER-MACRO))>
+[15]    #<CCL::STANDARD-KERNEL-METHOD DOCUMENTATION (CONS (EQL FUNCTION))>
+[16]    #<CCL::STANDARD-KERNEL-METHOD DOCUMENTATION (SLOT-DEFINITION T)>
+[17]    #<CCL::STANDARD-KERNEL-METHOD DOCUMENTATION #'(EQL FUNCTION)>
+[18]    #<CCL::STANDARD-KERNEL-METHOD DOCUMENTATION #'(EQL T)>
+* (inspect #'(lambda (x) x))
+[0]     #<Anonymous Function #x302000F3C84F>
+[1]     Name: NIL
+[2]     Arglist (analysis): (X)
+[3]     Bits: -528482048
+[4]     Plist: (CCL::FUNCTION-SYMBOL-MAP
+         (#(X) . #(63 17 26))
+         CCL::%FUNCTION-SOURCE-NOTE
+         #<SOURCE-NOTE Interactive "#'(lambda (x) x)">)
+[5]     Source Location: #<SOURCE-NOTE Interactive "#'(lambda (x) x)">
+* (inspect (funcall #'(lambda (x) #'(lambda () x)) nil))
+[0]     #<COMPILED-LEXICAL-CLOSURE #x302000F7A7AF>
+[1]     Name: NIL
+[2]     Arglist (analysis): NIL
+[3]     Bits: -520093696
+[4]     Plist: NIL
+[5]     Inner lfun: #<Anonymous Function #x302000F7E76F>
+        Closed over values
+[6]     X: NIL
+
+
+ECL:
+* (inspect #'identity)
+#<compiled-function IDENTITY 0x7fa5fad37c40> - COMPILED-FUNCTION
+* (inspect #'documentation) => deadly amounts of text
+* (inspect #'(lambda (x) x))
+#<bytecompiled-function 0x7fa5f923f910> - COMPILED-FUNCTION
+* (inspect (funcall #'(lambda (x) #'(lambda () x)) nil))
+#<bytecompiled-closure #<bytecompiled-function 0x7fa5f923f870>> - COMPILED-FUNCTION
+
+
+ABCL:
+* (inspect #'identity)
+An object of type COMPILED-FUNCTION at #x2713A484
+   0 lambda-name ------> IDENTITY
+   1 lambda-list ------> "object"
+* (inspect #'documentation)
+   0 LAYOUT -----------> #<LAYOUT {3E414EEB}>
+   1 NAME -------------> DOCUMENTATION
+   2 LAMBDA-LIST ------> (MOP::X MOP::DOC-TYPE)
+   3 REQUIRED-ARGS ----> (MOP::X MOP::DOC-TYPE)
+   4 OPTIONAL-ARGS ----> NIL
+   5 INITIAL-METHODS --> (#<STANDARD-METHOD DOCUMENTATION (FUNCTION T) {4A854997}> #<STANDARD-METHOD DOCUMENTATION (SYMBOL T) {42458152}>)
+   6 METHODS ----------> (#<STANDARD-METHOD DOCUMENTATION (SYMBOL #) {78C83A1A}> #<STANDARD-METHOD DOCUMENTATION (SYMBOL #) {4CCA05FE}> ...)
+   7 METHOD-CLASS -----> #<STANDARD-CLASS STANDARD-METHOD {1404E8C}>
+   8 %METHOD-COMBINATION -> #<METHOD-COMBINATION STANDARD {2CE32401}>
+   9 ARGUMENT-PRECEDENCE-ORDER -> (MOP::X MOP::DOC-TYPE)
+  10 DECLARATIONS -----> NIL
+  11 %DOCUMENTATION ---> NIL
+* (inspect #'(lambda (x) x))
+An object of type FUNCTION at #x42C27FDE
+   0 lambda-name ------> #<null>
+   1 lambda-list ------> (X)
+* (inspect (funcall #'(lambda (x) #'(lambda () x)) nil))
+An object of type FUNCTION at #x7B638576
+   0 lambda-name ------> #<null>
+   1 lambda-list ------> NIL
+
+
+CLISP:
+* (inspect #'identity)
+#<SYSTEM-FUNCTION IDENTITY>:  atom
+ type: COMPILED-FUNCTION
+ class: #1=#<BUILT-IN-CLASS FUNCTION>
+* (inspect #'documentation)
+#<STANDARD-GENERIC-FUNCTION DOCUMENTATION>:  standard object
+ type: STANDARD-GENERIC-FUNCTION
+0 [$NAME]:  DOCUMENTATION
+1 [$LISTENERS]:  NIL
+2 [$DYNAMICALLY-MODIFIABLE]:  T
+3 [$SIGNATURE]:  #<ARRAY T (6) #x000000800021C009>
+4 [$ARGORDER]:  (1 0)
+5 [$METHODS]:  
+(#1=#<STANDARD-METHOD (#2=#<BUILT-IN-CLASS SYMBOL> (EQL SYSTEM::IMPNOTES))>
+ #3=#<STANDARD-METHOD (#4=#<BUILT-IN-CLASS PACKAGE> (EQL SYSTEM::IMPNOTES))>
+ #5=#<STANDARD-METHOD (#2# (EQL EXT:CLHS))>
+ #<STANDARD-METHOD (#6=#<STANDARD-CLASS CLOS:SLOT-DEFINITION> (EQL T))>
+ #<STANDARD-METHOD (#7=#<STANDARD-CLASS CLASS> (EQL TYPE))>
+ ..)
+6 [$METHOD-COMBINATION]:  #<METHOD-COMBINATION STANDARD #x00000080001DEF99>
+7 [$DEFAULT-METHOD-CLASS]:  #1=#<STANDARD-CLASS STANDARD-METHOD>
+8 [$LAMBDA-LIST]:  (CLOS::X CLOS::DOC-TYPE)
+9 [$DOCUMENTATION]:  NIL
+10 [$DECLSPECS]:  ((CLOS:DYNAMICALLY-MODIFIABLE))
+11 [$EFFECTIVE-METHOD-CACHE]:  
+(((#1=#<STANDARD-METHOD (#2=# #)> #<STANDARD-METHOD (#2# #2#)>) .
+  #3=#<COMPILED-FUNCTION
+       #:|16 82 (DEFGENERIC DOCUMENTATION (X DOC-TYPE) ...)-3-5|>))
+12 [$INITIALIZED]:  T
+* (inspect #'(lambda (x) x))
+#<FUNCTION :LAMBDA (COMMON-LISP-USER::X) COMMON-LISP-USER::X>:  atom
+ type: FUNCTION
+ class: #1=#<BUILT-IN-CLASS FUNCTION>
+* (inspect (funcall #'(lambda (x) #'(lambda () x)) nil))
+#<FUNCTION :LAMBDA NIL COMMON-LISP-USER::X>:  atom
+ type: FUNCTION
+ class: #1=#<BUILT-IN-CLASS FUNCTION>
+
+
+GCL:
+* (inspect #'identity)
+#<compiled-function IDENTITY> - COMPILED-FUNCTION
+* (inspect #'documentation)
+#<compiled-function DOCUMENTATION> - COMPILED-FUNCTION
+* (inspect #'(lambda (x) x))
+(SYSTEM:LAMBDA-CLOSURE () () ...) - function
+ nth 0:
+    SYSTEM:LAMBDA-CLOSURE s
+ nth 1:
+    NIL
+ nth 2:
+    NIL
+ nth 3:
+    NIL
+ nth 4:
+    (X)
+ nth 5:
+    X
+ nthcdr 6:
+    NIL
+* (inspect (funcall #'(lambda (x) #'(lambda () x)) nil))
+(SYSTEM:LAMBDA-CLOSURE ((X NIL)) () ...) - function
+ nth 0:
+    SYSTEM:LAMBDA-CLOSURE s
+ nth 1:
+    ((X NIL))
+ nth 2:
+    NIL
+ nth 3:
+    NIL
+ nth 4:
+    NIL
+ nth 5:
+    X
+ nthcdr 6:
+    NIL

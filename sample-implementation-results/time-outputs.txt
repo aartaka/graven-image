@@ -1,0 +1,33 @@
+SBCL:
+Evaluation took:
+  0.000 seconds of real time
+  0.000002 seconds of total run time (0.000001 user, 0.000001 system)
+  100.00% CPU
+  1,612 processor cycles
+  0 bytes consed
+
+CCL:
+took 4,997 microseconds (0.004997 seconds) to run.
+     1,836 microseconds (0.001836 seconds, 36.74%) of which was spent in GC.
+During that period, and with 4 available CPU cores,
+     4,949 microseconds (0.004949 seconds) were spent in user mode
+        10 microseconds (0.000010 seconds) were spent in system mode
+ 1,295,408 bytes of memory allocated.
+
+ECL:
+real time : 0.002 secs
+run time  : 0.002 secs
+gc count  : 1 times
+consed    : 1511792 bytes
+
+GCL
+real time       :      0.000 secs
+run-gbc time    :      0.000 secs
+child run time  :      0.000 secs
+gbc time        :      0.000 secs
+
+CLISP:
+Real time: 0.013792 sec.
+Run time: 0.013546 sec.
+Space: 1290304 Bytes
+GC: 1, GC time: 0.002166 sec.

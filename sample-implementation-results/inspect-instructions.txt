@@ -1,0 +1,110 @@
+SBCL:
+help for INSPECT:
+  Q, E        -  Quit the inspector.
+  <integer>   -  Inspect the numbered slot.
+  R           -  Redisplay current inspected object.
+  U           -  Move upward/backward to previous inspected object.
+  ?, H, Help  -  Show this help.
+  <other>     -  Evaluate the input as an expression.
+Within the inspector, the special variable SB-EXT:*INSPECTED* is bound
+to the current inspected object, so that it can be referred to in
+evaluated expressions.
+
+CCL:
+2 > help
+The following toplevel commands are available:
+ <n>    the same as (:C <n>)
+ (:S N V)  set the <n>th line of object data to value <v>
+ :HOME   show first page of object data
+ :PREV   show previous page of object data
+ :NEXT   show next page of object data
+ :SHOW   re-show currently inspected object (the value of CCL:@)
+ :Q     exit inspector
+ :POP   exit current inspector level
+ (:I N)  inspect <n>th item
+ (:FUNCTION FRAME-NUMBER)  Returns the function invoked in backtrace frame <frame-number>.  This may be useful for, e.g., disassembly
+ (:FORM FRAME-NUMBER)  Return a form which looks like the call which established the stack frame identified by <frame-number>.  This is only well-defined in certain cases: when the function is globally named and not a lexical closure and when it was compiled with *SAVE-LOCAL-SYMBOLS* in effect.
+ (:SET-LOCAL NAME FRAME-NUMBER NEW)  Set value of argument denoted <name> (see :LOCAL) in frame <frame-number> to value <new>.
+ (:LOCAL NAME FRAME-NUMBER)  Return value of local denoted by <name> in frame <frame-number> <name> can either be a symbol - in which case the most recent
+binding of that symbol is used - or an integer index into the frame's set of local bindings.
+ (:SET-ARG NAME FRAME-NUMBER NEW)  Set value of argument named <name> in frame <frame-number> to value <new>.
+ (:ARG NAME FRAME-NUMBER)  Return value of argument named <name> in frame <frame-number>
+ (:V N FRAME-NUMBER)  Return value <n> in frame <frame-number>
+ (:RAW N)  Show raw contents of backtrace frame <n>
+ (:APPLY-IN-FRAME I FUNCTION &REST ARGS)  Applies FUNCTION to ARGS in the execution context of the Ith stack frame
+ (:RETURN-FROM-FRAME I &REST VALUES)  Return VALUES from the I'th stack frame
+ (:F N)  Show backtrace frame <n>
+ (:C &OPTIONAL N)  Choose restart <n>. If no <n>, continue
+ (:B &KEY START COUNT SHOW-FRAME-CONTENTS)  backtrace
+ :NFRAMES   print the number of stack frames accessible from this break loop
+ :R     list restarts
+ :Q     return to toplevel
+ :GO    continue
+ :A     exit current break loop
+ :POP   exit current break loop
+ :?     help
+ :PWD   Print the pathame of the current directory
+ (:CD DIR)  Change to directory DIR (e.g., #p"ccl:" or "/some/dir")
+ (:PROC &OPTIONAL P)  Show information about specified process <p>/all processes
+ (:KILL P)  Kill process whose name or ID matches <p>
+ (:Y &OPTIONAL P)  Yield control of terminal-input to process
+whose name or ID matches <p>, or to any process if <p> is null
+Any other form is evaluated and its results are printed out.
+
+ECL:
+Top level commands:
+:cf              Compile file.
+:exit            Exit Lisp.
+:ld              Load file.
+:step            Single step form.
+:tr(ace)         Trace function.
+:untr(ace)       Untrace function.
+:s(witch)        Switch to next process to debug.
+:br(eak)         Stop a given process.
+:w(aiting)       Display list of active toplevels.
+Help commands:
+:apropos         Apropos.
+:doc(ument)      Document.
+:h(elp) or ?     Help.  Type ":help help" for more information.
+
+ABCL:
+  COMMAND     ABBR DESCRIPTION
+  apropos     ap   apropos
+  bt               backtrace n stack frames (default 8)
+  cd               change default directory
+  cf               compile file(s)
+  cload       cl   compile and load file(s)
+  continue    cont invoke restart n
+  describe    de   describe an object
+  error       err  print the current error message
+  exit        ex   exit lisp
+  frame       fr   set the value of cl:* to be frame n (default 0)
+  help        he   print this help
+  inspect     in   inspect an object
+  istep       i    navigate within inspection of an object
+  ld               load a file
+  ls               list directory
+  macroexpand ma   macroexpand an expression
+  package     pa   change *PACKAGE*
+  pwd         pw   print current directory
+  reset       res  return to top level
+  rq               require a module
+  trace       tr   trace function(s)
+  untrace     untr untrace function(s)
+Commands must be prefixed by the command character, which is ':' by default.
+
+CLISP:
+ *** commands:
+ :h, :?         this help
+ :p, :a         Print the current item Again
+ :s             re-inspect this item (Self)
+ :d             Describe the current item
+ :w             Widen: double CUSTOM:*INSPECT-LENGTH* and re-inspect
+ :n             Narrow: halve CUSTOM:*INSPECT-LENGTH* and re-inspect
+ :e lisp-form   eval this form, with these substitutions:
+                     (:slot number) is replaced with the appropriate slot value
+                     :self is replaced with this object
+ :m num lisp    Modify this slot
+ :q             return to the main Read/Eval/Print loop
+
+GCL: broken

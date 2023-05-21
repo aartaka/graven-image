@@ -1,0 +1,3 @@
+SBCL:
+> 1
+The object contains nothing to inspect.

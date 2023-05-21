@@ -1,0 +1,43 @@
+FIXME: No impl seems to search docs (standard: names only) or list
+docs alongside names (QoL)?
+
+ANSI CL: "These functions search for interned symbols whose names
+contain the substring string.
+
+"For apropos, as each such symbol is found, its name is printed on
+standard output. In addition, if such a symbol is defined as a
+function or dynamic variable, information about those definitions
+might also be printed.
+
+SBCL:
+SB-C::*IR1-OPTIMIZE-MAXED-OUT-EVENT-INFO* (bound, SB-C::EVENT-INFO)
+SB-C::*MAX-FAST-PROPAGATE-LIVE-TN-PASSES* = 10
+SB-C::APPROXIMATE-FUN-TYPE-MAX-ARGS (fbound)
+
+CCL:
+CCL::CHARACTER-ENCODING-MAX-UNITS-PER-CHAR, Def: FUNCTION
+X8664::FASL-MAX-VERSION,  Value: 98
+ANSI-LOOP::LOOP-ACCUMULATE-MINIMAX-VALUE, Def: MACRO FUNCTION
+ANSI-LOOP::LOOP-MINIMAX, Class: #<STRUCTURE-CLASS ANSI-LOOP::LOOP-MINIMAX>
+ACCEPT-CONNECTION, Def: STANDARD-GENERIC-FUNCTION
+CCL::%ACCESSOR-METHOD.SLOT-DEFINITION, Def: MACRO FUNCTION,  Value: 7
+
+ECL and GCL
+:MAXIMUM-REDIRECTS  Constant: :MAXIMUM-REDIRECTS
+C::*INLINE-MAX-DEPTH*  has value: 3
+C::FUN-MAXARG  Function
+SI::LOOP-ACCUMULATE-MINIMAX-VALUE  Macro
+ARRAY
+
+ABCL
+JVM::P2-MIN/MAX (fbound)
+SYSTEM::*MAXIMUM-ERROR-DEPTH* (bound)
+SYSTEM::MAXIMUM
+
+CLISP
+SYSTEM::*SQUEEZE-STRING-MAX*               variable
+:AIO-LISTIO-MAX                            constant
+SYSTEM::MAX-DEPTH
+SYSTEM::MAX-IF                             function
+EXPORTING:DEFCLASS                         macro
+FOO                                        class
