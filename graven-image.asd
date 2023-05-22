@@ -17,7 +17,8 @@
                (:file "apropos")
                (:file "function-lambda-expression")
                (:file "time"))
-  :in-order-to ((test-op "graven-image/tests")))
+  ;; :in-order-to ((test-op "graven-image/tests"))
+  )
 
 (defsystem "graven-image/cl"
   :depends-on ("graven-image")
