@@ -78,18 +78,20 @@
     (when (symbolp name)
       name)))
 
-(-> transform-definition-to-lambda (list) list)
-(defun transform-definition-to-lambda (definition)
+(-> transform-definition-to-lambda (list boolean) list)
+(defun transform-definition-to-lambda (definition force)
   (when definition
     (case (first definition)
       (lambda definition)
       ((defmacro defun)
        `(lambda ,@(cddr definition)))
       (defmethod
-          `(lambda ,@(member-if #'listp definition)))
+          (when force
+            `(lambda ,@(member-if #'listp definition))))
       (defgeneric
-          (when (= 1 (count :method (cdddr definition)
-                            :key #'first))
+          (when (and force
+                     (= 1 (count :method (cdddr definition)
+                                 :key #'first)))
             (let ((single-method (find :method (cdddr definition)
                                        :key #'first)))
               (when (equal (second single-method)
@@ -238,7 +240,8 @@
            (maybe-unsafe-read f))))
      #-(or ccl ecl sbcl)
      (warn "source fetching is not implemented for this CL, help in implementing it!"))
-   (function-source-expression-fallback function)))
+   (when force
+     (function-source-expression-fallback function))))
 
 (-> function-lambda-expression* ((or function symbol) &optional boolean))
 (defun function-lambda-expression* (function &optional force)
@@ -249,7 +252,11 @@
     one can rely on as the arglist of the FUNCTION.
 - Whether the FUNCTION is closed over some values and what these
   values are (when possible).
-- The name of the function, whenever applicable."
+- The name of the function, whenever applicable.
+
+When FORCE, return the lambda even if it's not suitable for `compile'
+or is otherwise not representing the FUNCTION truthfully. Might be
+useful to the arglist or some body, though. Use at your own risk!"
   (let* ((function (typecase function
                      (symbol (symbol-function function))
                      (function function)))
@@ -258,7 +265,7 @@
         (funcall old-function-lambda-expression function)
       (values
        (or expression
-           (transform-definition-to-lambda definition))
+           (transform-definition-to-lambda definition force))
        (cond
         ;; T is suspicious.
         ((eq closure-p t) (function-closure-p function))
