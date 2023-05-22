@@ -19,11 +19,6 @@
                (:file "time"))
   :in-order-to ((test-op "graven-image/tests")))
 
-(defsystem "graven-image/import"
-  :depends-on ("graven-image")
-  :description "Importing Graven Image functions/macros into CL."
-  :components ((:file "source/import")))
-
 (defsystem "graven-image/cl"
   :depends-on ("graven-image")
   :description "Binding CL functions/macros to Graven Image counterparts."
