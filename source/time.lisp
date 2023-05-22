@@ -135,10 +135,13 @@ The way information is returned depends on RETURN-KIND:
                 (old-bytes-allocated
                   #+(and ecl boehm-gc)
                   (si::gc-stats t))
+                (old-gc-count
+                  #+(and ecl boehm-gc)
+                  (nth-value 1 (si::gc-stats t)))
                 (aborted t))
             (declare (ignorable
                       #+ecl ecl-force-gc
-                      old-gc-time old-bytes-allocated))
+                      old-gc-time old-gc-count old-bytes-allocated))
             (unwind-protect
                  (multiple-value-prog1
                      ,form
@@ -158,5 +161,8 @@ The way information is returned depends on RETURN-KIND:
                     ,props)
               #+(and ecl boehm-gc)
               (push (cons :allocated (- (si::gc-stats t) old-bytes-allocated))
+                    ,props)
+              #+(and ecl boehm-gc)
+              (push (cons :gc-count (- (nth-value 1 (si::gc-stats t)) old-gc-count))
                     ,props))))
          (list (return-time-props ,return-kind ,props ',form)))))))
