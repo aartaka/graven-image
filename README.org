@@ -154,15 +154,16 @@ See the docs of =time*= for more info.
 * Roadmap
 - [ ] Make =apropos= sorting more customizable.
 - [ ] Add:
-  - [ ] INSPECT,
-  - [ ] DESCRIBE,
-  - [ ] TIME,
-  - [ ] ED.
+  - [ ] =inspect=,
+  - [ ] =describe=,
+  - [X] =time=,
+  - [ ] =ed=.
 - [ ] Improve
-  - [ ] DRIBBLE,
-  - [ ] STEP,
-  - [ ] TRACE/UNTRACE,
-  - [ ] DOCUMENTATION,
-  - [ ] DISASSEMBLE?
-- [ ] Somehow hook into and improve over \*DEBUGGER-HOOK\*.
+  - [ ] =dribble=,
+  - [ ] =step=,
+  - [ ] =trace=/=untrace=,
+  - [ ] =documentation=?
+  - [ ] =disassemble=?
+  - [ ] =room=?
+- [ ] Somehow hook into and improve over =*debugger-hook*=?
 - [ ] Test on more implementations.
