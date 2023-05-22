@@ -6,17 +6,21 @@
 (defun return-time-props (kind props form)
   (flet ((print-props (stream)
            (format stream
-                   "~&Time spent ~:[evaluating~;aborting~] ~s:
-Real time: ~f seconds.
-Run time (system): ~f seconds.
-Run time (user): ~f seconds.
-GC time: ~f seconds.
-Bytes allocated: ~a.
-Page faults: ~a.~%"
+                   "~&Time spent ~@[un~*~]successfully evaluating ~s:~
+~@[~&Real time: ~f seconds.~]~
+~@[~&Run time (system): ~f seconds.~]~
+~@[~&Run time (user): ~f seconds.~]~
+~@[~&CPU load: ~f percent.~]~
+~@[~&CPU cores utilized: ~d.~]~
+~@[~&GC time: ~f seconds.~]~
+~@[~&Bytes allocated: ~a.~]~
+~@[~&Page faults: ~a.~]"
                    (cdr (assoc :aborted props))
                    form (cdr (assoc :real props))
                    (cdr (assoc :system props))
                    (cdr (assoc :user props))
+                   (cdr (assoc :cpu props))
+                   (cdr (assoc :cores props))
                    (cdr (assoc :gc props))
                    (cdr (assoc :allocated props))
                    (or (cdr (assoc :faults props)) 0))))
@@ -83,7 +87,7 @@ The way information is returned depends on RETURN-KIND:
                     (push (cons :system (/ system-time internal-time-units-per-second)) ,props)
                     (push (cons :user (/ user-time internal-time-units-per-second)) ,props)
                     (push (cons :gc (/ gc-time internal-time-units-per-second)) ,props)
-                    (push (cons :count (ccl::cpu-count)) ,props)(ccl::cpu-count)
+                    (push (cons :cores (ccl::cpu-count)) ,props)
                     (values-list results))))
             (ccl::report-time ',form (lambda () ,form))))
          (list (return-time-props ,return-kind ,props ',form)))))))
