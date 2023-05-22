@@ -10,8 +10,9 @@
 ~@[~&Real time: ~f seconds.~]~
 ~@[~&Run time (system): ~f seconds.~]~
 ~@[~&Run time (user): ~f seconds.~]~
-~@[~&CPU load: ~f percent.~]~
-~@[~&CPU cores utilized: ~d.~]~
+~@[~&CPU cycles: ~d.~]~
+~@[~&CPU cores: ~d.~]~
+~@[~&GC: ~d times.~]~
 ~@[~&GC time: ~f seconds.~]~
 ~@[~&Bytes allocated: ~a.~]~
 ~@[~&Page faults: ~a.~]"
@@ -21,9 +22,10 @@
                    (cdr (assoc :user props))
                    (cdr (assoc :cpu props))
                    (cdr (assoc :cores props))
+                   (cdr (assoc :gc-count props))
                    (cdr (assoc :gc props))
                    (cdr (assoc :allocated props))
-                   (or (cdr (assoc :faults props)) 0))))
+                   (cdr (assoc :faults props)))))
     (typecase kind
       ((eql :data) props)
       (stream (print-props kind))
@@ -43,8 +45,9 @@ The way information is returned depends on RETURN-KIND:
   - (:user . seconds) for user run time.
   - (:system . seconds) for user run time.
   - (:cores . number) for CPU cores utilized.
+  - (:gc-count . number) for the times GC was invoked.
   - (:gc . seconds) for time spend on GC.
-  - (:cpu . percentage) for CPU load in percent.
+  - (:cpu . cycles) for CPU cycles spent.
   - (:allocated . bytes).
   - (:aborted . boolean)."
   (let ((props (gensym "PROPS")))
@@ -68,6 +71,8 @@ The way information is returned depends on RETURN-KIND:
                (push (cons :system (/ system-run-time-us 1000000)) ,props))
              (when gc-run-time-ms
                (push (cons :gc (/ gc-run-time-ms 1000)) ,props))
+             (when processor-cycles
+               (push (cons :cpu processor-cycles) ,props))
              (when bytes-consed
                (push (cons :allocated bytes-consed) ,props))
              (push (cons :faults page-faults) ,props))
@@ -89,5 +94,69 @@ The way information is returned depends on RETURN-KIND:
                     (push (cons :gc (/ gc-time internal-time-units-per-second)) ,props)
                     (push (cons :cores (ccl::cpu-count)) ,props)
                     (values-list results))))
-            (ccl::report-time ',form (lambda () ,form))))
+            (ccl::report-time ',form (lambda () ,form)))
+          #+clisp
+          (multiple-value-bind (old-real1 old-real2 old-run1 old-run2 old-gc1 old-gc2 old-space1 old-space2 old-gccount)
+              (system::%%time)
+            (let ((aborted t))
+              (unwind-protect
+                   (multiple-value-prog1
+                       ,form
+                     (setf aborted nil))
+                (multiple-value-bind (new-real1 new-real2 new-run1 new-run2 new-gc1 new-gc2 new-space1 new-space2 new-gccount)
+                    (system::%%time)
+                  (flet ((diff4 (newval1 newval2 oldval1 oldval2)
+                           (+ (* (- newval1 oldval1) internal-time-units-per-second)
+                              (- newval2 oldval2))))
+                    (push (cons :aborted aborted) ,props)
+                    (push (cons :real (/ (diff4 new-real1 new-real2 old-real1 old-real2)
+                                         internal-time-units-per-second))
+                          ,props)
+                    (push (cons :user (/ (diff4 new-run1 new-run2 old-run1 old-run2)
+                                         internal-time-units-per-second))
+                          ,props)
+                    (push (cons :allocated (system::delta4 new-space1 new-space2 old-space1 old-space2 24))
+                          ,props)
+                    (let ((gc-time (diff4 new-gc1 new-gc2 old-gc1 old-gc2))
+                          (gc-count (- new-gccount old-gccount)))
+                      (unless (zerop gc-time)
+                        (push (cons :gc (/ gc-time internal-time-units-per-second))
+                              ,props))
+                      (unless (zerop gc-count)
+                        (push (cons :gc-count gc-count) ,props))))))))
+          #-(or sbcl ccl clisp)
+          (let ((old-real-time (get-internal-real-time))
+                (old-run-time (get-internal-run-time))
+                #+ecl
+                (ecl-force-gc (si::gc t))
+                (old-gc-time
+                  #+(and ecl (not boehm-gc))
+                  (si::gc-time))
+                (old-bytes-allocated
+                  #+(and ecl boehm-gc)
+                  (si::gc-stats t))
+                (aborted t))
+            (declare (ignorable
+                      #+ecl ecl-force-gc
+                      old-gc-time old-bytes-allocated))
+            (unwind-protect
+                 (multiple-value-prog1
+                     ,form
+                   (setf aborted nil))
+              (push (cons :aborted aborted) ,props)
+              (push (cons :real (/ (- (get-internal-real-time)
+                                      old-real-time)
+                                   internal-time-units-per-second))
+                    ,props)
+              (push (cons :user (/ (- (get-internal-run-time)
+                                      old-run-time)
+                                   internal-time-units-per-second))
+                    ,props)
+              #+(and ecl (not boehm-gc))
+              (push (cons :gc (/ (- (si::gc-time) old-gc-time)
+                                 internal-time-units-per-second))
+                    ,props)
+              #+(and ecl boehm-gc)
+              (push (cons :allocated (- (si::gc-stats t) old-bytes-allocated))
+                    ,props))))
          (list (return-time-props ,return-kind ,props ',form)))))))
