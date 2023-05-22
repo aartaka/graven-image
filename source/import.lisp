@@ -17,4 +17,11 @@
   (import 'graven-image:function-lambda-expression*)
   (export 'function-lambda-expression*)
   (import 'graven-image:time*)
-  (export 'time*))
+  (export 'time*)
+  ;; Helpers.
+  (import 'graven-image:apropod*)
+  (export 'apropod*)
+  (import 'graven-image:function-lambda-list*)
+  (export 'function-lambda-list*)
+  (import 'graven-image:function-name*)
+  (export 'function-name*))

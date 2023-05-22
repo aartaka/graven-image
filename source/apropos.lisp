@@ -154,3 +154,10 @@ Influenced by:
                                   (not (fboundp symbol))
                                   (not (find-class symbol nil))))
           (format t "Symbol ~s~%" symbol))))))
+
+;;; Helpers
+
+(-> apropod* ((or string symbol) &optional (or package symbol list) boolean))
+(defun apropod* (string &optional package external-only)
+  "A version of `apropos*', but with documentation search by default."
+  (apropos* string package external-only t))

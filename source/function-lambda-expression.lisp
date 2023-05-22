@@ -274,3 +274,18 @@ useful to the arglist or some body, though. Use at your own risk!"
        (or name
            (function-name function)
            (transform-definition-to-name definition))))))
+
+;;; Helpers
+
+(-> function-lambda-list* ((or function symbol) &optional boolean))
+(defun function-lambda-list* (function &optional force)
+  "Return lambda list of the FUNCTION.
+Depends on `function-lambda-expression*'."
+  (second (function-lambda-expression* function force)))
+
+(-> function-name* ((or function symbol)))
+(defun function-name* (function)
+  "Get the name of the FUNCTION.
+It's not guaranteed that the returned value is a symbol.
+Depends on `function-lambda-expression*'."
+  (nth-value 2 (function-lambda-expression* function)))
