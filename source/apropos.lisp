@@ -132,8 +132,16 @@ Influenced by:
             (*print-length* 5)
             (*print-lines* 1))
         (when (boundp symbol)
-          (format t "Variable ~s = ~s~@[ (~a)~]~%"
-                  symbol (symbol-value symbol) (crop-docs (documentation symbol 'variable))))
+          (cond
+            ((or (eq t symbol)
+                 (null symbol)
+                 (keywordp symbol))
+             (format t "Self-evaluating ~s~%" symbol))
+            ((constantp symbol)
+             (format t "Constant ~s = ~s~@[ (~a)~]~%"
+                     symbol (symbol-value symbol) (crop-docs (documentation symbol 'variable))))
+            (t (format t "Variable ~s = ~s~@[ (~a)~]~%"
+                       symbol (symbol-value symbol) (crop-docs (documentation symbol 'variable))))))
         (when (fboundp symbol)
           (format t "~:[Function~;Macro~] ~s~@[ (~a)~]~%"
                   (macro-function symbol) symbol (crop-docs (documentation symbol 'function))))
