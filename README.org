@@ -134,12 +134,22 @@ Things that =function-lambda-expression= now returns are:
   =function-lambda-expression=, but also inspects
   implementation-specific function objects, if necessary.
 
+** =time= (macro) =form &optional return-kind=
+
+The improved =time= from Graven Image reuses as much implementation-specific APIs as possible, while providing:
+- Ability to print to string (possible everywhere) easily (with NIL passed as =return-kind=).
+- Ability to print to any stream (possible everywhere) easily (with stream passed as =return-kind=).
+- Predictable printing format across implementations.
+- Ability to return machine-readable data format (with :DATA keyword passed as =return-kind=).
+  - This is the main reason for re-implementing =time= in Graven Image—all the stats are now returned.
+
+See the docs of =time*= for more info.
+
 ** TODO =inspect= (generic-function) =object &key stream omit-empty &allow-other-keys -> (or alist string (values))=
 *** TODO =inspect-object= (generic-function) =object &key omit-empty &allow-other-keys -> alist=
 ** TODO =describe= (generic-function) =object &key stream force omit-empty &allow-other-keys=
 *** TODO =describe-object= (generic-function) =object stream &key force omit-empty &allow-other-keys= 
 ** TODO =ed= (function)
-** TODO =time= (macro)
 
 * Roadmap
 - [ ] Make =apropos= sorting more customizable.
