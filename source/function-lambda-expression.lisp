@@ -233,7 +233,7 @@
        ;; FIXME: Not using form number there, because it's too involved
        ;; and likely means some macro magic which will bork the lambda
        ;; expression anyway.
-       (when form-path
+       (when (and form-path file)
          (with-open-file (f (translate-logical-pathname file))
            (loop repeat (first (uiop:ensure-list form-path))
                  do (maybe-unsafe-read f))
