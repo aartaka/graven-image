@@ -256,7 +256,7 @@
 
 When FORCE, return the lambda even if it's not suitable for `compile'
 or is otherwise not representing the FUNCTION truthfully. Might be
-useful to the arglist or some body, though. Use at your own risk!"
+useful to fetch the arglist or body, though. Use at your own risk!"
   (let* ((function (typecase function
                      (symbol (symbol-function function))
                      (function function)))
