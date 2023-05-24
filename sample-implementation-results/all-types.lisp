@@ -1,5 +1,6 @@
 '(t
   atom
+  number
   readtable
   package
   symbol
