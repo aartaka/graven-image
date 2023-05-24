@@ -223,8 +223,6 @@ GCL:
  imaginary part:
     1.3
 * (inspect "hello")
-
-Type ? and a newline for help.
 "hello" - simple string
  dimension:  5 
  aref 0:
