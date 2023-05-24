@@ -1,19 +1,15 @@
-'(t
-  atom
-  number
+;; From https://cl-community-spec.github.io/pages/Type-Relationships.html
+'(number
   readtable
   package
   symbol
   restart
   random-state
   hash-table
-  structure-object
-  standard-object
-  method
-  method-combination
+  structure-object standard-object method method-combination ; CLOS.
   character
-  sequence
-  string
+  cons array ; Sequence as umbrella for cons, array, and null?
+  string ; Array too, but useful to specialize.
   stream
   function
   pathname
