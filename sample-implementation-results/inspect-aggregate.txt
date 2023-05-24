@@ -15,6 +15,37 @@ The object is a STRUCTURE-OBJECT of type PACKAGE.
 11. %IMPLEMENTATION-PACKAGES: NIL
 12. %LOCAL-NICKNAMES: NIL
 13. SOURCE-LOCATION: NIL
+* (inspect *readtable*)
+The object is a STRUCTURE-OBJECT of type READTABLE.
+0. BASE-CHAR-SYNTAX-ARRAY: #(4 4 4 4 4 4 4 4 4 0 0 4 0 0 4 4 4 4 4 4 4 4 4 4 4
+                             4 4 4 4 4 4 4 0 4 1 4 4 4 4 1 1 1 4 4 1 4 4 4 4 4
+                             4 4 4 4 4 4 4 4 4 1 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+                             4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 2 4 4 4 1 4 4 4
+                             4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 3
+                             4 4 4)
+1. BASE-CHAR-MACRO-ARRAY: #(NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL
+                            NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL
+                            NIL NIL NIL NIL NIL NIL NIL NIL
+                            #<FUNCTION SB-IMPL::READ-STRING>
+                            #<FUNCTION (LAMBDA (STREAM CHAR)
+                                         :IN
+                                         SB-IMPL::%MAKE-DISPATCH-MACRO-CHAR) {100031F1FB}>
+                            NIL NIL NIL #<FUNCTION SB-IMPL::READ-QUOTE>
+                            SB-IMPL::READ-LIST SB-IMPL::READ-RIGHT-PAREN NIL
+                            NIL SB-IMPL::COMMA-CHARMACRO NIL NIL NIL NIL NIL
+                            NIL NIL NIL NIL NIL NIL NIL NIL NIL
+                            #<FUNCTION SB-IMPL::READ-COMMENT> NIL NIL NIL NIL
+                            NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL
+                            NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL
+                            NIL NIL NIL NIL NIL NIL
+                            SB-IMPL::BACKQUOTE-CHARMACRO NIL NIL NIL NIL NIL
+                            NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL
+                            NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL NIL)
+2. EXTENDED-CHAR-TABLE: #<HASH-TABLE :TEST EQ :COUNT 0 {1000011833}>
+3. %READTABLE-CASE: :UPCASE
+4. %READTABLE-STRING-PREFERENCE: CHARACTER
+5. %READTABLE-SYMBOL-PREFERENCE: BASE-CHAR
+6. %READTABLE-NORMALIZATION: T
 * (inspect (make-instance 'foo))
 The object is a STANDARD-OBJECT of type FOO.
 0. SLOT-A: 5
@@ -335,6 +366,14 @@ CCL:
 [10]    PKG.SHADOWED: NIL
 [11]    PKG.LOCK: #<READ-WRITE-LOCK [ptr @ #xCD3F00] #x30200000BDAD>
 [12]    PKG.INTERN-HOOK: NIL
+* (inspect *readtable*)
+[0]     #<READTABLE #x302000313D3D>
+[1]     Type: READTABLE
+[2]     Class: #<BUILT-IN-CLASS READTABLE>
+[3]     TYPE: (READTABLE . #<CCL::CLASS-WRAPPER READTABLE #x3000400784BD>)
+[4]     RDTAB.TTAB: #<SPARSE-VECTOR 1114112 (UNSIGNED-BYTE 8) #x302000313D6D>
+[5]     RDTAB.MACROS: #<SPARSE-VECTOR 1114112 T #x302000313C6D>
+[6]     RDTAB.CASE: :UPCASE
 * (inspect (make-instance 'foo))
 [0]     #<FOO #x3020010BA4FD>
 [1]     Class: #<STANDARD-CLASS FOO>
@@ -477,7 +516,8 @@ ECL:
  nicknames:  ("CL")
  used-by list:  (#<"SB-BSD-SOCKETS" package> #<"QUICKLISP-CLIENT" package>
                  #<"QL-BUNDLE" package> ...)
-
+* (inspect *readtable*)
+#<readtable 0x7fd04e005ec0> - READTABLE
 * (inspect (make-instance 'foo))
 #<a COMMON-LISP-USER::FOO 0x7f828cb93280> - clos object:
     - it is an instance of class named FOO,
@@ -637,6 +677,8 @@ ECL:
 ABCL:
 * (inspect (find-package :cl))
 The COMMON-LISP package
+* (inspect *readtable*)
+An object of type READTABLE at #x7A3803F
 * (inspect (make-instance 'foo))
    0 LAYOUT -----------> #<LAYOUT {43E46931}>
    1 SLOT-A -----------> 5
@@ -836,6 +878,9 @@ GCL:
  nicknames:  ("LISP" "CL")
  used-by list:  (#<"CONDITIONS" package> #<"PCL" package>
                  #<"ITERATE" package> ...)
+
+* (inspect *readtable*)
+#<readtable 000000000092f118> - READTABLE
 * (inspect (make-instance 'foo))
 Structure of type STD-INSTANCE 
 Byte:[Slot Type]Slot Name   :Slot Value
