@@ -95,7 +95,7 @@ Influenced by:
                  :key (lambda (p) (funcall old-apropos-list string p))))
         #+(or sbcl ccl ecl gcl abcl clisp)
         (t (%apropos-list string packages external-only docs-too))
-        #+(not (or sbcl ccl ecl gcl abcl clisp))
+        #-(or sbcl ccl ecl gcl abcl clisp)
         (t
          (warn "apropos-list* is not implemented for this CL, help in implementing it!")
          (reduce #'append packages
