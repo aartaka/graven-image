@@ -399,3 +399,29 @@ or using a setf-accessor."))
 
 (defmethod inspect-object* ((object structure-object) &key &allow-other-keys)
   (inspect-slots object))
+
+(defmethod inspect-object* ((object function) &key &allow-other-keys)
+  `((:name ,(function-name* object)
+           ,(lambda (new-name old-name)
+              (compile new-name (fdefinition old-name))))
+    (:arguments ,(function-lambda-list* object t))
+    (:ftype ,(function-type* object))
+    (:expression ,(function-lambda-expression* object)
+                 ,(lambda (new-value _)
+                    (declare (ignorable _))
+                    (compile (function-name* object)
+                             new-value)))
+    ,@(when (typep object 'generic-function)
+        `((:methods ,(closer-mop:generic-function-methods object))
+          (:method-combination ,(closer-mop:generic-function-method-combination object))
+          #+ccl
+          ,@(get-ccl-props
+             object
+             'ccl::gf.code-vector 'ccl::gf.slots 'ccl::gf.dispatch-table 'ccl::gf.dcode 'ccl::gf.hash 'ccl::gf.bits)
+          #+ccl
+          ,@(when (typep object 'standard-generic-function)
+              (get-ccl-props object 'ccl::sgf.method-class 'ccl::sgf.decls 'ccl::sgf.dependents))))
+    #+sbcl
+    ,@(remove-sbcl-props-from
+       object
+       'sb-pcl::name 'sb-pcl::methods 'sb-pcl::%method-combination "Lambda-list" "Ftype")))
