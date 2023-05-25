@@ -356,9 +356,9 @@ or using a setf-accessor."))
                          ((and new-value (not exists-p))
                           (open file
                                 :direction :probe
-                                :if-does-not-exist :create)))))))))
-    ;; CCL inspection is quite broken, although there's interesting
-    ;; info in it...
+                                :if-does-not-exist :create))))))
+           #+ccl
+           ,@(get-ccl-props object 'basic-file-stream.actual-filename))))
     #+sbcl
     ,@(remove-sbcl-props-from
        object
