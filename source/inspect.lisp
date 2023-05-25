@@ -138,7 +138,7 @@ or using a setf-accessor."))
   (mapcar #'cons-to-list
           (set-difference
            (nth-value 2 (sb-impl::inspected-parts object))
-           names
+           names-to-remove
            :key (lambda (x)
                   (typecase x
                     (cons (car x))
