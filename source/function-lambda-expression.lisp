@@ -303,4 +303,4 @@ Depends on `function-lambda-expression*'."
   "Get the ftype of the FUNCTION.
 The return value is non-nil only on some implementations.
 Depends on `function-lambda-expression*'."
-  (nth-value 2 (function-lambda-expression* function)))
+  (nth-value 3 (function-lambda-expression* function)))
