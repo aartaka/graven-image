@@ -203,9 +203,9 @@ or using a setf-accessor."))
       ,(lambda (new-value)
          (setf (readtable-case object) new-value)))
     #+sbcl
-    (normalization ,(readtable-normalization object)
+    (normalization ,(sb-ext::readtable-normalization object)
                    ,(lambda (new-value)
-                      (setf (readtable-normalization object) new-value)))
+                      (setf (sb-ext::readtable-normalization object) new-value)))
     #+sbcl
     (symbol-preference ,(sb-impl::%readtable-symbol-preference object))
     #+sbcl
@@ -278,7 +278,7 @@ or using a setf-accessor."))
                     '("lsp" "lisp")
                     :test #'string-equal)
         `((compile-pathname ,(compile-file-pathname object))))
-    ,@(when (directory-pathname-p object)
+    ,@(when (uiop:directory-pathname-p object)
         `((files ,(uiop:directory-files object))
           (subdirectories ,(uiop:subdirectories object))))
     ,@(remove-sbcl-props-from
