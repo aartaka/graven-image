@@ -158,6 +158,7 @@ See the docs of =time*= for more info.
   - [ ] =describe=,
   - [X] =time=,
   - [ ] =ed=.
+  - [ ] =invoke-debugger=.
 - [ ] Improve
   - [ ] =dribble=,
   - [ ] =step=,
