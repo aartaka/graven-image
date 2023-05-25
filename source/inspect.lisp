@@ -363,3 +363,28 @@ or using a setf-accessor."))
     ,@(remove-sbcl-props-from
        object
        'sb-impl::file 'sb-impl::element-type 'sb-impl::dual-channel-p 'sb-impl::pathname)))
+
+(defun object-slots (object)
+  (mapcar #'closer-mop:slot-definition-name
+          (closer-mop:class-slots (class-of object))))
+
+(defun inspect-slots (object)
+  (append
+   (mapcar (lambda (name)
+             (list name (slot-value object name)
+                   (lambda (new-value)
+                     (setf (slot-value object name) new-value))))
+           (object-slots object))
+   #+ccl
+   (get-ccl-props
+    object
+    'instance.hash 'instance.slots)
+   #+sbcl
+   (apply #'remove-sbcl-props-from object
+          (object-slots object))))
+
+(defmethod inspect-object* ((object standard-object) &key &allow-other-keys)
+  (inspect-slots object))
+
+(defmethod inspect-object* ((object structure-object) &key &allow-other-keys)
+  (inspect-slots object))
