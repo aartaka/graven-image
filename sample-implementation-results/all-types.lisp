@@ -22,7 +22,7 @@
   #+abcl
   (java:java-exception mop::slot-definition java:java-object)
   #+ccl
-  (uvector-inspector)
+  (ccl:uvector-inspector)
   #+clasp
   (sys:cxx-object sys:vaslist)
   #+(or cmucl scl)
