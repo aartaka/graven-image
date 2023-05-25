@@ -21,10 +21,4 @@
    #+lispworks #:hcl
    #+allegro   #:excl
    #:package-local-nicknames)
-  (:import-from
-   #+sbcl      #:sb-ext
-   #+ecl       #:ext
-   #:package-locked-p
-   #:package-lock
-   #:package-unlock)
   (:documentation "CL standard debugging utilities improved."))

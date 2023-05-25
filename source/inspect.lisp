@@ -178,11 +178,14 @@ or using a setf-accessor."))
     (used-by ,(package-used-by-list object))
     (uses ,(package-use-list object))
     #+(or sb-package-locks package-locks)
-    (locked ,(package-locked-p object)
+    (locked #+sbcl ,(sb-ext:package-locked-p object)
+            #+ecl ,(ext:package-locked-p object)
             ,(lambda (new-value)
                (if new-value
-                   (lock-package object)
-                   (unlock-package object))))
+                   #+sbcl (sb-ext:lock-package object)
+                   #+ecl (ext:lock-package object)
+                   #+sbcl (sb-ext:unlock-package object)
+                   #+ecl (ext:unlock-package object))))
     #+package-local-nicknames
     (local-nicknames ,(package-local-nicknames object))
     #+ccl
