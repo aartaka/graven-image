@@ -198,6 +198,7 @@
                   (reader-error ()
                     (when force
                       (read-nolocks stream))))))
+            #-sbcl ; unused on SBCL
             (read-from-position (file position)
               (when (and position file)
                 (with-open-file (f file)
