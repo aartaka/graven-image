@@ -307,7 +307,7 @@ or using a setf-accessor."))
     #+ccl
     ,@(get-ccl-props
        object
-       'nhash.keytransf 'nhash.comparef 'nhash.rehash-bits 'nhash.vector 'nhash.lock 'nhash.owner
+       'nhash.keytransF 'nhash.compareF 'nhash.rehash-bits 'nhash.vector 'nhash.lock 'nhash.owner
        'nhash.grow-threshold 'nhash.puthash-count 'nhash.exclusion-lock 'nhash.find 'nhash.find-new
        'nhash.read-only 'nhash.min-size)
     #+sbcl
