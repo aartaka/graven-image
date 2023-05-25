@@ -11,6 +11,7 @@
   :version "0.0.1"
   :serial t
   :pathname "source/"
+  :depends-on ("closer-mop")
   :components ((:file "package")
                (:file "graven-image")
                (:file "yes-or-no")
