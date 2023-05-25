@@ -253,6 +253,7 @@
 - Whether the FUNCTION is closed over some values and what these
   values are (when possible).
 - The name of the function, whenever applicable.
+- The type of the function, whenever found.
 
 When FORCE, return the lambda even if it's not suitable for `compile'
 or is otherwise not representing the FUNCTION truthfully. Might be
@@ -273,7 +274,13 @@ useful to fetch the arglist or body, though. Use at your own risk!"
         (t nil))
        (or name
            (function-name function)
-           (transform-definition-to-name definition))))))
+           (transform-definition-to-name definition))
+       #+sbcl
+       (sb-introspect:function-type function)
+       #+(or cmucl scl)
+       (kernel:%function-type function)
+       #-(or cmucl scl sbcl)
+       nil))))
 
 ;;; Helpers
 
@@ -287,5 +294,12 @@ Depends on `function-lambda-expression*'."
 (defun function-name* (function)
   "Get the name of the FUNCTION.
 It's not guaranteed that the returned value is a symbol.
+Depends on `function-lambda-expression*'."
+  (nth-value 2 (function-lambda-expression* function)))
+
+(-> function-type* ((or function symbol)))
+(defun function-type* (function)
+  "Get the ftype of the FUNCTION.
+The return value is non-nil only on some implementations.
 Depends on `function-lambda-expression*'."
   (nth-value 2 (function-lambda-expression* function)))
