@@ -3,6 +3,15 @@
 
 (in-package :graven-image)
 
+;; Stolen from Nyxt:
+(defun scalar-p (object)
+  "Return true if OBJECT is of one of the following types:
+- symbol,
+- character,
+- string,
+- non-complex number."
+  (typep object '(or symbol character string real)))
+
 (defgeneric inspect-object* (object &key strip-null &allow-other-keys)
   (:method :around (object &key (strip-null t) &allow-other-keys)
     (delete
@@ -272,3 +281,82 @@ or using a setf-accessor."))
     ,@(remove-sbcl-props-from
        object
        'sb-impl::device 'sb-impl::name 'sb-impl::version 'type 'namestring)))
+
+(defmethod inspect-object* ((object hash-table) &key &allow-other-keys)
+  `((test ,(hash-table-test object))
+    (size ,(hash-table-size object))
+    (count ,(hash-table-count object))
+    (rehash-size ,(hash-table-rehash-size object))
+    (rehash-threshold ,(hash-table-rehash-threshold object))
+    ,@(loop for key being the hash-key in object
+              using (hash-value val)
+            when (scalar-p key)
+              collect (list key val
+                            (lambda (new-value)
+                              (setf (gethash key object)
+                                    new-value)))
+                into inline-props
+            else
+              collect key into complex-props
+              and collect val into complex-props
+            finally (return (append inline-props
+                                    (list 'other-pairs complex-props))))
+    #+ccl
+    ,@(get-ccl-props
+       object
+       'nhash.keytransf 'nhash.comparef 'nhash.rehash-bits 'nhash.vector 'nhash.lock 'nhash.owner
+       'nhash.grow-threshold 'nhash.puthash-count 'nhash.exclusion-lock 'nhash.find 'nhash.find-new
+       'nhash.read-only 'nhash.min-size)
+    #+sbcl
+    ,@(remove-sbcl-props-from
+       object
+       'sb-impl::test 'sb-impl::rehash-size 'sb-impl::rehash-threshold 'sb-impl::%count)))
+
+(defmethod inspect-object* ((object stream) &key &allow-other-keys)
+  `((direction ,(cond
+                  ((typep object 'two-way-stream) :io)
+                  ((input-stream-p object) :input)
+                  ((output-stream-p object) :output)))
+    (open ,(open-stream-p object)
+          ,(lambda (new-value)
+             (case new-value
+               ((nil) (close object))
+               (:abort (close object :abort t)))))
+    (element-type ,(stream-element-type object))
+    (format ,(stream-external-format object))
+    ,@(typecase object
+        ;; On SBCL, echo-stream is an instance of two-way-stream...
+        (echo-stream
+         `((in-echo ,(echo-stream-input-stream object))
+           (out-echo ,(echo-stream-output-stream object))))
+        (two-way-stream
+         `((input ,(two-way-stream-input-stream object))
+           (output ,(two-way-stream-output-stream object))))
+        (concatenated-stream
+         `((concatenates ,(concatenated-stream-streams object))))
+        (broadcast-stream
+         `((broadcasts ,(broadcast-stream-streams object))))
+        (synonym-stream
+         `((synonym ,(synonym-stream-symbol object))))
+        (file-stream
+         `((pathname ,(pathname object))
+           (position ,(file-position object))
+           (length (file-length object))
+           (probe ,(probe-file object)
+                  ,(lambda (new-value)
+                     (let* ((file (pathname object))
+                            (exists-p (uiop:file-exists-p file)))
+                       (cond
+                         ((and exists-p (null new-value))
+                          (delete-file file)
+                          (close object))
+                         ((and new-value (not exists-p))
+                          (open file
+                                :direction :probe
+                                :if-does-not-exist :create)))))))))
+    ;; CCL inspection is quite broken, although there's interesting
+    ;; info in it...
+    #+sbcl
+    ,@(remove-sbcl-props-from
+       object
+       'sb-impl::file 'sb-impl::element-type 'sb-impl::dual-channel-p 'sb-impl::pathname)))
