@@ -17,7 +17,8 @@
                (:file "yes-or-no")
                (:file "apropos")
                (:file "function-lambda-expression")
-               (:file "time"))
+               (:file "time")
+               (:file "inspect"))
   ;; :in-order-to ((test-op "graven-image/tests"))
   )
 
