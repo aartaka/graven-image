@@ -449,6 +449,32 @@ or using a setf-accessor."))
        object
        'sb-pcl::name 'sb-pcl::methods 'sb-pcl::%method-combination "Lambda-list" "Ftype")))
 
+(defun restart-interactive (restart)
+  #+ccl (ccl::%restart-interactive restart)
+  #+sbcl (sb-kernel::restart-interactive-function restart)
+  #+ecl (si::restart-interactive-function restart)
+  #-(or ccl sbcl ecl) nil)
+
+(defmethod properties ((object restart) &key &allow-other-keys)
+  `((:name ,(restart-name object))
+    (:interactive ,(restart-interactive object))
+    (:test
+     #+ccl ,(ccl::%restart-test object)
+     #+sbcl ,(sb-kernel::restart-test-function object)
+     #+ecl ,(si::restart-test-function object)
+     #-(or ccl sbcl ecl) nil)
+    (:action
+     #+ccl ,(ccl::%restart-action object)
+     #+sbcl ,(sb-kernel::restart-function object)
+     #+ecl ,(si::restart-function object)
+     #-(or ccl sbcl ecl) nil)
+    (:report
+     #+ccl ,(ccl::%restart-report object)
+     #+sbcl ,(sb-kernel::restart-report-function object)
+     #+ecl ,(si::restart-report-function object)
+     #-(or ccl sbcl ecl) nil)))
+
+
 (defgeneric description (object)
   (:method :around (object)
     (let ((description (call-next-method))
@@ -497,3 +523,7 @@ for the `properties' key-value format."))
           (length (all-symbols object))
           (package-use-list object)
           (mapcar #'package-name (package-use-list object))))
+
+(defmethod description ((object restart))
+  (format nil "~s~@[~* (interactive)~]"
+          (restart-name object) (restart-interactive object)))
