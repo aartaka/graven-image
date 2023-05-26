@@ -12,7 +12,7 @@
 - non-complex number."
   (typep object '(or symbol character string real)))
 
-(defgeneric inspect-object* (object &key strip-null &allow-other-keys)
+(defgeneric properties (object &key strip-null &allow-other-keys)
   (:method :around (object &key (strip-null t) &allow-other-keys)
     (delete
      nil
@@ -65,7 +65,7 @@ or using a setf-accessor."))
 (defun cons-to-list (cons)
   (list (car cons) (cdr cons)))
 
-(defmethod inspect-object* ((object symbol) &key &allow-other-keys)
+(defmethod properties ((object symbol) &key &allow-other-keys)
   `((:name ,(symbol-name object))
     (:package ,(symbol-package object))
     (:visibility ,(symbol-visibility object)
@@ -96,33 +96,35 @@ or using a setf-accessor."))
         `((:package-binding ,(ignore-errors (find-package object)))))
     (:plist ,(symbol-plist object))))
 
-(defmethod inspect-object* ((object cons) &key &allow-other-keys)
-  (let ((dotted-list (not (null (cdr (last object))))))
-    (if dotted-list
-        `((:car ,(car object)
-                ,(lambda (new-value _)
-                   (declare (ignorable _))
-                   (rplaca object new-value)))
-          (:cdr ,(cdr object)
-                ,(lambda (new-value _)
-                   (declare (ignorable _))
-                   (rplacd object new-value))))
-        (append
-         `((:length ,(length object)))
-         (loop for i from 0
-               for elem in object
-               collect (let ((i i)
-                             (elem elem))
-                         (list i elem (lambda (new-value _)
-                                        (declare (ignorable _))
-                                        (setf (nth i object) new-value)))))))))
+(defun dotted-p (cons)
+  (not (null (cdr (last cons)))))
+
+(defmethod properties ((object cons) &key &allow-other-keys)
+  (if (dotted-p object)
+      `((:car ,(car object)
+              ,(lambda (new-value _)
+                 (declare (ignorable _))
+                 (rplaca object new-value)))
+        (:cdr ,(cdr object)
+              ,(lambda (new-value _)
+                 (declare (ignorable _))
+                 (rplacd object new-value))))
+      (append
+       `((:length ,(length object)))
+       (loop for i from 0
+             for elem in object
+             collect (let ((i i)
+                           (elem elem))
+                       (list i elem (lambda (new-value _)
+                                      (declare (ignorable _))
+                                      (setf (nth i object) new-value))))))))
 
 
-(defmethod inspect-object* ((object complex) &key &allow-other-keys)
+(defmethod properties ((object complex) &key &allow-other-keys)
   `((:imagpart ,(imagpart object))
     (:realpart ,(realpart object))))
 
-(defmethod inspect-object* ((object number) &key &allow-other-keys)
+(defmethod properties ((object number) &key &allow-other-keys)
   `(,@(when (typep object 'ratio)
         `((:numerator ,(numerator object))
           (:denominator ,(denominator object))))
@@ -173,7 +175,7 @@ or using a setf-accessor."))
              (t (ccl:uvref object (symbol-value prop))))))
    props))
 
-(defmethod inspect-object* ((object package) &key &allow-other-keys)
+(defmethod properties ((object package) &key &allow-other-keys)
   `((:name ,(package-name object))
     (:description ,(documentation object 'package))
     (:nicknames ,(package-nicknames object))
@@ -212,7 +214,7 @@ or using a setf-accessor."))
        'sb-impl::internal-symbols 'sb-impl::external-symbols
        'sb-impl::doc-string 'sb-impl::%local-nicknames)))
 
-(defmethod inspect-object* ((object readtable) &key &allow-other-keys)
+(defmethod properties ((object readtable) &key &allow-other-keys)
   `((:case ,(readtable-case object)
       ,(lambda (new-value _)
          (declare (ignorable _))
@@ -233,13 +235,13 @@ or using a setf-accessor."))
        object
        'sb-impl::%readtable-normalization 'sb-impl::%readtable-case)))
 
-(defmethod inspect-object* ((object random-state) &key &allow-other-keys)
+(defmethod properties ((object random-state) &key &allow-other-keys)
   `(#+ccl
     ,@(get-ccl-props object 'ccl::random.mrg31k3p-state)
     #+sbcl
     ,@(remove-sbcl-props-from object)))
 
-(defmethod inspect-object* ((object character) &key &allow-other-keys)
+(defmethod properties ((object character) &key &allow-other-keys)
   `((:code ,(char-code object))
     (:name ,(char-name object))
     (:digit-char-p ,(digit-char-p object))
@@ -247,7 +249,7 @@ or using a setf-accessor."))
     (:graphic-char-p ,(graphic-char-p object))
     (:alphanumericp ,(alphanumericp object))))
 
-(defmethod inspect-object* ((object array) &key &allow-other-keys)
+(defmethod properties ((object array) &key &allow-other-keys)
   `((:dimensions ,(array-dimensions object)
                  ,(lambda (new-value _)
                     (declare (ignorable _))
@@ -273,7 +275,7 @@ or using a setf-accessor."))
                             (declare (ignorable _))
                             (setf (elt object i) new-value))))))
 
-(defmethod inspect-object* ((object pathname) &key &allow-other-keys)
+(defmethod properties ((object pathname) &key &allow-other-keys)
   `(,@(when (uiop:logical-pathname-p object)
         `((:translation ,(translate-logical-pathname object))))
     (:wild-p ,(wild-pathname-p object))
@@ -301,7 +303,7 @@ or using a setf-accessor."))
        object
        'sb-impl::device 'sb-impl::name 'sb-impl::version 'type 'namestring)))
 
-(defmethod inspect-object* ((object hash-table) &key &allow-other-keys)
+(defmethod properties ((object hash-table) &key &allow-other-keys)
   `((:test ,(hash-table-test object))
     (:size ,(hash-table-size object))
     (:count ,(hash-table-count object))
@@ -333,7 +335,7 @@ or using a setf-accessor."))
        object
        'sb-impl::test 'sb-impl::rehash-size 'sb-impl::rehash-threshold 'sb-impl::%count)))
 
-(defmethod inspect-object* ((object stream) &key &allow-other-keys)
+(defmethod properties ((object stream) &key &allow-other-keys)
   `((:direction ,(cond
                    ((typep object 'two-way-stream) :io)
                    ((input-stream-p object) :input)
@@ -405,13 +407,13 @@ or using a setf-accessor."))
    (apply #'remove-sbcl-props-from object
           (object-slots object))))
 
-(defmethod inspect-object* ((object standard-object) &key &allow-other-keys)
+(defmethod properties ((object standard-object) &key &allow-other-keys)
   (inspect-slots object))
 
-(defmethod inspect-object* ((object structure-object) &key &allow-other-keys)
+(defmethod properties ((object structure-object) &key &allow-other-keys)
   (inspect-slots object))
 
-(defmethod inspect-object* ((object function) &key &allow-other-keys)
+(defmethod properties ((object function) &key &allow-other-keys)
   `((:name ,(function-name* object)
            ,(lambda (new-name old-name)
               (compile new-name (fdefinition old-name))))
