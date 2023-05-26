@@ -438,3 +438,42 @@ or using a setf-accessor."))
     ,@(remove-sbcl-props-from
        object
        'sb-pcl::name 'sb-pcl::methods 'sb-pcl::%method-combination "Lambda-list" "Ftype")))
+
+(defgeneric description (object)
+  (:documentation "Human-readable description of OBJECT.
+
+Include the most useful information and things that are not suitable
+for the `properties' key-value format."))
+
+
+(defmethod description ((object integer))
+  (multiple-value-bind (second minute hour date month year)
+      (decode-universal-time object)
+    (format nil "~@(~a~) ~s (~a bits, #b~b, #o~o, #x~x ~2,'0d:~2,'0d:~2,'0d ~
+~[~;Jan~;Feb~;Mar~;Apr~;May~;Jun~;Jul~;Aug~;Sep~;Oct~;Nov~;Dec~] ~
+~a~[th~;st~;nd~;rd~:;th~] ~a)"
+            (first (uiop:ensure-list (type-of object)))
+            object (ceiling (log object 2)) object object object
+            hour minute second month date (mod date 10) year)))
+
+(defmethod description ((object float))
+  (format nil "~@(~a~) ~s (~e)"
+          (first (uiop:ensure-list (type-of object))) object object))
+
+(defmethod description ((object ratio))
+  (format nil "~@(~a~) ~s (~e)~:[~*~; ~f%~]"
+          (first (uiop:ensure-list (type-of object)))
+          object object
+          (< object 100) (coerce object 'float)))
+
+(defmethod description ((object complex))
+  (format nil "~@(~a~) ~s (~a+~ai)"
+          (first (uiop:ensure-list (type-of object)))
+          object
+          (realpart object) (imagpart object)))
+
+(defmethod description ((object cons))
+  (if (not (consp (cdr object)))
+      (format nil "(~s . ~s)"
+              (car object) (cdr object))
+      (format nil "~s" object)))
