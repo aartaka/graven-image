@@ -175,21 +175,31 @@ or using a setf-accessor."))
              (t (ccl:uvref object (symbol-value prop))))))
    props))
 
+(defun all-symbols (package)
+  (loop for sym being the present-symbol in package
+        collect sym))
+
+(defun external-symbols (package)
+  (loop for sym being the external-symbol in package
+        collect sym))
+
+(defun internal-symbols (package)
+  (loop for sym being the present-symbol in package
+        when (eql (symbol-visibility sym) :internal)
+          collect sym))
+
+(defun inherited-symbols (package)
+  (loop for sym being the present-symbol in package
+        when (eql (symbol-visibility sym) :inherited)
+          collect sym))
+
 (defmethod properties ((object package) &key &allow-other-keys)
   `((:name ,(package-name object))
     (:description ,(documentation object 'package))
     (:nicknames ,(package-nicknames object))
-    (:external-symbols
-     ,(loop for sym being the external-symbol in object
-            collect sym))
-    (:internal-symbols
-     ,(loop for sym being the present-symbol in object
-            when (eql (symbol-visibility sym) :internal)
-              collect sym))
-    (:inherited-symbols
-     ,(loop for sym being the present-symbol in object
-            when (eql (symbol-visibility sym) :inherited)
-              collect sym))
+    (:external-symbols ,(external-symbols object))
+    (:internal-symbols ,(internal-symbols object))
+    (:inherited-symbols ,(inherited-symbols object))
     (:used-by ,(package-used-by-list object))
     (:uses ,(package-use-list object))
     #+(or sb-package-locks package-locks)
@@ -477,3 +487,11 @@ for the `properties' key-value format."))
       (format nil "(~s . ~s)"
               (car object) (cdr object))
       (format nil "~s" object)))
+
+(defmethod description ((object package))
+  (format nil "Package ~a [exports ~a/~a~:[~*~;, uses ~{~a~^, ~}~]]"
+          (package-name object)
+          (length (external-symbols object))
+          (length (all-symbols object))
+          (package-use-list object)
+          (mapcar #'package-name (package-use-list object))))
