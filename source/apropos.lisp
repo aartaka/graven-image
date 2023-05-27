@@ -105,7 +105,7 @@ Influenced by:
 
 (-> apropos* ((or string symbol) &optional (or package symbol list) boolean boolean))
 (defun apropos* (string &optional package external-only docs-too)
-  "Print a list of PACKAGE symbol with names (+docs when DOCS-TOO) containing STRING.
+  "Print a list of PACKAGE symbols with names (+docs when DOCS-TOO) containing STRING.
 
 In case the symbol is naming several things (variable, macro,
 function, class), these interpretations will be listed
