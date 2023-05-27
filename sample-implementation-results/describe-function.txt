@@ -1,0 +1,164 @@
+SBCL:
+* (describe #'identity)
+#<FUNCTION IDENTITY>
+  [compiled function]
+Lambda-list: (THING)
+Declared type: (FUNCTION (T) (VALUES T &OPTIONAL))
+Documentation:
+  This function simply returns what was passed to it.
+Known attributes: foldable, flushable, unsafely-flushable, movable
+Source file: SYS:SRC;CODE;FUNUTILS.LISP
+* (describe #'documentation)
+#<STANDARD-GENERIC-FUNCTION COMMON-LISP:DOCUMENTATION (25)>
+  [generic-function]
+Lambda-list: (OBJECT DOC-TYPE)
+Argument precedence order: (DOC-TYPE OBJECT)
+Derived type: (FUNCTION (T T) *)
+Documentation:
+  Return the documentation string of Doc-Type for X, or NIL if none
+  exists. System doc-types are VARIABLE, FUNCTION, STRUCTURE, TYPE, SETF, and T.
+  Function documentation is stored separately for function names and objects:
+  DEFUN, LAMBDA, &co create function objects with the specified documentation
+  strings.
+   (SETF (DOCUMENTATION NAME 'FUNCTION) STRING)
+  sets the documentation string stored under the specified name, and
+   (SETF (DOCUMENTATION FUNC T) STRING)
+  sets the documentation string stored in the function object.
+   (DOCUMENTATION NAME 'FUNCTION)
+  returns the documentation stored under the function name if any, and
+  falls back on the documentation in the function object if necessary.
+Method-combination: STANDARD
+Methods:
+  (DOCUMENTATION (SYMBOL (EQL OPTIMIZE)))
+  (DOCUMENTATION (PACKAGE (EQL T)))
+  (DOCUMENTATION (STANDARD-SLOT-DEFINITION (EQL T)))
+  (DOCUMENTATION (SYMBOL (EQL VARIABLE)))
+  (DOCUMENTATION (SYMBOL (EQL STRUCTURE)))
+  (DOCUMENTATION (SYMBOL (EQL TYPE)))
+  (DOCUMENTATION (CONDITION-CLASS (EQL TYPE)))
+  (DOCUMENTATION (CONDITION-CLASS (EQL T)))
+  (DOCUMENTATION (CLASS (EQL TYPE)))
+  (DOCUMENTATION (CLASS (EQL T)))
+  (DOCUMENTATION (STRUCTURE-CLASS (EQL TYPE)))
+  (DOCUMENTATION (STRUCTURE-CLASS (EQL T)))
+  (DOCUMENTATION (STANDARD-METHOD (EQL T)))
+  (DOCUMENTATION (SYMBOL (EQL METHOD-COMBINATION)))
+  (DOCUMENTATION (METHOD-COMBINATION (EQL METHOD-COMBINATION)))
+  (DOCUMENTATION (METHOD-COMBINATION (EQL T)))
+  (DOCUMENTATION (SYMBOL (EQL SETF)))
+  (DOCUMENTATION (SYMBOL (EQL COMPILER-MACRO)))
+  (DOCUMENTATION (SYMBOL (EQL FUNCTION)))
+  (DOCUMENTATION (LIST (EQL FUNCTION)))
+  (DOCUMENTATION (LIST (EQL COMPILER-MACRO)))
+  (DOCUMENTATION (FUNCTION (EQL FUNCTION)))
+  (DOCUMENTATION (FUNCTION (EQL T)))
+  (DOCUMENTATION :AROUND (T T))
+  (DOCUMENTATION (T T))
+Source file: SYS:SRC;PCL;DOCUMENTATION.LISP
+Slots with :INSTANCE allocation:
+  SOURCE                         = #S(SB-C:DEFINITION-SOURCE-LOCATION..
+  PLIST                          = NIL
+  %DOCUMENTATION                 = "Return the documentation string of Doc-Type for X, or NIL if none..
+  INITIAL-METHODS                = NIL
+  ENCAPSULATIONS                 = NIL
+  NAME                           = DOCUMENTATION
+  METHODS                        = (#<STANDARD-METHOD COMMON-LISP:DOCUMENTATION (SYMBOL..
+  METHOD-CLASS                   = #<STANDARD-CLASS COMMON-LISP:STANDARD-METHOD>
+  %METHOD-COMBINATION            = #<SB-PCL::STANDARD-METHOD-COMBINATION STANDARD () {10003116B3}>
+  DECLARATIONS                   = NIL
+  ARG-INFO                       = #S(SB-PCL::ARG-INFO..
+  DFUN-STATE                     = (#<FUNCTION (LAMBDA (SB-PCL::.ARG0. SB-PCL::.ARG1.)..
+  %LOCK                          = #<SB-THREAD:MUTEX "GF lock" free owner=0>
+* (describe #'(lambda (x) x))
+#<FUNCTION (LAMBDA (X)) {5371145B}>
+  [compiled function]
+Lambda-list: (X)
+Derived type: (FUNCTION (T) (VALUES T &OPTIONAL))
+Documentation:
+  T
+Source form:
+  (LAMBDA (X) X)
+* (describe (funcall #'(lambda (x) #'(lambda () x)) nil))
+#<FUNCTION (LAMBDA ()) {1006F3DB0B}>
+  [compiled closure]
+Lambda-list: ()
+Derived type: (FUNCTION NIL (VALUES T &OPTIONAL))
+Documentation:
+  T
+Source form:
+  (LAMBDA () X)
+
+
+CCL, ECL, GCL: Same as in inspect.
+
+ABCL:
+* (describe #'identity)
+#<COMPILED-FUNCTION #<IDENTITY {68B53552}> {68B53552}> is an object of type COMPILED-FUNCTION.
+The function's lambda list is:
+  (object)
+* (describe #'documentation)
+#<STANDARD-GENERIC-FUNCTION DOCUMENTATION {135C2C27}> is an instance of #<MOP:FUNCALLABLE-STANDARD-CLASS STANDARD-GENERIC-FUNCTION {7A17E9E6}>.
+The following slots have :INSTANCE allocation:
+  NAME                        DOCUMENTATION
+  LAMBDA-LIST                 (MOP::X MOP::DOC-TYPE)
+  REQUIRED-ARGS               (MOP::X MOP::DOC-TYPE)
+  OPTIONAL-ARGS               NIL
+  INITIAL-METHODS             (#<STANDARD-METHOD DOCUMENTATION (FUNCTION T) {56B35A03}> #<STANDARD-METHOD DOCUMENTATION (SYMBOL T) {195CA48B}>)
+  METHODS                     (#<STANDARD-METHOD DOCUMENTATION (SYMBOL (EQL STRUCTURE)) {49C89583}> #<STANDARD-METHOD DOCUMENTATION (SYMBOL (EQL TYPE)) {31CDCB89}> #<STANDARD-METHOD DOCUMENTATION (SYMBOL (EQL FUNCTION)) {7DE2ECF1}> #<STANDARD-METHOD DOCUMENTATION (PACKAGE (EQL T)) {1E6673A}> #<STANDARD-METHOD DOCUMENTATION (MOP:STANDARD-SLOT-DEFINITION (EQL T)) {C8F8E08}> #<STANDARD-METHOD DOCUMENTATION (STANDARD-METHOD (EQL T)) {53419D93}> #<STANDARD-METHOD DOCUMENTATION (STANDARD-GENERIC-FUNCTION (EQL FUNCTION)) {39AE766E}> #<STANDARD-METHOD DOCUMENTATION (STANDARD-GENERIC-FUNCTION (EQL T)) {B4319D6}> #<STANDARD-METHOD DOCUMENTATION (STRUCTURE-CLASS (EQL TYPE)) {7BCC2978}> #<STANDARD-METHOD DOCUMENTATION (STRUCTURE-CLASS (EQL T)) {243E8E97}> #<STANDARD-METHOD DOCUMENTATION (CLASS (EQL TYPE)) {6E699178}> #<STANDARD-METHOD DOCUMENTATION (CLASS (EQL T)) {7DF7B8CA}> #<STANDARD-METHOD DOCUMENTATION (LIST (EQL COMPILER-MACRO)) {676AD9E5}> #<STANDARD-METHOD DOCUMENTATION (LIST (EQL FUNCTION)) {37F0A9A9}> #<STANDARD-METHOD DOCUMENTATION (FUNCTION T) {56B35A03}> #<STANDARD-METHOD DOCUMENTATION (SYMBOL T) {195CA48B}>)
+  METHOD-CLASS                #<STANDARD-CLASS STANDARD-METHOD {1404E8C}>
+  %METHOD-COMBINATION         #<METHOD-COMBINATION STANDARD {15300C7E}>
+  ARGUMENT-PRECEDENCE-ORDER   (MOP::X MOP::DOC-TYPE)
+  DECLARATIONS                NIL
+  %DOCUMENTATION              NIL
+* (describe #'(lambda (x) x))
+#<FUNCTION #<FUNCTION (LAMBDA (X)) {55C1C7FA}> {55C1C7FA}> is an object of type FUNCTION.
+The function's lambda list is:
+  (X)
+* (describe (funcall #'(lambda (x) #'(lambda () x)) nil))
+#<FUNCTION #<FUNCTION (LAMBDA ()) {64559956}> {64559956}> is an object of type FUNCTION.
+The function's lambda list is:
+  NIL
+
+CLISP:
+* (describe #'identity)
+#<SYSTEM-FUNCTION IDENTITY> is a built-in system function.
+Argument list: (#:ARG0)
+For more information, evaluate (DISASSEMBLE #'IDENTITY).
+* (describe #'documentation)
+#<STANDARD-GENERIC-FUNCTION DOCUMENTATION> is a generic function.
+Argument list: (CLOS::X CLOS::DOC-TYPE)
+Methods:
+(SYMBOL (EQL SYSTEM::IMPNOTES))
+(PACKAGE (EQL SYSTEM::IMPNOTES))
+(SYMBOL (EQL CLHS))
+(SLOT-DEFINITION (EQL T))
+(CLASS (EQL TYPE))
+(CLASS (EQL T))
+(STRUCTURE-OBJECT (EQL TYPE))
+(STRUCTURE-OBJECT (EQL T))
+(STANDARD-OBJECT (EQL TYPE))
+(STANDARD-OBJECT (EQL T))
+(STRUCTURE-CLASS (EQL TYPE))
+(STRUCTURE-CLASS (EQL T))
+(STANDARD-CLASS (EQL TYPE))
+(STANDARD-CLASS (EQL T))
+(PACKAGE (EQL T))
+(STANDARD-METHOD (EQL T))
+(SYMBOL (EQL METHOD-COMBINATION))
+(METHOD-COMBINATION (EQL METHOD-COMBINATION))
+(METHOD-COMBINATION (EQL T))
+(SYMBOL (EQL CLASS))
+(SYMBOL (EQL STRUCTURE))
+(SYMBOL (EQL TYPE))
+(SYMBOL SYMBOL)
+(SYMBOL (EQL FUNCTION))
+(CONS (EQL COMPILER-MACRO))
+(CONS (EQL FUNCTION))
+#'(EQL FUNCTION)
+#'(EQL T)
+* (describe #'(lambda (x) x))
+#<FUNCTION :LAMBDA (X) X> is an interpreted function.
+Argument list: (X)
+* (describe (funcall #'(lambda (x) #'(lambda () x)) nil))
+#<FUNCTION :LAMBDA NIL X> is an interpreted function.
+Argument list: ()

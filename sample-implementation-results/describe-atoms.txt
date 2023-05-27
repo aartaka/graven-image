@@ -1,0 +1,70 @@
+SBCL:
+* (describe 5)
+5
+  [fixnum]
+* (describe #c(1.0 1.3))
+#C(1.0 1.3)
+  [complex-single-float]
+* (describe "hello")
+"hello"
+  [simple-string]
+Element-type: CHARACTER
+Length: 5
+* (describe 'hello)
+COMMON-LISP-USER::HELLO
+  [symbol]
+* (describe #\a)
+#\a
+  [standard-char]
+Char-code: 97
+Char-name: LATIN_SMALL_LETTER_A
+* (describe 3.0d0)
+3.0d0
+  [double-float]
+* (describe 3/2)
+3/2
+  [ratio]
+
+CCL, ECL, GCL: Same as in inspect.
+
+ABCL:
+* (describe 5)
+5 is an object of type (INTEGER 0 2147483647).
+5.
+#x5
+#o5
+#b101
+* (describe #c(1.0 1.3))
+#C(1.0 1.3) is an object of type COMPLEX.
+* (describe "hello")
+"hello" is an object of type (SIMPLE-BASE-STRING 5).
+* (describe 'hello)
+HELLO is an internal symbol in the COMMON-LISP-USER package.
+* (describe #\a)
+#\a is an object of type STANDARD-CHAR.
+* (describe 3.0d0)
+3.0d0 is an object of type DOUBLE-FLOAT.
+* (describe 3/2)
+3/2 is an object of type RATIO.
+
+
+CLISP:
+* (describe 5)
+5 is an integer, uses 3 bits, is represented as a fixnum.
+* (describe #c(1.0 1.3))
+#C(1.0 1.3) is a complex number in the first quadrant of the Gaussian number
+plane.
+* (describe "hello")
+"hello" is a simple 1 dimensional array (vector) of CHARACTERs, of size 5 (a
+ISO-8859-1 string).
+* (describe 'hello)
+HELLO is the symbol HELLO, lies in #<PACKAGE COMMON-LISP-USER>, is accessible in 1
+package COMMON-LISP-USER.
+* (describe #\a)
+#\a is a character.
+Unicode name: LATIN SMALL LETTER A
+It is a printable character.
+* (describe 3.0d0)
+3.0d0 is a float with 53 bits of mantissa (double-float).
+* (describe 3/2)
+3/2 is a rational, not integral number.
