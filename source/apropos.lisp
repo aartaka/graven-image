@@ -50,9 +50,11 @@ Two scores: symbol name and symbol documentation ones.
                         collect sym)
         else
           nconc (loop for sym being the present-symbol in package
-                      when (or (search string (format nil "~s" sym) :test #'string-equal)
-                               (and docs-too
-                                    (search string (all-docs sym) :test #'string-equal)))
+                      when (and
+                            (eq (symbol-package sym) (find-package package))
+                            (or (search string (format nil "~s" sym) :test #'string-equal)
+                                (and docs-too
+                                     (search string (all-docs sym) :test #'string-equal))))
                         collect sym)))
 
 (-> apropos-list* ((or string symbol) &optional (or package symbol list) boolean boolean) list)
