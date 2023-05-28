@@ -20,6 +20,7 @@
   (without-package-locks
     (read stream nil nil)))
 
+;; Stolen from Serapeum.
 (defmacro -> (name (&rest arg-types) &optional return-type)
   "Shorter ftype declaration for NAME.
 Idea stolen from Serapeum, but the implementation is much simpler and
