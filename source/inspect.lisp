@@ -552,3 +552,49 @@ for the `properties' key-value format."))
        (loop for key being the hash-key in object
                using (hash-value val)
              collect (list key val))))
+
+(defmethod description ((object array)) ; string too
+  (fmt "~{~a~^ ~}[~d~@[/~d~]]~@[ ~s~]"
+       (uiop:ensure-list (array-element-type object))
+       (length object) (ignore-errors (fill-pointer object))
+       object))
+
+(defmethod description ((object stream))
+  (labels ((directions (object)
+             (uiop:ensure-list
+              (cond
+                ((typep object 'echo-stream) :echo)
+                ((typep object 'broadcast-stream)
+                 (mapcar (constantly :out)
+                         (broadcast-stream-streams object)))
+                ((typep object 'concatenated-stream)
+                 (mapcar (constantly :in)
+                         (concatenated-stream-streams object)))
+                ((typep object 'synonym-stream)
+                 (cons :synonym
+                       (reduce #'append (mapcar #'directions
+                                                (symbol-value (synonym-stream-symbol object))))))
+                ((typep object 'two-way-stream) (list :in :out))
+                ((input-stream-p object) :in)
+                ((output-stream-p object) :out)))))
+    (fmt "~{~a~^+~}~@[~a~]~:[~3*~;~@[ ~a~]~@[#L~d~]~@[-~d~]~]"
+         (directions object)
+         (uiop:ensure-list (ignore-errors (stream-external-format object)))
+         (uiop:file-stream-p object)
+         (ignore-errors (pathname object))
+         (ignore-errors (file-position object))
+         (ignore-errors (file-length object)))))
+
+(defmethod description ((object pathname))
+  (fmt "~a~@[ -> ~a~]"
+       object
+       (cond
+         ((uiop:logical-pathname-p object)
+          (translate-logical-pathname object))
+         ((and (ignore-errors (uiop:native-namestring object))
+               (not (equal (namestring object)
+                           (uiop:native-namestring object))))
+          (uiop:native-namestring object))
+         (t (ignore-errors
+             (unless (equal (truename object) object)
+               (truename object)))))))
