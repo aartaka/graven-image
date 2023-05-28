@@ -515,24 +515,16 @@ for the `properties' key-value format."))
           object (realpart object) (imagpart object)))
 
 (defmethod description ((object character))
-  ;; FIXME: Damn, that's a convoluted mess of a format expression, and
-  ;; I got it right on iteration 1 without looking at the spec. I must
-  ;; be going eldritch horror-level crazy...
-  (cond
-    ((not (graphic-char-p object))
-     (format nil "~s~:[~*~; ~a~] (~d/#x~x)"
-             object
-             ;; Magic number: chars longer than three characters are
-             ;; likely self-descriptive.
-             (< (length (format nil "~s" object)) 4)
-             (char-name object)
-             (char-code object) (char-code object)))
-    (t
-     (format nil "~a (~d/#x~x/~a, ~:[punctuation~;~:[alphabetic~;numeric~]~])"
-             object
-             (char-code object) (char-code object) (char-name object)
-             (alphanumericp object)
-             (digit-char-p object)))))
+  (if (not (graphic-char-p object))
+      (format nil "~s (~d/#x~x)" object (char-code object) (char-code object))
+      ;; FIXME: Damn, that's a convoluted mess of a format expression,
+      ;; and I got it right on iteration 1 without looking at the
+      ;; spec. I must be going eldritch horror-level crazy...
+      (format nil "~a (~d/#x~x/~a, ~:[punctuation~;~:[alphabetic~;numeric~]~])"
+              object
+              (char-code object) (char-code object) (char-name object)
+              (alphanumericp object)
+              (digit-char-p object))))
 
 (defmethod description ((object cons))
   (if (not (consp (cdr object)))
