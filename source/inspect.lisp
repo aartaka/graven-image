@@ -517,9 +517,6 @@ for the `properties' key-value format."))
 (defmethod description ((object character))
   (if (not (graphic-char-p object))
       (fmt "~s (~d/#x~x)" object (char-code object) (char-code object))
-      ;; FIXME: Damn, that's a convoluted mess of a format expression,
-      ;; and I got it right on iteration 1 without looking at the
-      ;; spec. I must be going eldritch horror-level crazy...
       (fmt "~a (~d/#x~x/~a, ~:[punctuation~;~:[alphabetic~;numeric~]~])"
            object
            (char-code object) (char-code object) (char-name object)
