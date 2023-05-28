@@ -532,8 +532,9 @@ for the `properties' key-value format."))
       (fmt "~s" object)))
 
 (defmethod description ((object package))
-  (fmt "~a [exports ~a/~a~:[~*~;, uses ~{~a~^, ~}~]]"
+  (fmt "~a~@[/~{~a~^/~}~] [exports ~a/~a~:[~*~;, uses ~{~a~^, ~}~]]"
        (package-name object)
+       (package-nicknames object)
        (length (external-symbols object))
        (length (all-symbols object))
        (package-use-list object)
