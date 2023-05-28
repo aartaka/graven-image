@@ -542,3 +542,12 @@ for the `properties' key-value format."))
 (defmethod description ((object restart))
   (fmt "~s~@[~* (interactive)~]"
        (restart-name object) (restart-interactive object)))
+
+(defmethod description ((object hash-table))
+  (fmt "~a [~d/~d]~:[ ~s~;~*~]"
+       (hash-table-test object)
+       (hash-table-count object) (hash-table-size object)
+       (zerop (hash-table-count object))
+       (loop for key being the hash-key in object
+               using (hash-value val)
+             collect (list key val))))
