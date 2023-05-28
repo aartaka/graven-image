@@ -28,3 +28,8 @@ unsafer."
   `(declaim (ftype (function (,@arg-types) ,@(when return-type
                                                (list return-type)))
                    ,name)))
+
+;; Stolen from Serapeum.
+(defun fmt (control &rest arguments)
+  "Shortened FORMAT."
+  (apply #'format nil control arguments))

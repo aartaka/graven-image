@@ -484,8 +484,8 @@ or using a setf-accessor."))
           (*print-length* 5)
           (*print-lines* 1))
       (if (uiop:emptyp description)
-          (format nil "~@(~a~) ~s" type object)
-          (format nil "~@(~a~) ~a" type description))))
+          (fmt "~@(~a~) ~s" type object)
+          (fmt "~@(~a~) ~a" type description))))
   (:method (object)
     (format nil "~s" object))
   (:documentation "Human-readable description of OBJECT.
@@ -497,49 +497,47 @@ for the `properties' key-value format."))
 (defmethod description ((object integer))
   (multiple-value-bind (second minute hour date month year)
       (decode-universal-time object)
-    (format nil "~s (~a bits, #b~b, #o~o, #x~x ~2,'0d:~2,'0d:~2,'0d ~
+    (fmt "~s (~a bits, #b~b, #o~o, #x~x ~2,'0d:~2,'0d:~2,'0d ~
 ~[~;Jan~;Feb~;Mar~;Apr~;May~;Jun~;Jul~;Aug~;Sep~;Oct~;Nov~;Dec~] ~
 ~a~[th~;st~;nd~;rd~:;th~] ~a)"
-            object (ceiling (log object 2)) object object object
-            hour minute second month date (mod date 10) year)))
+         object (ceiling (log object 2)) object object object
+         hour minute second month date (mod date 10) year)))
 
 (defmethod description ((object float))
-  (format nil "~s (~e)" object object))
+  (fmt "~s (~e)" object object))
 
 (defmethod description ((object ratio))
-  (format nil "~s (~e)~:[~*~; ~f%~]"
-          object object (< object 100) (coerce object 'float)))
+  (fmt "~s (~e)~:[~*~; ~f%~]"
+       object object (< object 100) (coerce object 'float)))
 
 (defmethod description ((object complex))
-  (format nil "~s (~a+~ai)"
-          object (realpart object) (imagpart object)))
+  (fmt "~s (~a+~ai)" object (realpart object) (imagpart object)))
 
 (defmethod description ((object character))
   (if (not (graphic-char-p object))
-      (format nil "~s (~d/#x~x)" object (char-code object) (char-code object))
+      (fmt "~s (~d/#x~x)" object (char-code object) (char-code object))
       ;; FIXME: Damn, that's a convoluted mess of a format expression,
       ;; and I got it right on iteration 1 without looking at the
       ;; spec. I must be going eldritch horror-level crazy...
-      (format nil "~a (~d/#x~x/~a, ~:[punctuation~;~:[alphabetic~;numeric~]~])"
-              object
-              (char-code object) (char-code object) (char-name object)
-              (alphanumericp object)
-              (digit-char-p object))))
+      (fmt "~a (~d/#x~x/~a, ~:[punctuation~;~:[alphabetic~;numeric~]~])"
+           object
+           (char-code object) (char-code object) (char-name object)
+           (alphanumericp object)
+           (digit-char-p object))))
 
 (defmethod description ((object cons))
   (if (not (consp (cdr object)))
-      (format nil "(~s . ~s)"
-              (car object) (cdr object))
-      (format nil "~s" object)))
+      (fmt "(~s . ~s)" (car object) (cdr object))
+      (fmt "~s" object)))
 
 (defmethod description ((object package))
-  (format nil "~a [exports ~a/~a~:[~*~;, uses ~{~a~^, ~}~]]"
-          (package-name object)
-          (length (external-symbols object))
-          (length (all-symbols object))
-          (package-use-list object)
-          (mapcar #'package-name (package-use-list object))))
+  (fmt "~a [exports ~a/~a~:[~*~;, uses ~{~a~^, ~}~]]"
+       (package-name object)
+       (length (external-symbols object))
+       (length (all-symbols object))
+       (package-use-list object)
+       (mapcar #'package-name (package-use-list object))))
 
 (defmethod description ((object restart))
-  (format nil "~s~@[~* (interactive)~]"
-          (restart-name object) (restart-interactive object)))
+  (fmt "~s~@[~* (interactive)~]"
+       (restart-name object) (restart-interactive object)))
