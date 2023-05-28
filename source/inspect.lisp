@@ -616,3 +616,15 @@ for the `properties' key-value format."))
        (second (function-type* object))
        (third (function-type* object))
        (documentation object t)))
+
+(defun object-description (object)
+  (fmt "~s~@[
+~a~]"
+       object (or (documentation (class-name (class-of object)) 'type)
+                  (documentation (class-name (class-of object)) 'structure))))
+
+(defmethod description ((object standard-object))
+  (object-description object))
+
+(defmethod description ((object structure-object))
+  (object-description object))
