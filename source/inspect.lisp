@@ -475,18 +475,21 @@ or using a setf-accessor."))
      #+ecl ,(si::restart-report-function object)
      #-(or ccl sbcl ecl) nil)))
 
+(defmacro with-concise-print (&body body)
+  `(let* ((*print-case* :downcase)
+          (*print-level* 2)
+          (*print-length* 5)
+          (*print-lines* 1))
+     ,@body))
 
 (defgeneric description (object)
   (:method :around (object)
-    (let* ((*print-case* :downcase)
-           (*print-level* 2)
-           (*print-length* 5)
-           (*print-lines* 1)
-           (description (call-next-method))
-           (type (first (uiop:ensure-list (type-of object)))))
-      (if (uiop:emptyp description)
-          (fmt "~@(~a~) ~s" type object)
-          (fmt "~@(~a~) ~a" type description))))
+    (with-concise-print
+      (let* ((description (call-next-method))
+             (type (first (uiop:ensure-list (type-of object)))))
+        (if (uiop:emptyp description)
+            (fmt "~@(~a~) ~s" type object)
+            (fmt "~@(~a~) ~a" type description)))))
   (:method (object)
     (format nil "~s" object))
   (:documentation "Human-readable description of OBJECT.
@@ -628,3 +631,25 @@ for the `properties' key-value format."))
 
 (defmethod description ((object structure-object))
   (object-description object))
+
+(defun describe* (object &optional (stream t) ignore-methods)
+  (let* ((out-stream (typecase stream
+                       (null (make-string-output-stream))
+                       ((eql t) *standard-output*)
+                       (stream object)))
+         (describe-object-method (find-method #'describe-object '()
+                                              (list (class-of object) (class-of out-stream)) nil)))
+    (cond
+      ((and describe-object-method
+            (not ignore-methods))
+       (funcall #'describe-object object out-stream))
+      (t
+       (fresh-line out-stream)
+       (princ (description object) out-stream)
+       (fresh-line out-stream)
+       (with-concise-print
+         (loop for (name value) in (properties object)
+               do (format out-stream "~&~a = ~s" name value)))))
+    (if (null stream)
+        (get-output-stream-string out-stream)
+        (values))))

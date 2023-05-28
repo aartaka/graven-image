@@ -6,8 +6,9 @@
   (:export
    #:y-or-n-p* #:yes-or-no-p* #:*yes-or-no-options*
    #:apropos-list* #:apropos* #:apropod*
-   ;; #:ed* #:inspect* #:inspect-object*
-   ;; #:describe* #:describe-object*
+   ;; #:ed*
+   ;; #:inspect* #:inspect-object*
+   #:describe*
    #:function-lambda-expression* #:function-lambda-list* #:function-name* #:function-type*
    #:time*
    ;; #:step* #:trace* #:untrace*
