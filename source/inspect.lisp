@@ -529,7 +529,7 @@ for the `properties' key-value format."))
 (defmethod description ((object cons))
   (if (not (consp (cdr object)))
       (fmt "(~s . ~s)" (car object) (cdr object))
-      (fmt "~s" object)))
+      (call-next-method)))
 
 (defmethod description ((object package))
   (fmt "~a~@[/~{~a~^/~}~] [exports ~a/~a~:[~*~;, uses ~{~a~^, ~}~]]"
