@@ -532,17 +532,21 @@ for the `properties' key-value format."))
       (call-next-method)))
 
 (defmethod description ((object package))
-  (fmt "~a~@[/~{~a~^/~}~] [exports ~a/~a~:[~*~;, uses ~{~a~^, ~}~]]"
+  (fmt "~a~@[/~{~a~^/~}~] [exports ~a/~a~:[~*~;, uses ~{~a~^, ~}~]]~@[
+~a~]"
        (package-name object)
        (package-nicknames object)
        (length (external-symbols object))
        (length (all-symbols object))
        (package-use-list object)
-       (mapcar #'package-name (package-use-list object))))
+       (mapcar #'package-name (package-use-list object))
+       (documentation object t)))
 
 (defmethod description ((object restart))
-  (fmt "~s~@[~* (interactive)~]"
-       (restart-name object) (restart-interactive object)))
+  (fmt "~s~@[~* (interactive)~]~@[:
+~a~]"
+       (restart-name object) (restart-interactive object)
+       object))
 
 (defmethod description ((object hash-table))
   (fmt "[~a, ~d/~d]~:[ ~s~;~*~]"
@@ -600,7 +604,9 @@ for the `properties' key-value format."))
                (truename object)))))))
 
 (defmethod description ((object function))
-  (fmt "~:[λ~*~;~a~](~:[?~*~;~{~a~^ ~}~])~@[ ↑ ~a~] -> ~:[?~;~a~]"
+  (fmt "~:[λ~*~;~a ~](~:[?~*~;~{~a~^ ~}~])~@[ ↑ ~a~]~:[~2*~;
+ : ~a -> ~a~]~@[
+~a~]"
        (symbolp (function-name* object))
        (function-name* object)
        (function-lambda-expression* object)
@@ -610,4 +616,6 @@ for the `properties' key-value format."))
            (list (mapcar (lambda (pair) (list (car pair) (cdr pair))) closure))
            (t "?")))
        (function-type* object)
-       (third (function-type* object))))
+       (second (function-type* object))
+       (third (function-type* object))
+       (documentation object t)))
