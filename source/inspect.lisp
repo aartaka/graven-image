@@ -598,3 +598,16 @@ for the `properties' key-value format."))
          (t (ignore-errors
              (unless (equal (truename object) object)
                (truename object)))))))
+
+(defmethod description ((object function))
+  (fmt "~:[λ~*~;~a~](~:[?~*~;~{~a~^ ~}~])~@[ ↑ ~a~] -> ~:[?~;~a~]"
+       (symbolp (function-name* object))
+       (function-name* object)
+       (function-lambda-expression* object)
+       (function-lambda-list* object)
+       (let ((closure (nth-value 1 (function-lambda-expression* object))))
+         (typecase closure
+           (list (mapcar (lambda (pair) (list (car pair) (cdr pair))) closure))
+           (t "?")))
+       (function-type* object)
+       (third (function-type* object))))
