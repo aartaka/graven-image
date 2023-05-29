@@ -145,8 +145,6 @@ The improved =time= from Graven Image reuses as much implementation-specific API
 
 See the docs of =time*= for more info.
 
-** TODO =inspect= (generic-function) =object &key stream omit-empty &allow-other-keys -> (or alist string (values))=
-*** TODO =inspect-object= (generic-function) =object &key omit-empty &allow-other-keys -> alist=
 ** =describe= (function) =object &optional stream ignore-methods=
 
 Describes the =object= to the stream, but this time with portable
@@ -172,6 +170,9 @@ indexing these right from the inspector.
 Concise and informative description of =object= to the
 =stream=. Useful information from most of the implementations
 tested—united into one description header.
+
+** TODO =inspect= (generic-function) =object &key stream omit-empty &allow-other-keys -> (or alist string (values))=
+*** TODO =inspect-object= (generic-function) =object &key omit-empty &allow-other-keys -> alist=
 
 ** TODO =ed= (function)
 
