@@ -49,7 +49,9 @@ The way information is returned depends on RETURN-KIND:
   - (:gc . seconds) for time spend on GC.
   - (:cpu . cycles) for CPU cycles spent.
   - (:allocated . bytes).
-  - (:aborted . boolean)."
+  - (:aborted . boolean) for whether the evaluation ended up with
+    non-local transfer of control.
+  - (:faults . number) for page faults."
   (let ((props (gensym "PROPS")))
     `(let ((,props (list)))
        (values-list
