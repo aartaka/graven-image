@@ -11,6 +11,7 @@
 ~@[~&Run time (system): ~f seconds.~]~
 ~@[~&Run time (user): ~f seconds.~]~
 ~@[~&CPU cycles: ~d.~]~
+~@[~&CPU load: ~d.~]~
 ~@[~&CPU cores: ~d.~]~
 ~@[~&GC: ~d times.~]~
 ~@[~&GC time: ~f seconds.~]~
@@ -20,7 +21,8 @@
                    form (cdr (assoc :real props))
                    (cdr (assoc :system props))
                    (cdr (assoc :user props))
-                   (cdr (assoc :cpu props))
+                   (cdr (assoc :cycles props))
+                   (cdr (assoc :load props))
                    (cdr (assoc :cores props))
                    (cdr (assoc :gc-count props))
                    (cdr (assoc :gc props))
@@ -45,10 +47,11 @@ The way information is returned depends on RETURN-KIND:
   - (:user . seconds) for user run time.
   - (:system . seconds) for system run time.
   - (:cores . number) for CPU cores utilized.
+  - (:cycles . cycles) for CPU cycles spent.
+  - (:load . percent) for CPU load.
   - (:gc-count . number) for the times GC was invoked.
   - (:gc . seconds) for time spend on GC.
-  - (:cpu . cycles) for CPU cycles spent.
-  - (:allocated . bytes).
+  - (:allocated . bytes) for the amount of bytes consed.
   - (:aborted . boolean) for whether the evaluation ended up with
     non-local transfer of control.
   - (:faults . number) for page faults."
@@ -74,7 +77,7 @@ The way information is returned depends on RETURN-KIND:
              (when gc-run-time-ms
                (push (cons :gc (/ gc-run-time-ms 1000)) ,props))
              (when processor-cycles
-               (push (cons :cpu processor-cycles) ,props))
+               (push (cons :cycles processor-cycles) ,props))
              (when bytes-consed
                (push (cons :allocated bytes-consed) ,props))
              (push (cons :faults page-faults) ,props))
