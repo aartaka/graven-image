@@ -7,8 +7,8 @@
    #:y-or-n-p* #:yes-or-no-p* #:*yes-or-no-options*
    #:apropos-list* #:apropos* #:apropod*
    ;; #:ed*
-   ;; #:inspect* #:inspect-object*
-   #:describe*
+   ;; #:inspect*
+   #:describe* #:description #:properties
    #:function-lambda-expression* #:function-lambda-list* #:function-name* #:function-type*
    #:time*
    ;; #:step* #:trace* #:untrace*

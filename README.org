@@ -147,15 +147,39 @@ See the docs of =time*= for more info.
 
 ** TODO =inspect= (generic-function) =object &key stream omit-empty &allow-other-keys -> (or alist string (values))=
 *** TODO =inspect-object= (generic-function) =object &key omit-empty &allow-other-keys -> alist=
-** TODO =describe= (generic-function) =object &key stream force omit-empty &allow-other-keys=
-*** TODO =describe-object= (generic-function) =object stream &key force omit-empty &allow-other-keys= 
+** =describe= (function) =object &optional stream ignore-methods=
+
+Describes the =object= to the stream, but this time with portable
+format of description (determined by =graven-image:description= and
+specified for many standard classes) and with predictable set of
+properties (=graven-image:properties=). In Graven Image, both
+=describe= and =inspect= have the same format and the same set of
+properties.
+
+As a homage to the original =describe=, Graven Image one respects the
+=describe-object= methods defined for user classes. If one needs to
+ignore these too, passing T to =ignore-methods= should be enough to
+get consistent Graven Image descriptions for all the objects.
+
+*** =graven-image:properties= (generic-function) =object &key strip-null &allow-other-keys=
+Returns an undotted alist of properties for the =object=. Custom
+properties provided by Graven Image are named with keywords, while the
+implementation-specific ones use whatever the implementation
+uses. Arrays and hash-tables are inlined into properties to allow
+indexing these right from the inspector.
+
+*** =graven-image:description= (generic-function) =object &optional stream=
+Concise and informative description of =object= to the
+=stream=. Useful information from most of the implementations
+tested—united into one description header.
+
 ** TODO =ed= (function)
 
 * Roadmap
 - [ ] Make =apropos= sorting more customizable.
 - [ ] Add:
   - [ ] =inspect=,
-  - [ ] =describe=,
+  - [X] =describe=,
   - [X] =time=,
   - [ ] =ed=.
   - [ ] =invoke-debugger=.
@@ -167,4 +191,5 @@ See the docs of =time*= for more info.
   - [ ] =disassemble=?
   - [ ] =room=?
 - [ ] Somehow hook into and improve over =*debugger-hook*=?
+  - [ ] Not necessary if =invoke-debugger= is re-implemented.
 - [ ] Test on more implementations.
