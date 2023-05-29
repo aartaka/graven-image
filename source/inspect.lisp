@@ -469,87 +469,86 @@ or using a setf-accessor."))
      #+ecl ,(si::restart-report-function object)
      #-(or ccl sbcl ecl) nil)))
 
-(defgeneric description (object)
-  (:method :around (object)
-    (let* ((description (call-next-method))
-           (type (first (uiop:ensure-list (type-of object)))))
-      (if (uiop:emptyp description)
-          (fmt "~@(~a~) ~s" type object)
-          (fmt "~@(~a~) ~a" type description))))
-  (:method (object)
-    (format nil "~s" object))
+(defgeneric description (object &optional stream)
+  (:method :around (object &optional stream)
+    (let* ((type (first (uiop:ensure-list (type-of object)))))
+      (format stream "~@(~a~) " type)
+      (call-next-method)))
+  (:method (object &optional stream)
+    (format stream "~s" object))
   (:documentation "Human-readable description of OBJECT.
 
 Include the most useful information and things that are not suitable
 for the `properties' key-value format."))
 
 
-(defmethod description ((object integer))
+(defmethod description ((object integer) &optional stream)
   (multiple-value-bind (second minute hour date month year)
       (decode-universal-time object)
-    (fmt "~s (~a bits, #b~b, #o~o, #x~x ~2,'0d:~2,'0d:~2,'0d ~
+    (format stream
+            "~s (~a bits, #b~b, #o~o, #x~x ~2,'0d:~2,'0d:~2,'0d ~
 ~[~;Jan~;Feb~;Mar~;Apr~;May~;Jun~;Jul~;Aug~;Sep~;Oct~;Nov~;Dec~] ~
 ~a~[th~;st~;nd~;rd~:;th~] ~a)"
-         object (ceiling (log object 2)) object object object
-         hour minute second month date (mod date 10) year)))
+            object (ceiling (log object 2)) object object object
+            hour minute second month date (mod date 10) year)))
 
-(defmethod description ((object float))
-  (fmt "~s (~e)" object object))
+(defmethod description ((object float) &optional stream)
+  (format stream "~s (~e)" object object))
 
-(defmethod description ((object ratio))
-  (fmt "~s (~e)~:[~*~; ~f%~]"
-       object object (< object 100) (coerce object 'float)))
+(defmethod description ((object ratio) &optional stream)
+  (format stream "~s (~e)~:[~*~; ~f%~]"
+          object object (< object 100) (coerce object 'float)))
 
-(defmethod description ((object complex))
-  (fmt "~s (~a+~ai)" object (realpart object) (imagpart object)))
+(defmethod description ((object complex) &optional stream)
+  (format stream "~s (~a+~ai)" object (realpart object) (imagpart object)))
 
-(defmethod description ((object character))
+(defmethod description ((object character) &optional stream)
   (if (not (graphic-char-p object))
-      (fmt "~s (~d/#x~x)" object (char-code object) (char-code object))
-      (fmt "~a (~d/#x~x/~a, ~:[punctuation~;~:[alphabetic~;numeric~]~])"
-           object
-           (char-code object) (char-code object) (char-name object)
-           (alphanumericp object)
-           (digit-char-p object))))
+      (format stream "~s (~d/#x~x)" object (char-code object) (char-code object))
+      (format stream "~a (~d/#x~x/~a, ~:[punctuation~;~:[alphabetic~;numeric~]~])"
+              object
+              (char-code object) (char-code object) (char-name object)
+              (alphanumericp object)
+              (digit-char-p object))))
 
-(defmethod description ((object cons))
+(defmethod description ((object cons) &optional stream)
   (if (not (consp (cdr object)))
-      (fmt "(~s . ~s)" (car object) (cdr object))
+      (format stream "(~s . ~s)" (car object) (cdr object))
       (call-next-method)))
 
-(defmethod description ((object package))
-  (fmt "~a~@[/~{~a~^/~}~] [exports ~a/~a~:[~*~;, uses ~{~a~^, ~}~]]~@[
+(defmethod description ((object package) &optional stream)
+  (format stream "~a~@[/~{~a~^/~}~] [exports ~a/~a~:[~*~;, uses ~{~a~^, ~}~]]~@[
 ~a~]"
-       (package-name object)
-       (package-nicknames object)
-       (length (external-symbols object))
-       (length (all-symbols object))
-       (package-use-list object)
-       (mapcar #'package-name (package-use-list object))
-       (documentation object t)))
+          (package-name object)
+          (package-nicknames object)
+          (length (external-symbols object))
+          (length (all-symbols object))
+          (package-use-list object)
+          (mapcar #'package-name (package-use-list object))
+          (documentation object t)))
 
-(defmethod description ((object restart))
-  (fmt "~s~@[~* (interactive)~]~@[:
+(defmethod description ((object restart) &optional stream)
+  (format stream "~s~@[~* (interactive)~]~@[:
 ~a~]"
-       (restart-name object) (restart-interactive object)
-       object))
+          (restart-name object) (restart-interactive object)
+          object))
 
-(defmethod description ((object hash-table))
-  (fmt "[~a, ~d/~d]~:[ ~s~;~*~]"
-       (hash-table-test object)
-       (hash-table-count object) (hash-table-size object)
-       (zerop (hash-table-count object))
-       (loop for key being the hash-key in object
-               using (hash-value val)
-             collect (list key val))))
+(defmethod description ((object hash-table) &optional stream)
+  (format stream "[~a, ~d/~d]~:[ ~s~;~*~]"
+          (hash-table-test object)
+          (hash-table-count object) (hash-table-size object)
+          (zerop (hash-table-count object))
+          (loop for key being the hash-key in object
+                  using (hash-value val)
+                collect (list key val))))
 
-(defmethod description ((object array)) ; string too
-  (fmt "~{~a~^ ~}[~d~@[/~d~]]~@[ ~s~]"
-       (uiop:ensure-list (array-element-type object))
-       (length object) (ignore-errors (fill-pointer object))
-       object))
+(defmethod description ((object array) &optional stream) ; string too
+  (format stream "~{~a~^ ~}[~d~@[/~d~]]~@[ ~s~]"
+          (uiop:ensure-list (array-element-type object))
+          (length object) (ignore-errors (fill-pointer object))
+          object))
 
-(defmethod description ((object stream))
+(defmethod description ((object stream) &optional stream)
   (labels ((directions (object)
              (uiop:ensure-list
               (cond
@@ -567,75 +566,77 @@ for the `properties' key-value format."))
                 ((typep object 'two-way-stream) (list :in :out))
                 ((input-stream-p object) :in)
                 ((output-stream-p object) :out)))))
-    (fmt "~{~a~^+~}~@[~a~]~:[~3*~;~@[ ~a~]~@[#L~d~]~@[-~d~]~]"
-         (directions object)
-         (uiop:ensure-list (ignore-errors (stream-external-format object)))
-         (uiop:file-stream-p object)
-         (ignore-errors (pathname object))
-         (ignore-errors (file-position object))
-         (ignore-errors (file-length object)))))
+    (format stream "~{~a~^+~}~@[~a~]~:[~3*~;~@[ ~a~]~@[#L~d~]~@[-~d~]~]"
+            (directions object)
+            (uiop:ensure-list (ignore-errors (stream-external-format object)))
+            (uiop:file-stream-p object)
+            (ignore-errors (pathname object))
+            (ignore-errors (file-position object))
+            (ignore-errors (file-length object)))))
 
-(defmethod description ((object pathname))
-  (fmt "~a~@[ -> ~a~]"
-       object
-       (cond
-         ((uiop:logical-pathname-p object)
-          (translate-logical-pathname object))
-         ((and (ignore-errors (uiop:native-namestring object))
-               (not (equal (namestring object)
-                           (uiop:native-namestring object))))
-          (uiop:native-namestring object))
-         (t (ignore-errors
-             (unless (equal (truename object) object)
-               (truename object)))))))
+(defmethod description ((object pathname) &optional stream)
+  (format stream "~a~@[ -> ~a~]"
+          object
+          (cond
+            ((uiop:logical-pathname-p object)
+             (translate-logical-pathname object))
+            ((and (ignore-errors (uiop:native-namestring object))
+                  (not (equal (namestring object)
+                              (uiop:native-namestring object))))
+             (uiop:native-namestring object))
+            (t (ignore-errors
+                (unless (equal (truename object) object)
+                  (truename object)))))))
 
-(defmethod description ((object function))
-  (fmt "~:[λ~*~;~a ~](~:[?~*~;~{~a~^ ~}~])~@[ ↑ ~a~]~:[~2*~;
+(defmethod description ((object function) &optional stream)
+  (format stream "~:[λ~*~;~a ~](~:[?~*~;~{~a~^ ~}~])~@[
+ ↑ ~{~a~^ ~}~]~:[~2*~;
  : ~a -> ~a~]~@[
 ~a~]"
-       (symbolp (function-name* object))
-       (function-name* object)
-       (function-lambda-expression* object)
-       (or (ignore-errors (function-arglist object (function-name* object)))
-           (function-lambda-list* object))
-       (let ((closure (nth-value 1 (function-lambda-expression* object))))
-         (typecase closure
-           (list (mapcar (lambda (pair) (list (car pair) (cdr pair))) closure))
-           (t "?")))
-       (function-type* object)
-       (second (function-type* object))
-       (third (function-type* object))
-       (documentation object t)))
+          (and (function-name* object)
+               (symbolp (function-name* object)))
+          (function-name* object)
+          (function-lambda-expression* object)
+          (or (ignore-errors (function-arglist object (function-name* object)))
+              (function-lambda-list* object))
+          (let ((closure (nth-value 1 (function-lambda-expression* object))))
+            (when closure
+              (typecase closure
+                (list (mapcar (lambda (pair) (list (car pair) (cdr pair))) closure))
+                (t (list "?")))))
+          (function-type* object)
+          (second (function-type* object))
+          (third (function-type* object))
+          (documentation object t)))
 
-(defun object-description (object)
-  (fmt "~s~@[
+(defun object-description (object stream)
+  (format stream "~s~@[
 ~a~]"
-       object (or (documentation (class-name (class-of object)) 'type)
-                  (documentation (class-name (class-of object)) 'structure))))
+          object (or (documentation (class-name (class-of object)) 'type)
+                     (documentation (class-name (class-of object)) 'structure))))
 
-(defmethod description ((object standard-object))
-  (object-description object))
+(defmethod description ((object standard-object) &optional stream)
+  (object-description object stream))
 
-(defmethod description ((object structure-object))
-  (object-description object))
+(defmethod description ((object structure-object) &optional stream)
+  (object-description object stream))
 
 (defun describe* (object &optional (stream t) ignore-methods)
-  (let* ((out-stream (typecase stream
-                       (null (make-string-output-stream))
-                       ((eql t) *standard-output*)
-                       (stream object)))
+  (let* ((stream (typecase stream
+                   (null (make-string-output-stream))
+                   ((eql t) *standard-output*)
+                   (stream object)))
          (describe-object-method (find-method #'describe-object '()
-                                              (list (class-of object) (class-of out-stream)) nil)))
-    (cond
-      ((and describe-object-method
-            (not ignore-methods))
-       (funcall #'describe-object object out-stream))
-      (t
-       (fresh-line out-stream)
-       (princ (description object) out-stream)
-       (fresh-line out-stream)
-       (loop for (name value) in (properties object)
-             do (format out-stream "~&~a = ~s" name value))))
-    (if (null stream)
-        (get-output-stream-string out-stream)
+                                              (list (class-of object) (class-of stream)) nil)))
+    (if (and describe-object-method
+             (not ignore-methods))
+        (funcall #'describe-object object stream)
+        (progn
+          (fresh-line stream)
+          (description object stream)
+          (fresh-line stream)
+          (loop for (name value) in (properties object)
+                do (format stream "~&~a = ~s" name value))))
+    (if (typep stream 'string-stream)
+        (get-output-stream-string stream)
         (values))))
