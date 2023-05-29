@@ -482,10 +482,10 @@ out."))
       (call-next-method)))
   (:method (object &optional stream)
     (format stream "~s" object))
-  (:documentation "Human-readable description of OBJECT.
+  (:documentation "Print human-readable description of OBJECT to STREAM.
 
-Include the most useful information and things that are not suitable
-for the `properties' key-value format."))
+Methods should include the most useful information and things that are
+not suitable for the `properties' key-value format."))
 
 
 (defmethod description ((object integer) &optional stream)
