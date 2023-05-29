@@ -41,7 +41,8 @@
                          :junk-allowed t
                          :radix 16)
                  #+abcl ,(system::identity-hash-code object)
-                 #-(or sbcl ccl ecl abcl) ,(sxhash object))
+                 #+clisp ,(system::address-of object)
+                 #-(or sbcl ccl ecl abcl clisp) ,(sxhash object))
                 (:class ,(class-of object)
                         ,(lambda (new-value _)
                            (declare (ignorable _))
