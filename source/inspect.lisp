@@ -30,9 +30,7 @@
               `((:self ,object) ; From CCL.
                 (:id
                  #+sbcl ,(sb-kernel::get-lisp-obj-address object)
-                 #+ccl ,(if (integerp object)
-                            object
-                            (ccl::%address-of object))
+                 #+ccl ,(ccl::%address-of object)
                  #+ecl ,(si:pointer object)
                  #+abcl ,(system::identity-hash-code object)
                  #+clisp ,(system::address-of object)
