@@ -48,7 +48,14 @@ Function below will be listed with their CL-imported names, instead of
 Graven Image names. So =y-or-n-p*= from Graven Image is listed as mere
 CL =y-or-n-p=.
 
-** =y-or-n-p=, =yes-or-no-p= (function) =&optional control &rest arguments -> generalized-boolean=
+** =y-or-n-p=, =yes-or-no-p= (function)
+
+Signature:
+#+begin_src lisp
+y-or-n-p &optional control &rest arguments => generalized-boolean
+yes-or-no-p &optional control &rest arguments => generalized-boolean
+#+end_src
+
 
 Improvements are:
 - Both functions accept options from =graven-image:*yes-or-no-options*=, thus
@@ -57,7 +64,13 @@ Improvements are:
   differentiating them.
 - No beeps.
 
-** =apropos-list=, =apropos= (function) =string &optional (package nil) exported-only docs-too=
+** =apropos-list=, =apropos= (function)
+
+Signature:
+#+begin_src lisp
+apropos-list string &optional (package nil) exported-only docs-too => list of symbols
+apropos string &optional (package nil) exported-only docs-too => no values
+#+end_src
 
 =apropos-list= now allows listing exported symbols only (with
 =exported-only=), which was a non-portable privilege of SBCL until
@@ -88,7 +101,12 @@ Symbol SB-VM::MAX-EXTENSIONS
 
 Less noticeable, but still nice: all the suggestions are listed by their "relevance" (i.e. by the number of matches of string in the symbol name/documentation).
 
-** =function-lambda-expression= (generic-function) =function-designator &optional force -> list, list, symbol=
+** =function-lambda-expression= (generic-function)
+
+Signature:
+#+begin_src lisp
+function-lambda-expression function-designator &optional force => list, list, symbol, list
+#+end_src
 
 This function tries to read source files, process the definitions of
 functions, and build at least a barebones lambda from the arglist and
@@ -105,14 +123,14 @@ While the new Graven Image =function-lambda-expression= now returns:
 #+begin_src lisp
   (function-lambda-expression #'idenitity)
   ;; => (LAMBDA (THING) "This function simply returns what was passed to it." THING), NIL, IDENTITY
-  (function-lambda-expression #'print-object)
+  (function-lambda-expression #'print-object t) ; Notice the T for FORCE, to build a dummy lambda.
   ;; => (LAMBDA (SB-PCL::OBJECT STREAM)), NIL, PRINT-OBJECT
 #+end_src
 
 Which means:
 - =identity= is actually not a closure, and has a reliable source!
 - =print-object= is a generic and thus is not really inspectable, so
-  we build a dummy lambda for it.
+  we build a dummy lambda for it when =force= argument is provided.
   - This might be a questionable choice, but it at least allows us to
     get function arglists from =function-lambda-expression= in a
     portable-ish way. The standard doesn't provide us with much ways
@@ -133,8 +151,14 @@ Things that =function-lambda-expression= now returns are:
 - Function name. Mostly falls back to the standard
   =function-lambda-expression=, but also inspects
   implementation-specific function objects, if necessary.
+- Function type, whenever accessible.
 
-** =time= (macro) =form &optional return-kind=
+** =time= (macro)
+
+Signature:
+#+begin_src lisp
+time form &optional return-kind => values &optional list
+#+end_src
 
 The improved =time= from Graven Image reuses as much implementation-specific APIs as possible, while providing:
 - Ability to print to string (possible everywhere) easily (with NIL passed as =return-kind=).
@@ -145,7 +169,12 @@ The improved =time= from Graven Image reuses as much implementation-specific API
 
 See the docs of =time*= for more info.
 
-** =describe= (function) =object &optional stream ignore-methods=
+** =describe= (function)
+
+Signature:
+#+begin_src lisp
+describe object &optional (stream t) ignore-methods
+#+end_src
 
 Describes the =object= to the stream, but this time with portable
 format of description (determined by =graven-image:description= and
