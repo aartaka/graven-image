@@ -49,9 +49,14 @@ Every property is a list of (NAME VALUE &optional SETTER) lists, where
 
 - NAME is a thing (preferably symbol) naming the property.
 
-- SETTER is a function of one argument to set the property to a new
-value. For slots, this setter will likely be setting the `slot-value',
-or using a setf-accessor."))
+- VALUE is the contents of the property.
+
+- And SETTER is a function of two arguments (new-value old-value) to
+modify the property. For slots, this setter will likely be setting the
+`slot-value'.
+
+When STRIP-NULL, properties with null VALUE and SETTER are filtered
+out."))
 
 (defun symbol-visibility (symbol)
   (nth-value 1 (find-symbol (symbol-name symbol) (symbol-package symbol))))
