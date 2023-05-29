@@ -656,7 +656,7 @@ used for OBJECT info."
           (description object stream)
           (fresh-line stream)
           (loop for (name value) in (properties object)
-                do (format stream "~&~a = ~s" name value))))
+                do (format stream "~&~a = ~s~%" name value))))
     (if (typep stream 'string-stream)
         (get-output-stream-string stream)
         (values))))
