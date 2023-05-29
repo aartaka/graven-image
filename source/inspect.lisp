@@ -33,13 +33,7 @@
                  #+ccl ,(if (integerp object)
                             object
                             (ccl::%address-of object))
-                 ;; Not perfect, but ECL doesn't leave us much to do here.
-                 #+ecl ,(parse-integer
-                         (subseq (with-output-to-string (s)
-                                   (si:print-unreadable-object-function object s nil t (lambda ())))
-                                 5) ; To strip "#< 0x" off and read hex directly.
-                         :junk-allowed t
-                         :radix 16)
+                 #+ecl ,(si:pointer object)
                  #+abcl ,(system::identity-hash-code object)
                  #+clisp ,(system::address-of object)
                  #-(or sbcl ccl ecl abcl clisp) ,(sxhash object))
