@@ -122,9 +122,10 @@ returns:
 While the new Graven Image =function-lambda-expression= now returns:
 #+begin_src lisp
   (function-lambda-expression #'idenitity)
-  ;; => (LAMBDA (THING) "This function simply returns what was passed to it." THING), NIL, IDENTITY
+  ;; => (LAMBDA (THING) "This function simply returns what was passed to it." THING),
+  ;;    NIL, IDENTITY, (FUNCTION (T) (VALUES T &OPTIONAL))
   (function-lambda-expression #'print-object t) ; Notice the T for FORCE, to build a dummy lambda.
-  ;; => (LAMBDA (SB-PCL::OBJECT STREAM)), NIL, PRINT-OBJECT
+  ;; => (LAMBDA (SB-PCL::OBJECT STREAM)), NIL, PRINT-OBJECT, (FUNCTION (T T) *)
 #+end_src
 
 Which means:
