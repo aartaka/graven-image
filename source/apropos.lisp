@@ -25,11 +25,13 @@ Two scores: symbol name and symbol documentation ones.
 - Symbol score is how much of a SYMBOL name STRING occupies.
 - Documentation score is how much of docs do STRING mentions occupy."
   (flet ((count-substrings (substring string)
-           (loop with idx = 0
-                 for match = (search substring string :test #'string-equal :start2 idx)
-                 while match
-                 count 1
-                 do (setf idx (1+ match)))))
+           (let ((count 0))
+             (uiop:frob-substrings
+              string (list substring)
+              (lambda (match frob)
+                (incf count)
+                (funcall frob match)))
+             count)))
     (let ((formatted-sym (format nil "~s" symbol)))
       (+ (/ (count-substrings string formatted-sym)
             (length formatted-sym))
