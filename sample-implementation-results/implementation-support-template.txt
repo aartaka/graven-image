@@ -1,6 +1,7 @@
 - [ ] Y-OR-N-P*, YES-OR-NO-P*
   - [ ] Ensure that I/O (FINISH-OUTPUT etc.) is not buggy.
 - [ ] APROPOS*, APROPOS-LIST*
+  - [ ] Make it fast enough.
   - [ ] Make sure that Graven Image APROPOS-LIST* returns the same
     data as the standard APROPOS-LIST when used with standard params.
     - (set-difference (apropos-list "A") (graven-image:apropos-list* "A"))
