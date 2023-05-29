@@ -13,7 +13,6 @@
   - [ ] Source parsing.
   - [ ] Generic functions support.
     - [ ] Methods support.
-  - [ ] FORCE.
 - [ ] TIME*
   - [ ] Real time.
   - [ ] User run time.
