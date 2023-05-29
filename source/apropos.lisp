@@ -157,7 +157,8 @@ Influenced by:
         (when (ignore-errors (and (not (boundp symbol))
                                   (not (fboundp symbol))
                                   (not (find-class symbol nil))))
-          (format t "Symbol ~s~%" symbol))))))
+          (format t "Symbol ~s~%" symbol)))))
+  (values))
 
 ;;; Helpers
 
