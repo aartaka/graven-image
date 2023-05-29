@@ -1,0 +1,47 @@
+- [ ] Y-OR-N-P*, YES-OR-NO-P*
+  - [ ] Ensure that I/O (FINISH-OUTPUT etc.) is not buggy.
+- [ ] APROPOS*, APROPOS-LIST*
+  - [ ] Make sure that Graven Image APROPOS-LIST* returns the same
+    data as the standard APROPOS-LIST when used with standard params.
+- [ ] FUNCTION-LAMBDA-EXPRESSION* etc.
+  - [ ] Name fetching.
+  - [ ] Arglist fetching.
+  - [ ] Closure fetching.
+  - [ ] Ftype fetching.
+  - [ ] Source search.
+  - [ ] Source parsing.
+  - [ ] Generic functions support.
+    - [ ] Methods support.
+  - [ ] FORCE.
+- [ ] TIME*
+  - [ ] Real time.
+  - [ ] User run time.
+  - [ ] System run time.
+  - [ ] CPU cores utilized.
+  - [ ] CPU cycles spent.
+  - [ ] CPU load.
+  - [ ] GC count.
+  - [ ] GC time.
+  - [ ] Bytes consed.
+  - [ ] Whether the evaluation aborted.
+  - [ ] Page faults.
+- [ ] DESCRIBE*, INSPECT*
+  - [ ] PROPERTIES
+    - [ ] Object IDs.
+    - [ ] Object/type system specifics.
+    - [ ] Implementation-specific properties.
+    - [ ] Implementation-specific types/objects:
+      - [ ]
+    - [ ] MOP object inspection.
+    - [ ] Proper function/funcallable hierarchy inspection.
+  - [ ] DESCRIPTION
+- [ ] ED*
+  - [ ] Function s-expr editing.
+    - [ ] Persisting the edited code into the function itself.
+  - [ ] File editing.
+    - [ ] Big files fetching.
+  - [ ] String editing.
+    - [ ] Modifying the string in memory.
+- [ ] INVOKE-DEBUGGER*
+  - [ ] Overriding the implementation-specific debugger.
+  - [ ] Running standard debugger hooks unobtrusively.
