@@ -43,7 +43,7 @@ The way information is returned depends on RETURN-KIND:
   returned by FORM):
   - (:real . seconds) for real time.
   - (:user . seconds) for user run time.
-  - (:system . seconds) for user run time.
+  - (:system . seconds) for system run time.
   - (:cores . number) for CPU cores utilized.
   - (:gc-count . number) for the times GC was invoked.
   - (:gc . seconds) for time spend on GC.
