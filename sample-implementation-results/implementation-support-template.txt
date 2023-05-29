@@ -3,6 +3,7 @@
 - [ ] APROPOS*, APROPOS-LIST*
   - [ ] Make sure that Graven Image APROPOS-LIST* returns the same
     data as the standard APROPOS-LIST when used with standard params.
+    - (set-difference (apropos-list "A") (graven-image:apropos-list* "A"))
 - [ ] FUNCTION-LAMBDA-EXPRESSION* etc.
   - [ ] Name fetching.
   - [ ] Arglist fetching.
@@ -26,15 +27,13 @@
   - [ ] Whether the evaluation aborted.
   - [ ] Page faults.
 - [ ] DESCRIBE*, INSPECT*
-  - [ ] PROPERTIES
-    - [ ] Object IDs.
-    - [ ] Object/type system specifics.
-    - [ ] Implementation-specific properties.
-    - [ ] Implementation-specific types/objects:
-      - [ ]
-    - [ ] MOP object inspection.
-    - [ ] Proper function/funcallable hierarchy inspection.
-  - [ ] DESCRIPTION
+  - [ ] Object IDs.
+  - [ ] Object/type system specifics.
+  - [ ] Implementation-specific properties.
+  - [ ] Implementation-specific types/objects:
+    - [ ]
+  - [ ] MOP object inspection.
+  - [ ] Proper function/funcallable hierarchy inspection.
 - [ ] ED*
   - [ ] Function s-expr editing.
     - [ ] Persisting the edited code into the function itself.
