@@ -628,7 +628,21 @@ not suitable for the `properties' key-value format."))
   (object-description object stream))
 
 (defun describe* (object &optional (stream t) ignore-methods)
-  (let* ((stream (typecase stream
+  "Display OBJECT information to a STREAM.
+
+Shows a summary of OBJECT features and then lists all the properties
+OBJECT has.
+
+STREAM could be:
+- T --- information is printed to *STANDARD-OUTPUT*.
+- NIL --- information is printed to a string and this string is
+  returned from DESCRIBE*.
+- Any stream --- information is printed there.
+
+DESCRIBE-OBJECT methods are honored and used, unless IGNORE-METHODS is
+true. If IGNORE-METHODS, a regular summary+properties structure is
+used for OBJECT info."
+  (let* ((stream (etypecase stream
                    (null (make-string-output-stream))
                    ((eql t) *standard-output*)
                    (stream object)))
