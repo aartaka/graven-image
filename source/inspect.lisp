@@ -19,7 +19,8 @@
   #+abcl (system::identity-hash-code object)
   #+clisp (system::address-of object)
   #+gcl (system:address object)
-  #-(or sbcl ccl ecl abcl clisp gcl) (sxhash object))
+  #+allegro (excl:lispval-to-address *readtable*)
+  #-(or sbcl ccl ecl abcl clisp gcl allegro) (sxhash object))
 
 (defgeneric properties (object &key strip-null &allow-other-keys)
   (:method :around (object &key (strip-null t) &allow-other-keys)
