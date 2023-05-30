@@ -41,3 +41,12 @@ SYSTEM::MAX-DEPTH
 SYSTEM::MAX-IF                             function
 EXPORTING:DEFCLASS                         macro
 FOO                                        class
+
+Allegro:
+EXCL::LOOP-MINIMAX-FLAG-VARIABLE [function] (EXCL::STRUCT)
+EXCL::LOOP-ACCUMULATE-MINIMAX-VALUE [macro] (EXCL::LM
+                                             EXCL::OPERATION
+                                             EXCL::FORM) ..
+:OVERAGE-MAX        value: :OVERAGE-MAX
+MP::*MAXIMUM-PRIORITY-TABLE-SIZE* value: 4000
+MP:PROCESS-POOL-MAX-ACTIVE [generic-function] (MP::POOL &REST REST)

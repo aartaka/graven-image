@@ -2,12 +2,14 @@ SBCL:
 + Doesn't include the initial (dribble ...) form.
   + Doesn't include the results of it either.
 - Includes the final (dribble) form.
+  + Doesn't include the results of it.
 + Includes the whole session with values, spaces, newlines and REPL prompt.
 
 CCL:
 + Doesn't include the initial (dribble ...) form.
   - Includes the results of it somewhy.
 - Includes the final (dribble) form.
+  + Doesn't include the results of it.
 + Includes the whole session with values, spaces, newlines and REPL prompt.
 
 ECL:
@@ -15,12 +17,14 @@ ECL:
   - Includes the results of it somewhy.
 + Prints out a nice starting and finishing message for dribbling.
 - Includes the final (dribble) form.
+  - Include the results of it too.
 + Includes the whole session with values, spaces, newlines and REPL prompt.
 
 ABCL:
 + Doesn't include the initial (dribble ...) form.
   + Doesn't include the results of it either.
 - Includes the final (dribble) form.
+  + Doesn't include the results of it.
 - Prompt gets broken.
 - Multiple values get reduced to mere single value.
 + Includes the REPL prompt.
@@ -31,4 +35,12 @@ CLISP:
 - Includes the final (dribble) form.
   + Doesn't include the results of it.
 + Has nice opening/closing comments with metadata in the dribble file.
++ Includes the whole session with values, spaces, newlines and REPL prompt.
+
+Allegro:
++ Prints out a nice starting and finishing message for dribbling.
++ Doesn't include the initial (dribble ...) form.
+  - Includes the results of it.
+- Includes the final (dribble) form.
+  + Doesn't include the results of it.
 + Includes the whole session with values, spaces, newlines and REPL prompt.

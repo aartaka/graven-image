@@ -40,3 +40,13 @@ GC: 1, GC time: 0.002166 sec.
 ABCL:
 0.028 seconds real time
 511686 cons cells
+
+
+Allegro:
+; cpu time (non-gc) 0.003366 sec user, 0.000085 sec system
+; cpu time (gc)     0.025465 sec user, 0.000067 sec system
+; cpu time (total)  0.028831 sec user, 0.000152 sec system
+; real time  0.029297 sec (98.93%)
+; space allocation:
+;  500,501 cons cells, 0 other bytes, 0 static bytes
+; Page Faults: major: 0 (gc: 67), minor: 79 (gc: 67)

@@ -162,3 +162,42 @@ Argument list: (X)
 * (describe (funcall #'(lambda (x) #'(lambda () x)) nil))
 #<FUNCTION :LAMBDA NIL X> is an interpreted function.
 Argument list: ()
+
+
+
+Allegro:
+* (describe #'identity)
+#<Function IDENTITY> is a TENURED COMPILED-FUNCTION.
+  The arguments are (EXCL::THING)
+* (describe #'documentation)
+#<STANDARD-GENERIC-FUNCTION DOCUMENTATION> is an instance of
+    #<ACLMOP:FUNCALLABLE-STANDARD-CLASS STANDARD-GENERIC-FUNCTION>:
+ The following slots have :INSTANCE allocation:
+  EXCL::LOCK-CONTROL #(NIL NIL)
+  EXCL::PLIST        NIL
+  EXCL::FLAGS        1
+  EXCL::METHODS
+     (#<STANDARD-METHOD DOCUMENTATION (PACKAGE T)>
+      #<STANDARD-METHOD DOCUMENTATION (STRUCTURE-CLASS T)>
+      #<STANDARD-METHOD DOCUMENTATION
+        (EXCL::STRUCTURE-SLOT-DEFINITION T)>
+      #<STANDARD-METHOD DOCUMENTATION
+        (ACLMOP:STANDARD-SLOT-DEFINITION T)>
+      #<STANDARD-METHOD DOCUMENTATION (METHOD-COMBINATION T)>
+      #<STANDARD-METHOD DOCUMENTATION (STANDARD-GENERIC-FUNCTION T)>
+      #<STANDARD-METHOD DOCUMENTATION (EXCL::STD-CLASS T)>
+      #<STANDARD-METHOD DOCUMENTATION (STANDARD-METHOD T)>
+      #<STANDARD-METHOD DOCUMENTATION #'T>
+      #<STANDARD-METHOD DOCUMENTATION (T T)>)
+  EXCL::NAME         DOCUMENTATION
+  EXCL::METHOD-CLASS #<STANDARD-CLASS STANDARD-METHOD>
+  METHOD-COMBINATION
+     #<EXCL::STANDARD-METHOD-COMBINATION @ #x1000027abe2>
+  EXCL::ARG-INFO     #(EXCL::ARG-INFO T (CLASS T) 0 NIL NIL NIL)
+* (describe #'(lambda (x) x))
+#<Interpreted Function (unnamed) @ #x1000786b5d2> is a NEW FUNCTION.
+  The arguments are (X)
+* (describe (funcall #'(lambda (x) #'(lambda () x)) 5))
+#<Interpreted Closure (unnamed) @ #x1000786c6d2> is a NEW FUNCTION.
+It closes over the following variables:
+X

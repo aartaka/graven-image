@@ -956,3 +956,151 @@ Byte:[Slot Type]Slot Name   :Slot Value
     1
  nthcdr 1:
     2
+
+Allegro:
+* (inspect (find-package :cl))
+A TENURED The COMMON-LISP package @ #x10000206052
+   0 Class --------> #<STRUCTURE-CLASS PACKAGE>
+   1 TABLES -------> (NIL), a proper list with 1 element
+   2 INTERNAL-NAME -> A simple-string (11) "COMMON-LISP"
+   3 INTERNAL-NICKNAMES -> ("CL" "LISP"), a proper list with 2 elements
+   4 INTERNAL-USE-LIST -> symbol NIL
+   5 INTERNAL-USED-BY-LIST -> (#<The NET.URI package> ...), a proper list with 22 elements
+   6 INTERNAL-SYMBOLS -> symbol NIL
+   7 EXTERNAL-SYMBOLS -> #<SYMBOL hash-table (sans values) with 978 entries
+                           @ #x10000205b92>
+   8 INTERNAL-SHADOWING-SYMBOLS -> symbol NIL
+   9 LOCK ---------> symbol T
+  10 DEFINITION-LOCK -> symbol T
+  11 INTERNAL-IMPLEMENTATION-PACKAGES -> ("EXCL" "COMP" "CLOS" ...), a proper list with 5 elements
+  12 INTERNAL-INDEX -> fixnum 1 [#x0000000000000008]
+  13 DOCUMENTATION -> symbol NIL
+  14 PLIST --------> symbol NIL
+  15 MODE ---------> symbol :DEPENDENT
+  16 DIRECT-PARENT -> symbol NIL
+  17 FULL-NAME ----> A simple-string (11) "COMMON-LISP"
+  18 DIRECT-CHILDREN -> symbol NIL
+  19 FOREIGN-PROTOCOL -> symbol NIL
+  20 FLAT ---------> symbol NIL
+  21 INTERNAL-ALTERNATE-NAME -> symbol NIL
+* (inspect (make-instance 'foo))
+A NEW FOO @ #x100078541b2 = #<FOO @ #x100078541b2>
+   0 Class --------> #<STANDARD-CLASS FOO>
+   1 SLOT-A -------> fixnum 5 [#x0000000000000028]
+* (inspect (make-instance 'error))
+A NEW ERROR @ #x10007856392 = #<ERROR @ #x10007856392>
+   0 Class --------> #<STANDARD-CLASS ERROR>
+   1 FORMAT-CONTROL -> symbol :--UNBOUND--
+   2 FORMAT-ARGUMENTS -> symbol NIL
+   3 PLIST --------> symbol NIL
+* (inspect (open #p"~/git/nyxt/source/buffer.lisp"))
+A NEW FILE-SIMPLE-STREAM @ #x10007859f02 = #<FILE-SIMPLE-STREAM
+                                             #P"/home/aartaka/git/nyxt/source/buffer.lisp" for input pos 0
+                                             @
+                                             #x10007859f02>
+   0 Class --------> #<STANDARD-CLASS FILE-SIMPLE-STREAM>
+   1 LOCK-CONTROL -> BASIC-LOCK = #S(BASIC-LOCK :SMPLOCKER NIL ...)
+   2 J-UNREAD-BYTE -> #<Function SINGLE-CHANNEL-UNREAD-BYTE>
+   3 J-WRITE-BYTE -> #<Function SINGLE-CHANNEL-WRITE-BYTE>
+   4 J-READ-BYTE --> #<Function SINGLE-CHANNEL-READ-BYTE>
+   5 J-UNREAD-CHAR -> #<Function SINGLE-CHANNEL-UNREAD-CHAR>
+   6 J-WRITE-CHARS -> #<Function (:EFFT SC-WRITE-CHARS :UTF8-BASE)>
+   7 J-WRITE-CHAR -> #<Function (:EFFT SC-WRITE-CHAR :UTF8-BASE)>
+   8 J-READ-CHARS -> #<Function (:EFFT SC-READ-CHARS :UTF8-BASE)>
+   9 J-READ-CHAR --> #<Function (:EFFT SC-READ-CHAR :UTF8-BASE)>
+  10 J-LISTEN -----> #<Function (:EFFT SC-LISTEN :UTF8-BASE)>
+  11 REREAD-COUNT -> fixnum 0 [#x0000000000000000]
+  12 LAST-CHAR-READ-SIZE -> fixnum 0 [#x0000000000000000]
+  13 ENCAPSULATED-CHAR-READ-SIZE -> fixnum 0 [#x0000000000000000]
+  14 XPSTRUCT -----> symbol NIL
+  15 DRIBBLE-OUT --> symbol NIL
+  16 MELDED-STREAM -> #<FILE-SIMPLE-STREAM
+                        #P"/home/aartaka/git/nyxt/source/buffer.lisp" for input pos 0
+                        @ #x10007859f02>
+  17 MELDING-BASE -> #<FILE-SIMPLE-STREAM
+                       #P"/home/aartaka/git/nyxt/source/buffer.lisp" for input pos 0
+                       @ #x10007859f02>
+  18 EXTERNAL-FORMAT -> EXTERNAL-FORMAT = <...>
+  19 RECORDINGP ---> symbol NIL
+  20 OUTPUT-RECORDING -> symbol NIL
+  21 CONTROL-OUT --> symbol NIL
+  22 CONTROL-IN ---> symbol NIL
+  23 OUTPUT-HANDLE -> symbol NIL
+  24 INPUT-HANDLE -> fixnum 5 [#x0000000000000028]
+   ...
+  39 SRC-POSITION-TABLE -> symbol NIL
+* (inspect #(1 "hello" #p"path" #c(1 3)))
+A NEW simple T vector (4) @ #x10007864112
+   0-> fixnum 1 [#x0000000000000008]
+   1-> A simple-string (5) "hello"
+   2-> PATHNAME = #P"path"
+   3-> COMPLEX object = #C(1 3)
+* (inspect #p"~/git/nyxt/source/buffer.lisp")
+A NEW PATHNAME @ #x10007866112 = #P"/home/aartaka/git/nyxt/source/buffer.lisp"
+   0 Class --------> #<STRUCTURE-CLASS PATHNAME>
+   1 HOST ---------> symbol NIL
+   2 DEVICE -------> symbol :UNSPECIFIC
+   3 DIRECTORY ----> (:ABSOLUTE "home" "aartaka" "git" "nyxt" "source"), a proper list with 6 elements
+   4 NAME ---------> A simple-string (6) "buffer"
+   5 TYPE ---------> A simple-string (4) "lisp"
+   6 VERSION ------> symbol :UNSPECIFIC
+   7 NAMESTRING ---> A simple-string (41) that starts "/home/aartaka/gi"
+   8 HASH ---------> symbol NIL
+   9 DIR-NAMESTRING -> A simple-string (30) "/home/aartaka/git/nyxt/source/"
+  10 PLIST --------> symbol NIL
+* (inspect (make-random-state))
+A NEW RANDOM-STATE @ #x10007869902 = #S(RANDOM-STATE :SMPLOCKER NIL ...)
+   0 Class --------> #<STRUCTURE-CLASS RANDOM-STATE>
+   1 SMPLOCKER ----> symbol NIL
+   2 MTI ----------> fixnum 198 [#x0000000000000630]
+   3 FIXSEED ------> simple (UNSIGNED-BYTE 32) vector (624) = #(3960924350 ...)
+* (inspect (let ((ht (make-hash-table :test #'equal)))
+  (setf (gethash #c(1 3) ht) 1)
+  (setf (gethash 1 ht) "hello")
+  (setf (gethash "hello" ht) #p"path")
+  (setf (gethash #p"path" ht) #c(1 3))
+  ht))
+A NEW #<EQUAL hash-table with 4 entries @ #x10007875d32>
+   0 KEY ----------> PATHNAME = #P"path"
+   1 VALUE --------> COMPLEX object = #C(1 3)
+   2 KEY ----------> COMPLEX object = #C(1 3)
+   3 VALUE --------> fixnum 1 [#x0000000000000008]
+   4 KEY ----------> fixnum 1 [#x0000000000000008]
+   5 VALUE --------> A simple-string (5) "hello"
+   6 KEY ----------> A simple-string (5) "hello"
+   7 VALUE --------> PATHNAME = #P"path"
+* (inspect #*1010001)
+A NEW simple-bit-vector (7) #*1010001 @ #x1000787af92
+   0-> The bit 1
+   1-> The bit 0
+   2-> The bit 1
+   3-> The bit 0
+   4-> The bit 0
+   5-> The bit 0
+   6-> The bit 1
+* (inspect (find-class 'standard-class))
+A TENURED STANDARD-CLASS @ #x1000026a912 = #<STANDARD-CLASS
+                                             STANDARD-CLASS>
+   0 Class --------> #<STANDARD-CLASS STANDARD-CLASS>
+   1 LOCK-CONTROL -> simple T vector (2) = #(NIL NIL)
+   2 PLIST --------> symbol NIL
+   3 FLAGS --------> fixnum 1 [#x0000000000000008]
+   4 DIRECT-METHODS -> ((# # # # # # # # # # # # #)), a proper list with 1 element
+   5 NAME ---------> symbol STANDARD-CLASS
+   6 DIRECT-SUPERCLASSES -> (#<STANDARD-CLASS EXCL::STD-CLASS>), a proper list with 1 element
+   7 DIRECT-SUBCLASSES -> (#<STANDARD-CLASS EXCL.YACC:GRAMMAR-CLASS> ...), a proper list with 2 elements
+   8 WRAPPER ------> simple T vector (7) = #(32579421876047339 T ...)
+   9 CLASS-PRECEDENCE-LIST -> (#<STANDARD-CLASS STANDARD-CLASS> ...), a proper list with 12 elements
+  10 DIRECT-SLOTS -> symbol NIL
+  11 SLOTS --------> (# # # # # # # # # # # #), a proper list with 12 elements
+  12 PROTOTYPE ----> #<STANDARD-CLASS "Unnamed" @ #x100003b6fa2>
+* (inspect '(1 "hello" #p"~/git/nyxt/source/buffer.lisp" 3.556d0))
+A NEW proper list @ #x100079fffe1 with 4 elements
+   0-> fixnum 1 [#x0000000000000008]
+   1-> A simple-string (5) "hello"
+   2-> PATHNAME = #P"/home/aartaka/git/nyxt/source/buffer.lisp"
+   3-> double-float = 3.556d0 [#x400c72b0 20c49ba6]
+* (inspect (cons 1 2))
+A dotted list @ #x100079fcea1 with 1 element
+   0-> fixnum 1 [#x0000000000000008]
+tail-> fixnum 2 [#x0000000000000010]

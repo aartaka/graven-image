@@ -312,3 +312,62 @@ GCL:
     X
  nthcdr 6:
     NIL
+
+
+Allegro:
+* (inspect #'identity)
+A TENURED #<Function IDENTITY>
+  lambda-list: (EXCL::THING)
+   0 type ---------> Bit field: #x88
+   1 flags --------> Bit field: #xaa
+   2 start --------> Bit field: #x00007fc0211c3120
+   3 xflags -------> Bit field: #x00
+   4 hash ---------> Bit field: #x6aa
+   5 symdef -------> symbol IDENTITY
+   6 code ---------> simple CODE vector (19) = #(33608 2296 372 ...)
+   7 formals ------> (EXCL::THING), a proper list with 1 element
+   8 gc-info ------> #<gc-info @ #x10000094d62>
+   9 immed-args ---> fixnum 0 [#x0000000000000000]
+  10 locals -------> fixnum 0 [#x0000000000000000]
+* (inspect #'documentation)
+A TENURED #<STANDARD-GENERIC-FUNCTION DOCUMENTATION>
+  lambda-list: (EXCL::OBJECT EXCL::DOC-TYPE)
+   0 Class --------> #<MOP:FUNCALLABLE-STANDARD-CLASS
+                       STANDARD-GENERIC-FUNCTION>
+   1 LOCK-CONTROL -> simple T vector (2) = #(NIL NIL)
+   2 PLIST --------> symbol NIL
+   3 FLAGS --------> fixnum 1 [#x0000000000000008]
+   4 METHODS ------> (#<STANDARD-METHOD DOCUMENTATION (PACKAGE ...)> ...), a proper list with 10 elements
+   5 NAME ---------> symbol DOCUMENTATION
+   6 METHOD-CLASS -> #<STANDARD-CLASS STANDARD-METHOD>
+   7 METHOD-COMBINATION -> #<EXCL::STANDARD-METHOD-COMBINATION @
+                             #x1000027abe2>
+   8 ARG-INFO -----> simple T vector (7) = #(EXCL::ARG-INFO T (CLASS T) ...)
+* (inspect #'(lambda (x) x))
+A NEW #<Interpreted Function (unnamed) @ #x100079895f2>
+  lambda-list: (X)
+   0 type ---------> Bit field: #x88
+   1 flags --------> Bit field: #x48
+   2 start --------> Bit field: #x00000100000017f0
+   3 xflags -------> Bit field: #x00
+   4 hash ---------> Bit field: #xae0c
+   5 symdef -------> symbol NIL
+   6 code ---------> (LAMBDA (X) X), a proper list with 3 elements
+   7 formals ------> (X), a proper list with 1 element
+   8 gc-info ------> #<gc-info @ #x10000013842>
+   9 immed-args ---> fixnum 0 [#x0000000000000000]
+  10 locals -------> fixnum 0 [#x0000000000000000]
+* (inspect (funcall #'(lambda (x) #'(lambda () x)) nil))
+A NEW #<Interpreted Closure (unnamed) @ #x1000798b6d2>
+  lambda-list: :NULL
+   0 type ---------> Bit field: #x88
+   1 flags --------> Bit field: #x48
+   2 start --------> Bit field: #x00000100000017f0
+   3 xflags -------> Bit field: #x00
+   4 hash ---------> Bit field: #xae0e
+   5 symdef -------> symbol NIL
+   6 code ---------> (EXCL::.LEXICAL-CLOSURE. ...), a dotted list with 2 elements
+   7 formals ------> symbol :NULL
+   8 gc-info ------> #<gc-info @ #x10000013842>
+   9 immed-args ---> fixnum 0 [#x0000000000000000]
+  10 locals -------> fixnum 0 [#x0000000000000000]

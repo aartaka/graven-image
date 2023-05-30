@@ -32,3 +32,10 @@ hello (y/n)
 hello (yes/no)
 Please answer with y or n :
 Please answer with yes or no :
+
+Allegro:
+(Y or N)?
+(Yes or No)?
+hello  --- yes, without the markings and space before the user input
+Type "y" for yes or "n" for no. 
+Type "yes" for yes or "no" for no. 

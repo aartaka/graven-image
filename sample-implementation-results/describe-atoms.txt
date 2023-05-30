@@ -68,3 +68,25 @@ It is a printable character.
 3.0d0 is a float with 53 bits of mantissa (double-float).
 * (describe 3/2)
 3/2 is a rational, not integral number.
+
+
+
+Allegro:
+* (describe 5)
+5 is an IMMEDIATE FIXNUM.
+* (describe #c(1.0 1.3))
+#C(1.0 1.3) is a NEW COMPLEX.
+* (describe "hello")
+"hello" is a NEW (SIMPLE-ARRAY CHARACTER (5)).
+ There are 5 elements
+* (describe 'hello)
+HELLO is a NEW SYMBOL.
+  It is unbound.
+  It is INTERNAL in the COMMON-LISP-USER package.
+* (describe #\a)
+#\a is an IMMEDIATE CHARACTER.
+* (describe 3.0d0)
+3.0d0 is a NEW DOUBLE-FLOAT.
+ The hex representation is [#x40080000 00000000].
+* (describe 3/2)
+3/2 is a NEW RATIO.
