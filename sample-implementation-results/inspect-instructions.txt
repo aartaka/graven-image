@@ -108,3 +108,73 @@ CLISP:
  :q             return to the main Read/Eval/Print loop
 
 GCL: broken
+
+
+
+
+Allegro (not inspect commands, rather global commands):
+COMMAND   ABBR DESCRIPTION
+aliases   ali  print all command aliases
+args      arg  save arguments before calls
+arrest    arr  arrest a process for debugging
+boe            Mark frame to break when exitted.
+bottom    bo   Zoom at the oldest frame on the stack.
+break     br   Add or remove breakpoints
+bt             Zoom in a very brief manner.
+cd             change into another directory
+cf             compile a file
+cload     cl   compile and load a file
+continue  cont continue from a continuable error
+current   cur  return the expression given by the current stack frame
+dirs      di   print the Allegro directory stack
+dn             move down the stack `n' frames, default 1
+edit      ed   edit the source for the current stack frame
+EOF            either :pop or :exit
+error     err  print the last error message
+evalmode  eval examine or set evaluation mode
+exit      ex   exit and return to the shell
+find      fin  find the stack frame calling the function `func'
+focus     fo   focus the top level on a process
+frame     fr   print info about current frame 
+function  fun  print and set * to the function object of this frame
+help      he   print this text -- use `:help cmd-name' for more info
+hide      hid  hide functions or types of stack frames
+history   his  print the most recently typed user inputs
+inspect   in   start an inspector on a lisp object
+istep     i    navigate within inspection of a lisp object
+kill      ki   kill a process
+ld             load one or more files
+ldb            Turn on/off low-level debugging
+local     loc  print the value of a local (interpreted or compiled) variable
+macroexpand ma call macroexpand on the argument, and pretty print it
+optimize  opt  interactively set compiler optimizations
+package   pa   go into a package
+pop            pop up `n' (default 1) break levels
+popd           cd into the previous entry on directory stack
+printer-variables pri Interactively set printer control variables
+processes pro  List all processes
+prt            pop-and-retry the last expression which caused an error
+pushd     pu   cd to a directory, pushing the directory on to the stack
+pwd       pw   print the process current working directory
+register  reg  print the value of a saved register if available
+reset     res  return to the top-most break level
+restart   rest restart the function in the current frame
+return    ret  return values from the current frame
+scont     sc   step `n' forms before stopping
+set-local set-l  set the value of a local variable
+set-register set-r set the value of a saved register if available
+slide     sl   navigate potential breakpoints as slide points
+sover     so   eval the current step form, with stepping turned off
+step      st   turn on or off stepping
+top       to   Zoom at the newest frame on the stack.
+trace     tr   trace the function arguments
+unarrest  unar revoke the debugging arrest reason on a process
+unhide    unh  unhide functions or types of stack frames
+untrace   untr stop tracing some or all functions
+up             move up `n' (default 1) stack frames
+who-binds who-b find bindings of a variable
+who-calls who-c find callers of a function
+who-references who-r find references to a variable
+who-sets  who-s find setters of a variable
+who-uses  who-u find references, bindings and settings of a variable
+zoom      zo   print the runtime stack
