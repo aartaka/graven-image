@@ -491,6 +491,7 @@ Methods should include the most useful information and things that are
 not suitable for the `properties' key-value format."))
 
 
+;; TODO: integer binary layout (two's complement?).
 (defmethod description ((object integer) &optional stream)
   (multiple-value-bind (second minute hour date month year)
       (decode-universal-time object)
@@ -501,6 +502,7 @@ not suitable for the `properties' key-value format."))
             object (ceiling (log object 2)) object object object
             hour minute second month date (mod date 10) year)))
 
+;; TODO: float/double etc. binary layout
 (defmethod description ((object float) &optional stream)
   (format stream "~s (~e)" object object))
 
