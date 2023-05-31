@@ -210,10 +210,11 @@
             #-sbcl ; unused on SBCL
             (read-from-position (file position)
               (when (and position file)
-                (with-open-file (f file)
-                  (loop repeat position
-                        do (read-char f nil nil))
-                  (maybe-unsafe-read f)))))
+                (ignore-errors
+                 (with-open-file (f file)
+                   (loop repeat position
+                         do (read-char f nil nil))
+                   (maybe-unsafe-read f))))))
      #+ccl
      (let* ((sources (ccl:find-definition-sources function))
             ;; Generic function defs don't return the generic definition
@@ -229,7 +230,7 @@
      (multiple-value-bind (file position)
          (ext:compiled-function-file function)
        (when (and file position)
-         (read-from-position file position)))
+         (read-from-position (translate-logical-pathname file) position)))
      #+sbcl
      (let* ((sources
               (ignore-errors
