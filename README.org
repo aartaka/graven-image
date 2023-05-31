@@ -79,16 +79,16 @@ gone for a better and more unified listing:
 
 #+begin_src
 > (apropos* :max)
-MAX [function (NUMBER &REST MORE-NUMBERS) (Return the greatest of its arguments; among EQUALP greatest, return)]
-:MAX [self-evaluating]
+MAX [FUNCTION (NUMBER &REST MORE-NUMBERS) (Return the greatest of its arguments; among EQUALP greatest, return)]
+:MAX [SELF-EVALUATING]
 ...
 SB-C::MAXREST
-ALEXANDRIA:MAXF [macro (Modify-macro for MAX. Sets place designated by the first argument to the)]
+ALEXANDRIA:MAXF [MACRO (Modify-macro for MAX. Sets place designated by the first argument to the)]
 ...
 SB-UNICODE::MAX-MATCH
-SB-C::MAX-VOP-TN-REFS [constant: 256]
-SB-LOOP::LOOP-MINIMAX [class
-SB-IMPL::HEAP-MAXIMUM [function (HEAP)]
+SB-C::MAX-VOP-TN-REFS [CONSTANT: 256]
+SB-LOOP::LOOP-MINIMAX [CLASS]
+SB-IMPL::HEAP-MAXIMUM [FUNCTION (HEAP)]
 ...
 #+end_src
 
