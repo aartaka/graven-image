@@ -128,36 +128,39 @@ PACKAGE can be:
 Influenced by:
 - Current list of packages and their contents.
 - `*standard-output*'."
-  (dolist (symbol (apropos-list* string package external-only docs-too))
-    (flet ((crop-docs (docs)
-             (when docs
-               (first (uiop:split-string docs :separator '(#\newline))))))
-      (let ((*print-level* 2)
-            (*print-length* 5)
-            (*print-lines* 1))
+  ;; This is because function-* APIs often throw warnings for
+  ;; non-implemented methods.
+  (handler-bind ((warning #'muffle-warning))
+    (dolist (symbol (apropos-list* string package external-only docs-too))
+      (flet ((crop-docs (docs)
+               (when docs
+                 (first (uiop:split-string docs :separator '(#\newline))))))
+        (fresh-line)
+        (format t "~s" symbol)
         (when (boundp symbol)
           (cond
             ((or (eq t symbol)
                  (null symbol)
                  (keywordp symbol))
-             (format t "Self-evaluating ~s~%" symbol))
+             (format t " [self-evaluating]"))
             ((constantp symbol)
-             (format t "Constant ~s = ~s~@[ (~a)~]~%"
-                     symbol (symbol-value symbol) (crop-docs (documentation symbol 'variable))))
-            (t (format t "Variable ~s = ~s~@[ (~a)~]~%"
-                       symbol (symbol-value symbol) (crop-docs (documentation symbol 'variable))))))
+             (format t " [constant: ~s~@[ (~a)~]]"
+                     (symbol-value symbol) (crop-docs (documentation symbol 'variable))))
+            (t (format t " [variable: ~s~@[ (~a)~]]"
+                       (symbol-value symbol) (crop-docs (documentation symbol 'variable))))))
         (when (fboundp symbol)
-          (format t "~:[Function~;Macro~] ~s~@[ (~a)~]~%"
-                  (macro-function symbol) symbol (crop-docs (documentation symbol 'function))))
+          (format t " [~:[function~;macro~] (~{~s~^ ~})~@[ (~a)~]]"
+                  (macro-function symbol)
+                  (function-lambda-list* (or (macro-function symbol)
+                                             (symbol-function symbol)))
+                  (crop-docs (or (documentation symbol 'function)
+                                 (documentation (macro-function symbol) t)
+                                 (ignore-errors (documentation (symbol-function symbol) t))))))
         (when (ignore-errors (find-class symbol nil))
-          (format t "Class ~s~@[ (~a)~]~%"
-                  symbol (crop-docs
-                          (or (documentation symbol 'type)
-                              (documentation symbol 'structure)))))
-        (when (ignore-errors (and (not (boundp symbol))
-                                  (not (fboundp symbol))
-                                  (not (find-class symbol nil))))
-          (format t "Symbol ~s~%" symbol)))))
+          (format t " [class~@[ (~a)~]"
+                  (crop-docs
+                   (or (documentation symbol 'type)
+                       (documentation symbol 'structure))))))))
   (values))
 
 ;;; Helpers
