@@ -26,7 +26,12 @@
        ;; Is that the right one?
        (loop for i below (1- (sb-kernel:get-closure-length function))
              collect (cons i (sb-kernel:%closure-index-ref function i))))
-  #-(or ccl cmucl scl sbcl)
+  #+abcl
+  (let ((environment (nth-value 1 (funcall old-function-lambda-expression function))))
+    (when (and environment
+               (typep environment 'system::environment))
+      (system:environment-variables environment)))
+  #-(or ccl cmucl scl sbcl abcl)
   (warn "closure inspection is not implemented for this CL, help in implementing it!"))
 
 ;; FIXME: Phew, that's a long one... Maybe use Slynk after all? Graven
@@ -273,6 +278,9 @@ useful to fetch the arglist or body, though. Use at your own risk!"
        (cond
         ;; T is suspicious.
         ((eq closure-p t) (function-closure-p function))
+        #+abcl
+        (closure-p (function-closure-p function))
+        #-abcl
         (closure-p closure-p)
         (t nil))
        (or name
