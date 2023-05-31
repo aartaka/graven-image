@@ -54,3 +54,8 @@ Allegro:
 NOTE for later:
 (EXCL::TIME-A-FUNCALL (lambda (stream gc-time gc-systime run-time run-systime real-time ? bytes???? ? ? faults major minor ? ?) ...) function . args)
 Aborted not supported---fails the whole thing.
+
+EXCL::S EXCL::TGCU EXCL::TGCS EXCL::TU EXCL::TS EXCL::TR
+;;          EXCL::SCONS EXCL::SOTHER EXCL::STATIC &OPTIONAL
+;;          EXCL::PFMAJOR EXCL::PFMINOR EXCL::GCPFMAJOR EXCL::GCPFMINOR
+;;          EXCL::THREADU EXCL::THREADS
