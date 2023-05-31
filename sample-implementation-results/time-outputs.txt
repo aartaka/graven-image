@@ -50,12 +50,3 @@ Allegro:
 ; space allocation:
 ;  500,501 cons cells, 0 other bytes, 0 static bytes
 ; Page Faults: major: 0 (gc: 67), minor: 79 (gc: 67)
-
-NOTE for later:
-(EXCL::TIME-A-FUNCALL (lambda (stream gc-time gc-systime run-time run-systime real-time ? bytes???? ? ? faults major minor ? ?) ...) function . args)
-Aborted not supported---fails the whole thing.
-
-EXCL::S EXCL::TGCU EXCL::TGCS EXCL::TU EXCL::TS EXCL::TR
-;;          EXCL::SCONS EXCL::SOTHER EXCL::STATIC &OPTIONAL
-;;          EXCL::PFMAJOR EXCL::PFMINOR EXCL::GCPFMAJOR EXCL::GCPFMINOR
-;;          EXCL::THREADU EXCL::THREADS
