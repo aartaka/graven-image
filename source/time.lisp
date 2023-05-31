@@ -82,32 +82,32 @@ always the case that some are missing."
                       #+clisp
                       (multiple-value-bind (old-real1 old-real2 old-run1 old-run2 old-gc1 old-gc2 old-space1 old-space2 old-gccount)
                           (system::%%time)
-                        (let ((aborted t))
-                          (unwind-protect
-                               (multiple-value-prog1
-                                   ,form
-                                 (setf aborted nil))
-                            (multiple-value-bind (new-real1 new-real2 new-run1 new-run2 new-gc1 new-gc2 new-space1 new-space2 new-gccount)
-                                (system::%%time)
-                              (flet ((diff4 (newval1 newval2 oldval1 oldval2)
-                                       (+ (* (- newval1 oldval1) internal-time-units-per-second)
-                                          (- newval2 oldval2))))
-                                (push (cons :aborted aborted) ,props)
-                                (push (cons :real (/ (diff4 new-real1 new-real2 old-real1 old-real2)
-                                                     internal-time-units-per-second))
-                                      ,props)
-                                (push (cons :user (/ (diff4 new-run1 new-run2 old-run1 old-run2)
-                                                     internal-time-units-per-second))
-                                      ,props)
-                                (push (cons :allocated (system::delta4 new-space1 new-space2 old-space1 old-space2 24))
-                                      ,props)
-                                (let ((gc-time (diff4 new-gc1 new-gc2 old-gc1 old-gc2))
-                                      (gc-count (- new-gccount old-gccount)))
-                                  (unless (zerop gc-time)
-                                    (push (cons :gc (/ gc-time internal-time-units-per-second))
-                                          ,props))
-                                  (unless (zerop gc-count)
-                                    (push (cons :gc-count gc-count) ,props))))))))
+                        (multiple-value-prog1
+                            (handler-case
+                                ,form
+                              (error ()
+                                (push (cons :aborted t) ,props)
+                                nil))
+                          (multiple-value-bind (new-real1 new-real2 new-run1 new-run2 new-gc1 new-gc2 new-space1 new-space2 new-gccount)
+                              (system::%%time)
+                            (flet ((diff4 (newval1 newval2 oldval1 oldval2)
+                                     (+ (* (- newval1 oldval1) internal-time-units-per-second)
+                                        (- newval2 oldval2))))
+                              (push (cons :real (/ (diff4 new-real1 new-real2 old-real1 old-real2)
+                                                   internal-time-units-per-second))
+                                    ,props)
+                              (push (cons :user (/ (diff4 new-run1 new-run2 old-run1 old-run2)
+                                                   internal-time-units-per-second))
+                                    ,props)
+                              (push (cons :allocated (system::delta4 new-space1 new-space2 old-space1 old-space2 24))
+                                    ,props)
+                              (let ((gc-time (diff4 new-gc1 new-gc2 old-gc1 old-gc2))
+                                    (gc-count (- new-gccount old-gccount)))
+                                (unless (zerop gc-time)
+                                  (push (cons :gc (/ gc-time internal-time-units-per-second))
+                                        ,props))
+                                (unless (zerop gc-count)
+                                  (push (cons :gc-count gc-count) ,props)))))))
                       #+allegro
                       (excl::time-a-funcall
                        (lambda (s tgcu tgcs tu ts tr scons sother static
@@ -151,20 +151,16 @@ always the case that some are missing."
                               (si::gc-stats t))
                             (old-gc-count
                               #+(and ecl boehm-gc)
-                              (nth-value 1 (si::gc-stats t)))
-                            (aborted t))
+                              (nth-value 1 (si::gc-stats t))))
                         (declare (ignorable
                                   #+ecl ecl-force-gc
                                   old-gc-time old-gc-count old-bytes-allocated))
-                        (unwind-protect
-                             (multiple-value-prog1
-                                 (handler-case
-                                     (multiple-value-prog1
-                                         ,form
-                                       (setf aborted nil))
-                                   (error ()
-                                     nil)))
-                          (push (cons :aborted aborted) ,props)
+                        (multiple-value-prog1
+                            (handler-case
+                                ,form
+                              (error ()
+                                (push (cons :aborted t) ,props)
+                                nil))
                           (push (cons :real (/ (- (get-internal-real-time)
                                                   old-real-time)
                                                internal-time-units-per-second))
