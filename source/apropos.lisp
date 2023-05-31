@@ -142,22 +142,25 @@ Influenced by:
             ((or (eq t symbol)
                  (null symbol)
                  (keywordp symbol))
-             (format t " [self-evaluating]"))
+             (format t " [~a]" 'self-evaluating))
             ((constantp symbol)
-             (format t " [constant: ~s~@[ (~a)~]]"
-                     (symbol-value symbol) (crop-docs (documentation symbol 'variable))))
-            (t (format t " [variable: ~s~@[ (~a)~]]"
-                       (symbol-value symbol) (crop-docs (documentation symbol 'variable))))))
+             (format t " [~a: ~s~@[ (~a)~]]"
+                     'constant (symbol-value symbol) (crop-docs (documentation symbol 'variable))))
+            (t (format t " [~a: ~s~@[ (~a)~]]"
+                       'variable (symbol-value symbol) (crop-docs (documentation symbol 'variable))))))
         (when (fboundp symbol)
-          (format t " [~:[function~;macro~]~@[ ~s~]~@[ (~a)~]]"
-                  (macro-function symbol)
+          (format t " [~a~@[ ~s~]~@[ (~a)~]]"
+                  (if (macro-function symbol)
+                      'macro
+                      'function)
                   (function-lambda-list* (or (macro-function symbol)
                                              (symbol-function symbol)))
                   (crop-docs (or (documentation symbol 'function)
                                  (documentation (macro-function symbol) t)
                                  (ignore-errors (documentation (symbol-function symbol) t))))))
         (when (ignore-errors (find-class symbol nil))
-          (format t " [class~@[ (~a)~]]"
+          (format t " [~a~@[ (~a)~]]"
+                  'class
                   (crop-docs
                    (or (documentation symbol 'type)
                        (documentation symbol 'structure))))))))
