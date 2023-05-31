@@ -268,7 +268,8 @@ useful to fetch the arglist or body, though. Use at your own risk!"
         (funcall old-function-lambda-expression function)
       (values
        (or expression
-           (transform-definition-to-lambda definition force))
+           (when (listp definition)
+             (transform-definition-to-lambda definition force)))
        (cond
         ;; T is suspicious.
         ((eq closure-p t) (function-closure-p function))
