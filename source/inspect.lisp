@@ -453,6 +453,7 @@ out."))
        'sb-pcl::name 'sb-pcl::methods 'sb-pcl::%method-combination "Lambda-list" "Ftype")))
 
 (defun restart-interactive (restart)
+  (declare (ignorable restart))
   #+ccl (ccl::%restart-interactive restart)
   #+sbcl (sb-kernel::restart-interactive-function restart)
   #+ecl (si::restart-interactive-function restart)
