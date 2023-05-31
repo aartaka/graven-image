@@ -44,16 +44,12 @@ The functions that Graven Image exposes come in two flavors:
   =describe=)—in =graven-image= system.
 - Functions shadowing CL symbols in =graven-image/cl= system.
 
-Function below will be listed with their CL-imported names, instead of
-Graven Image names. So =y-or-n-p*= from Graven Image is listed as mere
-CL =y-or-n-p=.
-
-** =y-or-n-p=, =yes-or-no-p= (function)
+** =y-or-n-p*=, =yes-or-no-p*= (function)
 
 Signature:
 #+begin_src lisp
-y-or-n-p &optional control &rest arguments => generalized-boolean
-yes-or-no-p &optional control &rest arguments => generalized-boolean
+y-or-n-p* &optional control &rest arguments => generalized-boolean
+yes-or-no-p* &optional control &rest arguments => generalized-boolean
 #+end_src
 
 
@@ -64,25 +60,25 @@ Improvements are:
   differentiating them.
 - No beeps.
 
-** =apropos-list=, =apropos= (function)
+** =apropos-list*=, =apropos*= (function)
 
 Signature:
 #+begin_src lisp
-apropos-list string &optional (package nil) exported-only docs-too => list of symbols
-apropos string &optional (package nil) exported-only docs-too => no values
+apropos-list* string &optional (package nil) exported-only docs-too => list of symbols
+apropos* string &optional (package nil) exported-only docs-too => no values
 #+end_src
 
-=apropos-list= now allows listing exported symbols only (with
+=apropos-list*= now allows listing exported symbols only (with
 =exported-only=), which was a non-portable privilege of SBCL until
-now. Search over docs (more intuitive for =apropos(-list)= than mere
+now. Search over docs (more intuitive for =apropos(-list)*= than mere
 name search) is possible with =docs-too=.
 
-Based on this foundation, =apropos= lists symbols with their types,
+Based on this foundation, =apropos*= lists symbols with their types,
 values, and documentation, so that implementation-specific formats are
 gone for a better and more unified listing:
 
 #+begin_src
-> (apropos :max)
+> (apropos* :max)
 Function MAX (Return the greatest of its arguments; among EQUALP greatest, return)
 Variable :MAX = :MAX
 ...
@@ -101,11 +97,11 @@ Symbol SB-VM::MAX-EXTENSIONS
 
 Less noticeable, but still nice: all the suggestions are listed by their "relevance" (i.e. by the number of matches of string in the symbol name/documentation).
 
-** =function-lambda-expression= (generic-function)
+** =function-lambda-expression*= (generic-function)
 
 Signature:
 #+begin_src lisp
-function-lambda-expression function-designator &optional force => list, list, symbol, list
+function-lambda-expression* function-designator &optional force => list, list, symbol, list
 #+end_src
 
 This function tries to read source files, process the definitions of
@@ -121,10 +117,10 @@ returns:
 
 While the new Graven Image =function-lambda-expression= now returns:
 #+begin_src lisp
-  (function-lambda-expression #'idenitity)
+  (function-lambda-expression* #'idenitity)
   ;; => (LAMBDA (THING) "This function simply returns what was passed to it." THING),
   ;;    NIL, IDENTITY, (FUNCTION (T) (VALUES T &OPTIONAL))
-  (function-lambda-expression #'print-object t) ; Notice the T for FORCE, to build a dummy lambda.
+  (function-lambda-expression* #'print-object t) ; Notice the T for FORCE, to build a dummy lambda.
   ;; => (LAMBDA (SB-PCL::OBJECT STREAM)), NIL, PRINT-OBJECT, (FUNCTION (T T) *)
 #+end_src
 
@@ -154,27 +150,47 @@ Things that =function-lambda-expression= now returns are:
   implementation-specific function objects, if necessary.
 - Function type, whenever accessible.
 
-** =time= (macro)
+*** Helpers
+Based on these new features of =function-lambda-expression*=, here are
+some Graven Image-specific helpers:
+- =function-lambda-list*= :: Get the lambda list of a function.
+- =function-name*= :: Get the name of a function.
+- =function-type*= :: Get its ftype.
+
+** =time*= (macro)
 
 Signature:
 #+begin_src lisp
-time form &optional return-kind => values &optional list
+time* form &optional stream => values &rest return-values
 #+end_src
 
-The improved =time= from Graven Image reuses as much implementation-specific APIs as possible, while providing:
-- Ability to print to string (possible everywhere) easily (with NIL passed as =return-kind=).
-- Ability to print to any stream (possible everywhere) easily (with stream passed as =return-kind=).
+The improved =time*= from Graven Image reuses as much implementation-specific APIs as possible, while providing:
+- Ability to print to string (possible everywhere) easily (with NIL passed as =stream=).
+- Ability to print to any stream (possible everywhere) easily (with stream passed as =stream=).
 - Predictable printing format across implementations.
-- Ability to return machine-readable data format (with :DATA keyword passed as =return-kind=).
-  - This is the main reason for re-implementing =time= in Graven Image—all the stats are now returned.
 
-See the docs of =time*= for more info.
-
-** =describe= (function)
+*** =with-time*= (macro)
 
 Signature:
 #+begin_src lisp
-describe object &optional (stream t) ignore-methods
+with-time* (&rest time-keywords) (&rest multiple-value-args) form &body body
+#+end_src
+
+
+As the implementation detail of =time*=, =with-time*= allows to get
+the timing data for interactive querying. =time-keywords= allow
+=&key=-matching the timing data (like =:gc= time or bytes
+=:allocated=) for processing in the body. While =multiple-value-args=
+allow matching against the return values of the =form=. So we get best
+of the both worlds: timing data and return values. This flexibility
+enables =time*=, with its requirements of printing the data and
+returning the original values at the same time.
+
+** =describe*= (function)
+
+Signature:
+#+begin_src lisp
+describe* object &optional (stream t) ignore-methods
 #+end_src
 
 Describes the =object= to the stream, but this time with portable
@@ -201,19 +217,19 @@ Concise and informative description of =object= to the
 =stream=. Useful information from most of the implementations
 tested—united into one description header.
 
-** TODO =inspect= (generic-function) =object &key stream omit-empty &allow-other-keys -> (or alist string (values))=
-*** TODO =inspect-object= (generic-function) =object &key omit-empty &allow-other-keys -> alist=
+** TODO =inspect*= (generic-function) =object &key stream omit-empty &allow-other-keys -> (or alist string (values))=
+*** TODO =inspect-object*= (generic-function) =object &key omit-empty &allow-other-keys -> alist=
 
-** TODO =ed= (function)
+** TODO =ed*= (function)
 
 * Roadmap
-- [ ] Make =apropos= sorting more customizable.
+- [ ] Make =apropos*= sorting more customizable.
 - [ ] Add:
-  - [ ] =inspect=,
-  - [X] =describe=,
-  - [X] =time=,
-  - [ ] =ed=.
-  - [ ] =invoke-debugger=.
+  - [ ] =inspect*=,
+  - [X] =describe*=,
+  - [X] =time*=,
+  - [ ] =ed*=.
+  - [ ] =invoke-debugger*=.
 - [ ] Improve
   - [ ] =dribble=,
   - [ ] =step=,
