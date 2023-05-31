@@ -166,9 +166,10 @@ Note that you can influence the printout by let-bindings:
                   (unless (special-operator-p symbol)
                     (function-lambda-list* (or (macro-function symbol)
                                                (symbol-function symbol))))
-                  (crop-docs (or (documentation symbol 'function)
-                                 (ignore-errors (documentation (macro-function symbol) t))
-                                 (ignore-errors (documentation (symbol-function symbol) t))))))
+                  (unless (special-operator-p symbol)
+                    (crop-docs (or (documentation symbol 'function)
+                                   (ignore-errors (documentation (macro-function symbol) t))
+                                   (ignore-errors (documentation (symbol-function symbol) t)))))))
         (when (ignore-errors (find-class symbol nil))
           (format t " [~a~@[ ~s~]~@[ : ~a~]]"
                   'class
