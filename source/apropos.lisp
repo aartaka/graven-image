@@ -151,23 +151,29 @@ Note that you can influence the printout by let-bindings:
                  (keywordp symbol))
              (format t " [~a]" 'self-evaluating))
             ((constantp symbol)
-             (format t " [~a: ~s~@[ (~a)~]]"
+             (format t " [~a = ~s~@[ : ~a~]]"
                      'constant (symbol-value symbol) (crop-docs (documentation symbol 'variable))))
-            (t (format t " [~a: ~s~@[ (~a)~]]"
+            (t (format t " [~a = ~s~@[ : ~a~]]"
                        'variable (symbol-value symbol) (crop-docs (documentation symbol 'variable))))))
         (when (fboundp symbol)
-          (format t " [~a~@[ ~s~]~@[ (~a)~]]"
-                  (if (macro-function symbol)
-                      'macro
-                      'function)
-                  (function-lambda-list* (or (macro-function symbol)
-                                             (symbol-function symbol)))
+          (format t " [~a~@[ ~s~]~@[ : ~a~]]"
+                  (cond
+                    ((special-operator-p symbol)
+                     'special-operator)
+                    ((macro-function symbol)
+                     'macro)
+                    (t 'function))
+                  (unless (special-operator-p symbol)
+                    (function-lambda-list* (or (macro-function symbol)
+                                               (symbol-function symbol))))
                   (crop-docs (or (documentation symbol 'function)
-                                 (documentation (macro-function symbol) t)
+                                 (ignore-errors (documentation (macro-function symbol) t))
                                  (ignore-errors (documentation (symbol-function symbol) t))))))
         (when (ignore-errors (find-class symbol nil))
-          (format t " [~a~@[ (~a)~]]"
+          (format t " [~a~@[ ~s~]~@[ : ~a~]]"
                   'class
+                  (mapcar #'class-name
+                          (closer-mop:class-direct-superclasses (find-class symbol nil)))
                   (crop-docs
                    (or (documentation symbol 'type)
                        (documentation symbol 'structure))))))))

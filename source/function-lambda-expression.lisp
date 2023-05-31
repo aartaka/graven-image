@@ -28,9 +28,12 @@
              collect (cons i (sb-kernel:%closure-index-ref function i))))
   #+abcl
   (let ((environment (nth-value 1 (funcall old-function-lambda-expression function))))
-    (when (and environment
-               (typep environment 'system::environment))
-      (system:environment-variables environment)))
+    (cond
+      ((and environment
+            (typep environment 'system::environment))
+       (system:environment-variables environment))
+      (environment environment)
+      (t nil)))
   #-(or ccl cmucl scl sbcl abcl)
   (warn "closure inspection is not implemented for this CL, help in implementing it!"))
 
