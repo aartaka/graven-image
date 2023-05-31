@@ -10,7 +10,7 @@
    ;; #:inspect*
    #:describe* #:description #:properties
    #:function-lambda-expression* #:function-lambda-list* #:function-name* #:function-type*
-   #:time*
+   #:time* #:with-time*
    ;; #:step* #:trace* #:untrace*
    )
   (:import-from
