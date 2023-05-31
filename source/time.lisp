@@ -178,20 +178,21 @@ always the case that some are missing."
              ,values
            ,@body)))))
 
-(defmacro time* (form &optional (stream t))
-  "Execute FORM and print timing information for it.
-STREAM designates a stream to print information to:
-- T --- print to *TRACE-OUTPUT*.
-- NIL --- print to string and return it.
-- Any output stream --- write to it.
+(defmacro time* (&rest forms)
+  "Execute FORMS and print timing information for them.
+The values of FORMS evaluation are returned unaltered.
 
-Based on `with-time*', use it for increased control."
-  `(with-time* (&key aborted real system user cycles load cores gc-count gc allocated faults)
-       (&rest values)
-       ,form
-     (format ,stream
-             "~&Time spent ~@[un~*~]successfully evaluating:
-~s~
+Based on `with-time*', use it for increased control.
+Prints to `*trace-output*', rebind to redirect output."
+  (let ((form (if (= 1 (length forms))
+                  (first forms)
+                  (cons 'progn forms))))
+    `(with-time* (&key aborted real system user cycles load cores gc-count gc allocated faults)
+         (&rest values)
+         ,form
+       (format *trace-output*
+               "~&Time spent ~@[un~*~]successfully evaluating:~
+~&~s~
 ~@[~&Real time: ~f seconds.~]~
 ~@[~&Run time (system): ~f seconds.~]~
 ~@[~&Run time (user): ~f seconds.~]~
@@ -202,10 +203,10 @@ Based on `with-time*', use it for increased control."
 ~@[~&GC time: ~f seconds.~]~
 ~@[~&Bytes allocated: ~a.~]~
 ~@[~&Page faults: ~a.~]"
-             aborted ',form
-             real system user
-             cycles load cores
-             gc-count gc
-             allocated
-             faults)
-     (values-list values)))
+               aborted ',form
+               real system user
+               cycles load cores
+               gc-count gc
+               allocated
+               faults)
+       (values-list values))))

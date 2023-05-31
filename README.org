@@ -166,13 +166,15 @@ function-type* function => ftype
 
 Signature:
 #+begin_src lisp
-time* form &optional stream => values &rest return-values
+time* &rest forms => values &rest return-values
 #+end_src
 
 The improved =time*= from Graven Image reuses as much implementation-specific APIs as possible, while providing:
 - Ability to print to string (possible everywhere) easily (with NIL passed as =stream=).
 - Ability to print to any stream (possible everywhere) easily (with stream passed as =stream=).
 - Predictable printing format across implementations.
+
+And it also allows providing several forms, yay!
 
 *** =with-time*= (macro)
 
