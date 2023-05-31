@@ -151,11 +151,19 @@ Things that =function-lambda-expression= now returns are:
 - Function type, whenever accessible.
 
 *** Helpers
+
 Based on these new features of =function-lambda-expression*=, here are
 some Graven Image-specific helpers:
 - =function-lambda-list*= :: Get the lambda list of a function.
 - =function-name*= :: Get the name of a function.
 - =function-type*= :: Get its ftype.
+
+#+begin_src lisp
+function-lambda-list* function => lambda-list
+function-name* function => name
+function-type* function => ftype
+#+end_src
+
 
 ** =time*= (macro)
 

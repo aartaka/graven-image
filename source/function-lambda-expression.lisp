@@ -286,11 +286,14 @@ useful to fetch the arglist or body, though. Use at your own risk!"
 
 ;;; Helpers
 
-(-> function-lambda-list* ((or function symbol) &optional boolean))
-(defun function-lambda-list* (function &optional force)
+(-> function-lambda-list* ((or function symbol)) list)
+(defun function-lambda-list* (function)
   "Return lambda list of the FUNCTION.
 Depends on `function-lambda-expression*'."
-  (second (function-lambda-expression* function force)))
+  (let ((expression (function-lambda-expression* function)))
+    (if expression
+        (second expression)
+        (ignore-errors (function-arglist function (function-name* function))))))
 
 (-> function-name* ((or function symbol)))
 (defun function-name* (function)
