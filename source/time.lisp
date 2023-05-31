@@ -71,7 +71,14 @@ always the case that some are missing."
                                 (push (cons :gc (/ gc-time internal-time-units-per-second)) ,props)
                                 (push (cons :cores (ccl::cpu-count)) ,props)
                                 (values-list results))))
-                        (ccl::report-time ',form (lambda () ,form)))
+                        (ccl::report-time
+                         ',form
+                         (lambda ()
+                           (handler-case
+                               ,form
+                             (serious-condition ()
+                               (push (cons :aborted t) ,props)
+                               nil)))))
                       #+clisp
                       (multiple-value-bind (old-real1 old-real2 old-run1 old-run2 old-gc1 old-gc2 old-space1 old-space2 old-gccount)
                           (system::%%time)
