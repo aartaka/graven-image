@@ -158,8 +158,12 @@ always the case that some are missing."
                                   old-gc-time old-gc-count old-bytes-allocated))
                         (unwind-protect
                              (multiple-value-prog1
-                                 ,form
-                               (setf aborted nil))
+                                 (handler-case
+                                     (multiple-value-prog1
+                                         ,form
+                                       (setf aborted nil))
+                                   (error ()
+                                     nil)))
                           (push (cons :aborted aborted) ,props)
                           (push (cons :real (/ (- (get-internal-real-time)
                                                   old-real-time)
