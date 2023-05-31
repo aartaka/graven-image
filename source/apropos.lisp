@@ -149,7 +149,7 @@ Influenced by:
             (t (format t " [variable: ~s~@[ (~a)~]]"
                        (symbol-value symbol) (crop-docs (documentation symbol 'variable))))))
         (when (fboundp symbol)
-          (format t " [~:[function~;macro~] (~{~s~^ ~})~@[ (~a)~]]"
+          (format t " [~:[function~;macro~]~@[ ~s~]~@[ (~a)~]]"
                   (macro-function symbol)
                   (function-lambda-list* (or (macro-function symbol)
                                              (symbol-function symbol)))
@@ -157,7 +157,7 @@ Influenced by:
                                  (documentation (macro-function symbol) t)
                                  (ignore-errors (documentation (symbol-function symbol) t))))))
         (when (ignore-errors (find-class symbol nil))
-          (format t " [class~@[ (~a)~]"
+          (format t " [class~@[ (~a)~]]"
                   (crop-docs
                    (or (documentation symbol 'type)
                        (documentation symbol 'structure))))))))
