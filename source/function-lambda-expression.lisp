@@ -129,7 +129,7 @@
   ;; Slynk often hooks into `function-lambda-expression', but that's a
   ;; dangerous recursive reference for us, thus
   ;; `old-function-lambda-expression'.
-  (or (ignore-errors (second (funcall old-function-lambda-expression name)))
+  (or (ignore-errors (second (funcall old-function-lambda-expression function)))
       (ignore-errors
        #+abcl
        (or (sys::arglist name)
