@@ -6,7 +6,7 @@
 (defmacro with-time* ((&rest time-keywords)
                       (&rest multiple-value-args) form
                       &body body)
-  "Measure the timing properties for FORM and bind them to TIME-ARGS in BODY.
+  "Measure the timing properties for FORM and bind them to TIME-KEYWORDS in BODY.
 The values of FORM are bound to MULTIPLE-VALUE-ARGS.
 
 Both TIME-KEYWORDS and MULTIPLE-VALUE-ARGS are destructuring lists,
@@ -172,7 +172,7 @@ always the case that some are missing."
                           #+(and ecl boehm-gc)
                           (push (cons :gc-count (- (nth-value 1 (si::gc-stats t)) old-gc-count))
                                 ,props))))))
-       (destructuring-bind (,@time-args)
+       (destructuring-bind (,@time-keywords)
            (reduce #'append (mapcar (lambda (p) (list (car p) (cdr p))) ,props))
          (destructuring-bind (,@multiple-value-args)
              ,values
