@@ -162,6 +162,8 @@ Note that you can influence the printout by let-bindings:
                      'special-operator)
                     ((macro-function symbol)
                      'macro)
+                    ((typep (symbol-function symbol) 'generic-function)
+                     'generic-function)
                     (t 'function))
                   (unless (special-operator-p symbol)
                     (function-lambda-list* (or (macro-function symbol)
