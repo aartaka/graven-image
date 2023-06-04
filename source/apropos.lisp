@@ -21,41 +21,6 @@
      (reduce #'append (uiop:ensure-list packages)
              :key (lambda (p) (apply old-apropos-list string p args))))))
 
-(-> all-docs (symbol))
-(defun all-docs (sym)
-  ;; Not including compiler-macro, setf, and method-combination,
-  ;; because yes.
-  (uiop:strcat (ignore-errors (documentation sym 'variable))
-               #\Newline
-               (ignore-errors (documentation sym 'function))
-               #\Newline
-               (ignore-errors (documentation sym 'type))
-               #\Newline
-               (ignore-errors (documentation sym 'structure))))
-
-(-> count-appearances (string symbol) number)
-(defun count-appearances (string symbol)
-  "Quite a strange heuristic.
-Two scores: symbol name and symbol documentation ones.
-- Symbol score is how much of a SYMBOL name STRING occupies.
-- Documentation score is how much of docs do STRING mentions occupy."
-  (flet ((count-substrings (substring string)
-           (let ((count 0))
-             (uiop:frob-substrings
-              string (list substring)
-              (lambda (match frob)
-                (incf count)
-                (funcall frob match)))
-             count)))
-    (let ((formatted-sym (format nil "~s" symbol)))
-      (+ (/ (count-substrings string formatted-sym)
-            (length formatted-sym))
-         (let ((docs (all-docs symbol)))
-           (if (uiop:emptyp docs)
-               0
-               (/ (count-substrings string docs)
-                  (length docs))))))))
-
 (-> %apropos-list (string (or package symbol list) boolean boolean) list)
 (defun %apropos-list (string packages external-only docs-too)
   (loop for package in packages

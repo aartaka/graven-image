@@ -69,9 +69,9 @@ apropos* string &optional (package nil) exported-only docs-too => no values
 #+end_src
 
 =apropos-list*= now allows listing exported symbols only (with
-=exported-only=), which was a non-portable privilege of SBCL until
-now. Search over docs (more intuitive for =apropos(-list)*= than mere
-name search) is possible with =docs-too=.
+=exported-only=), which was a non-portable privilege of SBCL/Allegro
+until now. Search over docs (more intuitive for =apropos(-list)*= than
+mere name search) is possible with =docs-too=.
 
 Based on this foundation, =apropos*= lists symbols with their types,
 values, and documentation, so that implementation-specific formats are
@@ -91,8 +91,6 @@ SB-LOOP::LOOP-MINIMAX [CLASS]
 SB-IMPL::HEAP-MAXIMUM [FUNCTION (HEAP)]
 ...
 #+end_src
-
-Less noticeable, but still nice: all the suggestions are listed by their "relevance" (i.e. by the number of matches of string in the symbol name/documentation).
 
 ** =function-lambda-expression*= (generic-function)
 
@@ -230,7 +228,6 @@ tested—united into one description header.
 ** TODO =ed*= (function)
 
 * Roadmap
-- [ ] Make =apropos*= sorting more customizable.
 - [ ] Add:
   - [ ] =inspect*=,
   - [X] =describe*=,
