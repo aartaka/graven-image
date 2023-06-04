@@ -299,7 +299,7 @@ useful to fetch the arglist or body, though. Use at your own risk!"
 
 ;;; Helpers
 
-(-> function-lambda-list* ((or function symbol)) list)
+(-> function-lambda-list* ((or function symbol)))
 (defun function-lambda-list* (function)
   "Return lambda list of the FUNCTION.
 Depends on `function-lambda-expression*'."

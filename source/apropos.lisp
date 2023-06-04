@@ -52,7 +52,7 @@
                               (search string (all-docs sym) :test #'string-equal)))
                      do (pushnew sym symbols))))
 
-(-> apropos-list* ((or string symbol) &optional (or package symbol list) boolean boolean) list)
+(-> apropos-list* ((or string symbol) &optional (or package symbol list) boolean boolean))
 (defun apropos-list* (string &optional (packages (list-all-packages)) external-only docs-too)
   "Search for symbols in PACKAGES with names (+docs when DOCS-TOO) containing STRING.
 Sorts these by the frequency of STRING appearance in the respective
