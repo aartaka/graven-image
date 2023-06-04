@@ -22,7 +22,7 @@
   #+allegro (excl:lispval-to-address *readtable*)
   #-(or sbcl ccl ecl abcl clisp gcl allegro) (sxhash object))
 
-(defgeneric properties (object &key strip-null &allow-other-keys)
+(defgeneric properties* (object &key strip-null &allow-other-keys)
   (:method :around (object &key (strip-null t) &allow-other-keys)
     (delete
      nil
@@ -67,7 +67,7 @@ out."))
 (defun cons-to-list (cons)
   (list (car cons) (cdr cons)))
 
-(defmethod properties ((object symbol) &key &allow-other-keys)
+(defmethod properties* ((object symbol) &key &allow-other-keys)
   `((:name ,(symbol-name object))
     (:package ,(symbol-package object))
     (:visibility ,(symbol-visibility object)
@@ -101,7 +101,7 @@ out."))
 (defun dotted-p (cons)
   (not (null (cdr (last cons)))))
 
-(defmethod properties ((object cons) &key &allow-other-keys)
+(defmethod properties* ((object cons) &key &allow-other-keys)
   (if (dotted-p object)
       `((:car ,(car object)
               ,(lambda (new-value _)
@@ -122,11 +122,11 @@ out."))
                                       (setf (nth i object) new-value))))))))
 
 
-(defmethod properties ((object complex) &key &allow-other-keys)
+(defmethod properties* ((object complex) &key &allow-other-keys)
   `((:imagpart ,(imagpart object))
     (:realpart ,(realpart object))))
 
-(defmethod properties ((object number) &key &allow-other-keys)
+(defmethod properties* ((object number) &key &allow-other-keys)
   `(,@(when (typep object 'ratio)
         `((:numerator ,(numerator object))
           (:denominator ,(denominator object))))
@@ -195,7 +195,7 @@ out."))
         when (eql (symbol-visibility sym) :inherited)
           collect sym))
 
-(defmethod properties ((object package) &key &allow-other-keys)
+(defmethod properties* ((object package) &key &allow-other-keys)
   `((:name ,(package-name object))
     (:description ,(documentation object 'package))
     (:nicknames ,(package-nicknames object))
@@ -226,7 +226,7 @@ out."))
        'sb-impl::internal-symbols 'sb-impl::external-symbols
        'sb-impl::doc-string 'sb-impl::%local-nicknames)))
 
-(defmethod properties ((object readtable) &key &allow-other-keys)
+(defmethod properties* ((object readtable) &key &allow-other-keys)
   `((:case ,(readtable-case object)
       ,(lambda (new-value _)
          (declare (ignorable _))
@@ -247,13 +247,13 @@ out."))
        object
        'sb-impl::%readtable-normalization 'sb-impl::%readtable-case)))
 
-(defmethod properties ((object random-state) &key &allow-other-keys)
+(defmethod properties* ((object random-state) &key &allow-other-keys)
   `(#+ccl
     ,@(get-ccl-props object 'ccl::random.mrg31k3p-state)
     #+sbcl
     ,@(remove-sbcl-props-from object)))
 
-(defmethod properties ((object character) &key &allow-other-keys)
+(defmethod properties* ((object character) &key &allow-other-keys)
   `((:code ,(char-code object))
     (:name ,(char-name object))
     (:digit-char-p ,(digit-char-p object))
@@ -262,7 +262,7 @@ out."))
     (:alphanumericp ,(alphanumericp object))
     (:char-code-limit ,char-code-limit)))
 
-(defmethod properties ((object array) &key &allow-other-keys)
+(defmethod properties* ((object array) &key &allow-other-keys)
   `((:dimensions ,(array-dimensions object)
                  ,(lambda (new-value _)
                     (declare (ignorable _))
@@ -288,7 +288,7 @@ out."))
                             (declare (ignorable _))
                             (setf (elt object i) new-value))))))
 
-(defmethod properties ((object pathname) &key &allow-other-keys)
+(defmethod properties* ((object pathname) &key &allow-other-keys)
   `(,@(when (uiop:logical-pathname-p object)
         `((:translation ,(translate-logical-pathname object))))
     (:wild-p ,(wild-pathname-p object))
@@ -316,7 +316,7 @@ out."))
        object
        'sb-impl::device 'sb-impl::name 'sb-impl::version 'type 'namestring)))
 
-(defmethod properties ((object hash-table) &key &allow-other-keys)
+(defmethod properties* ((object hash-table) &key &allow-other-keys)
   `((:test ,(hash-table-test object))
     (:size ,(hash-table-size object))
     (:count ,(hash-table-count object))
@@ -348,7 +348,7 @@ out."))
        object
        'sb-impl::test 'sb-impl::rehash-size 'sb-impl::rehash-threshold 'sb-impl::%count)))
 
-(defmethod properties ((object stream) &key &allow-other-keys)
+(defmethod properties* ((object stream) &key &allow-other-keys)
   `((:direction ,(cond
                    ((typep object 'two-way-stream) :io)
                    ((input-stream-p object) :input)
@@ -420,13 +420,13 @@ out."))
    (apply #'remove-sbcl-props-from object
           (object-slots object))))
 
-(defmethod properties ((object standard-object) &key &allow-other-keys)
+(defmethod properties* ((object standard-object) &key &allow-other-keys)
   (inspect-slots object))
 
-(defmethod properties ((object structure-object) &key &allow-other-keys)
+(defmethod properties* ((object structure-object) &key &allow-other-keys)
   (inspect-slots object))
 
-(defmethod properties ((object function) &key &allow-other-keys)
+(defmethod properties* ((object function) &key &allow-other-keys)
   `((:name ,(function-name* object)
            ,(lambda (new-name old-name)
               (compile new-name (fdefinition old-name))))
@@ -459,7 +459,7 @@ out."))
   #+ecl (si::restart-interactive-function restart)
   #-(or ccl sbcl ecl) nil)
 
-(defmethod properties ((object restart) &key &allow-other-keys)
+(defmethod properties* ((object restart) &key &allow-other-keys)
   `((:name ,(restart-name object))
     (:interactive ,(restart-interactive object))
     (:test
@@ -478,7 +478,7 @@ out."))
      #+ecl ,(si::restart-report-function object)
      #-(or ccl sbcl ecl) nil)))
 
-(defgeneric description (object &optional stream)
+(defgeneric description* (object &optional stream)
   (:method :around (object &optional stream)
     (let* ((type (first (uiop:ensure-list (type-of object)))))
       (format stream "~@(~a~) " type)
@@ -488,11 +488,11 @@ out."))
   (:documentation "Print human-readable description of OBJECT to STREAM.
 
 Methods should include the most useful information and things that are
-not suitable for the `properties' key-value format."))
+not suitable for the `properties*' key-value format."))
 
 
 ;; TODO: integer binary layout (two's complement?).
-(defmethod description ((object integer) &optional stream)
+(defmethod description* ((object integer) &optional stream)
   (multiple-value-bind (second minute hour date month year)
       (decode-universal-time object)
     (format stream
@@ -503,17 +503,17 @@ not suitable for the `properties' key-value format."))
             hour minute second month date (mod date 10) year)))
 
 ;; TODO: float/double etc. binary layout
-(defmethod description ((object float) &optional stream)
+(defmethod description* ((object float) &optional stream)
   (format stream "~s (~e)" object object))
 
-(defmethod description ((object ratio) &optional stream)
+(defmethod description* ((object ratio) &optional stream)
   (format stream "~s (~e)~:[~*~; ~f%~]"
           object object (< object 100) (coerce object 'float)))
 
-(defmethod description ((object complex) &optional stream)
+(defmethod description* ((object complex) &optional stream)
   (format stream "~s (~a+~ai)" object (realpart object) (imagpart object)))
 
-(defmethod description ((object character) &optional stream)
+(defmethod description* ((object character) &optional stream)
   (if (not (graphic-char-p object))
       (format stream "~s (~d/#x~x)" object (char-code object) (char-code object))
       (format stream "~a (~d/#x~x/~a, ~:[punctuation~;~:[alphabetic~;numeric~]~])"
@@ -522,12 +522,12 @@ not suitable for the `properties' key-value format."))
               (alphanumericp object)
               (digit-char-p object))))
 
-(defmethod description ((object cons) &optional stream)
+(defmethod description* ((object cons) &optional stream)
   (if (not (consp (cdr object)))
       (format stream "(~s . ~s)" (car object) (cdr object))
       (call-next-method)))
 
-(defmethod description ((object package) &optional stream)
+(defmethod description* ((object package) &optional stream)
   (format stream "~a~@[/~{~a~^/~}~] [exports ~a/~a~:[~*~;, uses ~{~a~^, ~}~]]~@[
 ~a~]"
           (package-name object)
@@ -538,13 +538,13 @@ not suitable for the `properties' key-value format."))
           (mapcar #'package-name (package-use-list object))
           (documentation object t)))
 
-(defmethod description ((object restart) &optional stream)
+(defmethod description* ((object restart) &optional stream)
   (format stream "~s~@[~* (interactive)~]~@[:
 ~a~]"
           (restart-name object) (restart-interactive object)
           object))
 
-(defmethod description ((object hash-table) &optional stream)
+(defmethod description* ((object hash-table) &optional stream)
   (format stream "[~a, ~d/~d]~:[ ~s~;~*~]"
           (hash-table-test object)
           (hash-table-count object) (hash-table-size object)
@@ -553,13 +553,13 @@ not suitable for the `properties' key-value format."))
                   using (hash-value val)
                 collect (list key val))))
 
-(defmethod description ((object array) &optional stream) ; string too
+(defmethod description* ((object array) &optional stream) ; string too
   (format stream "~{~a~^ ~}[~d~@[/~d~]]~@[ ~s~]"
           (uiop:ensure-list (array-element-type object))
           (length object) (ignore-errors (fill-pointer object))
           object))
 
-(defmethod description ((object stream) &optional stream)
+(defmethod description* ((object stream) &optional stream)
   (labels ((directions (object)
              (uiop:ensure-list
               (cond
@@ -585,7 +585,7 @@ not suitable for the `properties' key-value format."))
             (ignore-errors (file-position object))
             (ignore-errors (file-length object)))))
 
-(defmethod description ((object pathname) &optional stream)
+(defmethod description* ((object pathname) &optional stream)
   (format stream "~a~@[ -> ~a~]"
           object
           (cond
@@ -599,7 +599,7 @@ not suitable for the `properties' key-value format."))
                 (unless (equal (truename object) object)
                   (truename object)))))))
 
-(defmethod description ((object function) &optional stream)
+(defmethod description* ((object function) &optional stream)
   (format stream "~:[λ~*~;~a ~](~:[?~*~;~{~a~^ ~}~])~@[
  ↑ ~{~a~^ ~}~]~:[~2*~;
  : ~a -> ~a~]~@[
@@ -625,10 +625,10 @@ not suitable for the `properties' key-value format."))
           object (or (documentation (class-name (class-of object)) 'type)
                      (documentation (class-name (class-of object)) 'structure))))
 
-(defmethod description ((object standard-object) &optional stream)
+(defmethod description* ((object standard-object) &optional stream)
   (object-description object stream))
 
-(defmethod description ((object structure-object) &optional stream)
+(defmethod description* ((object structure-object) &optional stream)
   (object-description object stream))
 
 (defun describe* (object &optional (stream t) ignore-methods)
@@ -657,9 +657,9 @@ used for OBJECT info."
         (funcall #'describe-object object stream)
         (progn
           (fresh-line stream)
-          (description object stream)
+          (description* object stream)
           (fresh-line stream)
-          (loop for (name value) in (properties object)
+          (loop for (name value) in (properties* object)
                 do (format stream "~&~a = ~s~%" name value))))
     (if (typep stream 'string-stream)
         (get-output-stream-string stream)

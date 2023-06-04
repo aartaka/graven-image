@@ -8,7 +8,7 @@
    #:apropos-list* #:apropos* #:apropod*
    ;; #:ed*
    ;; #:inspect*
-   #:describe* #:description #:properties
+   #:describe* #:description* #:properties*
    #:function-lambda-expression* #:function-lambda-list* #:function-name* #:function-type*
    #:time* #:with-time*
    ;; #:step* #:trace* #:untrace*
