@@ -33,3 +33,9 @@ unsafer."
 (defun fmt (control &rest arguments)
   "Shortened FORMAT."
   (apply #'format nil control arguments))
+
+;; Stolen from Nyxt with slight alternations.
+(defun funcall* (maybe-fn args)
+  "Only funcall MAYBE-FN on ARGS when it's actually a function."
+  (when (functionp maybe-fn)
+    (apply maybe-fn args)))
