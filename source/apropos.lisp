@@ -6,6 +6,21 @@
 (defvar old-apropos-list (symbol-function 'apropos-list)
   "Good old CL `apropos-list' so we can reuse it in `apropos-list*'.")
 
+(-> reduce-old-apropos (string (or package symbol list) &rest list))
+(defun reduce-old-apropos (string packages &rest args)
+  (cond
+    ((null packages)
+     (apply old-apropos-list string nil args))
+    ((or (packagep packages)
+         (symbolp packages)
+         (and (listp packages)
+              (= 1 (length packages))))
+     (apply old-apropos-list
+            string (first (uiop:ensure-list packages)) args))
+    (t
+     (reduce #'append (uiop:ensure-list packages)
+             :key (lambda (p) (apply old-apropos-list string p args))))))
+
 (-> all-docs (symbol))
 (defun all-docs (sym)
   ;; Not including compiler-macro, setf, and method-combination,
@@ -44,31 +59,32 @@ Two scores: symbol name and symbol documentation ones.
 (-> %apropos-list (string (or package symbol list) boolean boolean) list)
 (defun %apropos-list (string packages external-only docs-too)
   (loop for package in packages
+        with symbols = (unless external-only
+                         (reduce-old-apropos string package))
         when external-only
           nconc (loop for sym being the external-symbol in package
-                      when (or (search string (format nil "~s" sym) :test #'string-equal)
+                      when (or (search string (symbol-name sym) :test #'string-equal)
                                (and docs-too
                                     (search string (all-docs sym) :test #'string-equal)))
-                        collect sym)
+                        do (push sym symbols))
         else
-          nconc (loop for sym being the present-symbol in package
-                      when (and
-                            (eq (symbol-package sym) (find-package package))
-                            (or (search string (format nil "~s" sym) :test #'string-equal)
-                                (and docs-too
-                                     (search string (all-docs sym) :test #'string-equal))))
-                        collect sym)))
+          do (loop for sym being the present-symbol in package
+                   when (and
+                         (eq (symbol-package sym) (find-package package))
+                         (and docs-too
+                              (search string (all-docs sym) :test #'string-equal)))
+                     do (pushnew sym symbols))))
 
 (-> apropos-list* ((or string symbol) &optional (or package symbol list) boolean boolean) list)
-(defun apropos-list* (string &optional package external-only docs-too)
-  "Search for symbols in PACKAGE with names (+docs when DOCS-TOO) containing STRING.
+(defun apropos-list* (string &optional (packages (list-all-packages)) external-only docs-too)
+  "Search for symbols in PACKAGES with names (+docs when DOCS-TOO) containing STRING.
 Sorts these by the frequency of STRING appearance in the respective
 name/documentation.
 
 When EXTERNAL-ONLY, only search the external symbols of
-PACKAGE (ported from SBCL).
+PACKAGES (ported from SBCL/Allegro).
 
-PACKAGE can be:
+PACKAGES can be:
 - A package.
 - A symbol denoting a package.
 - A list of packages/symbols.
@@ -77,35 +93,27 @@ PACKAGE can be:
 Influenced by:
 - Current list of packages and their contents."
   (declare (ignorable external-only docs-too))
-  (let ((packages (mapcar #'find-package (uiop:ensure-list (or package (list-all-packages)))))
-        (string (string string)))
-    (sort
-     (remove-duplicates
-      (cond
-        ;; NOTE: Reusing built-in external-only functionality of SBCL.
-        ;; FIXME: Is SBCL listing reliable enough? Seems te be so.
-        #+sbcl
-        ((not docs-too)
-         (reduce #'append packages
-                 :key (lambda (p) (funcall old-apropos-list string p external-only))))
-        ;; FIXME: Test on more impls (help needed with this one!)
-        ;; FIXME: The case-sensitivity of standard `apropos/-list' is
-        ;; not specified, so this might bring some inconsistencies. All
-        ;; the implementations I've tested list things in the
-        ;; case-insensitive fashion, though.
-        #+(or ccl ecl gcl abcl clisp)
-        ((and (not external-only) (not docs-too))
-         (reduce #'append packages
-                 :key (lambda (p) (funcall old-apropos-list string p))))
-        #+(or sbcl ccl ecl gcl abcl clisp)
-        (t (%apropos-list string packages external-only docs-too))
-        #-(or sbcl ccl ecl gcl abcl clisp)
-        (t
-         (warn "apropos-list* is not implemented for this CL, help in implementing it!")
-         (reduce #'append packages
-                 :key (lambda (p) (funcall old-apropos-list string p))))))
-     #'> :key (lambda (sym)
-                (count-appearances (string string) sym)))))
+  (let ((string (string string)))
+    (cond
+      ;; NOTE: Reusing built-in external-only functionality of SBCL/Allegro.
+      ;; FIXME: Is their listing reliable enough? Seems te be so.
+      #+(or sbcl allegro)
+      ((not docs-too)
+       (reduce-old-apropos string packages external-only))
+      ;; FIXME: Test on more impls (help needed with this one!)
+      ;; FIXME: The case-sensitivity of standard `apropos/-list' is
+      ;; not specified, so this might bring some inconsistencies. All
+      ;; the implementations I've tested list things in the
+      ;; case-insensitive fashion, though.
+      #+(or ccl ecl gcl abcl clisp)
+      ((and (not external-only) (not docs-too))
+       (reduce-old-apropos string packages))
+      #+(or sbcl ccl ecl gcl abcl clisp allegro)
+      (t (%apropos-list string packages external-only docs-too))
+      #-(or sbcl ccl ecl gcl abcl clisp allegro)
+      (t
+       (warn "apropos-list* is not implemented for this CL, help in implementing it!")
+       (reduce-old-apropos string packages)))))
 
 (-> apropos* ((or string symbol) &optional (or package symbol list) boolean boolean))
 (defun apropos* (string &optional package external-only docs-too)
