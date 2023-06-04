@@ -214,7 +214,7 @@ out."))
                    #+ecl (ext:lock-package object)
                    #+sbcl (sb-ext:unlock-package object)
                    #+ecl (ext:unlock-package object))))
-    #+package-local-nicknames
+    #+(or sb-ext ccl ext ext ext hcl excl)
     (:local-nicknames ,(package-local-nicknames object))
     #+ccl
     ,@(get-ccl-props
