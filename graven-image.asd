@@ -19,10 +19,30 @@
                (:file "apropos")
                (:file "time")
                (:file "inspect"))
-  ;; :in-order-to ((test-op "graven-image/tests"))
-  )
+  :in-order-to ((test-op (test-op "graven-image/tests"))))
 
 (defsystem "graven-image/cl"
   :depends-on ("graven-image")
   :description "Binding CL functions/macros to Graven Image counterparts."
   :components ((:file "source/cl")))
+
+(defsystem "graven-image/tests"
+  :depends-on ("graven-image" "lisp-unit2")
+  :serial t
+  :pathname "tests/"
+  :components ((:file "package")
+               (:file "tests"))
+  :perform (test-op (o c)
+                    (if *debugger-hook*
+                        (symbol-call :lisp-unit2 :run-tests
+                                     :package :graven-image/tests
+                                     :run-contexts (find-symbol "WITH-SUMMARY-CONTEXT" :lisp-unit2))
+                        (let* ((*debugger-hook* nil)
+                               (test-results (symbol-call :lisp-unit2 :run-tests
+                                                          :package :graven-image/tests
+                                                          :run-contexts (find-symbol "WITH-SUMMARY-CONTEXT" :lisp-unit2))))
+                          (when (or
+                                 (uiop:symbol-call :lisp-unit2 :failed test-results)
+                                 (uiop:symbol-call :lisp-unit2 :errors test-results))
+                            ;; Arbitrary but hopefully recognizable exit code.
+                            (quit 18))))))
