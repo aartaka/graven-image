@@ -21,6 +21,18 @@
      (reduce #'append (uiop:ensure-list packages)
              :key (lambda (p) (apply old-apropos-list string p args))))))
 
+(-> all-docs (symbol))
+(defun all-docs (sym)
+  ;; Not including compiler-macro, setf, and method-combination,
+  ;; because yes.
+  (uiop:strcat (ignore-errors (documentation sym 'variable))
+               #\Newline
+               (ignore-errors (documentation sym 'function))
+               #\Newline
+               (ignore-errors (documentation sym 'type))
+               #\Newline
+               (ignore-errors (documentation sym 'structure))))
+
 (-> %apropos-list (string (or package symbol list) boolean boolean) list)
 (defun %apropos-list (string packages external-only docs-too)
   (loop for package in packages
