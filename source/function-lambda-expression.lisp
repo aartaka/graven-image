@@ -240,15 +240,23 @@
             (file (when sources
                     (sb-introspect:definition-source-pathname (first sources))))
             (form-path (when sources
-                         (sb-introspect:definition-source-form-path (first sources)))))
+                         (sb-introspect:definition-source-form-path (first sources))))
+            (char-offset (when sources
+                           (sb-introspect:definition-source-character-offset (first sources)))))
        ;; FIXME: Not using form number there, because it's too involved
        ;; and likely means some macro magic which will bork the lambda
        ;; expression anyway.
-       (when (and form-path file)
+       (cond
+        ((and char-offset file)
+         (with-open-file (f (translate-logical-pathname file))
+           (loop repeat char-offset
+                 do (read-char f nil nil))
+           (maybe-unsafe-read f)))
+        ((and form-path file)
          (with-open-file (f (translate-logical-pathname file))
            (loop repeat (first (uiop:ensure-list form-path))
                  do (maybe-unsafe-read f))
-           (maybe-unsafe-read f))))
+           (maybe-unsafe-read f)))))
      #-(or ccl ecl sbcl)
      (warn "source fetching is not implemented for this CL, help in implementing it!"))
    (when force
