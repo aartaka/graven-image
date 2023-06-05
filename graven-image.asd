@@ -11,7 +11,7 @@
   :version "0.0.1"
   :serial t
   :pathname "source/"
-  :depends-on ("closer-mop")
+  :depends-on ("closer-mop" "trivial-gray-streams")
   :components ((:file "package")
                (:file "graven-image")
                (:file "function-lambda-expression")
