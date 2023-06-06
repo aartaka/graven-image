@@ -30,7 +30,10 @@
                    (uiop:split-string string :separator (string #\Newline))))
                (print-output (output formatter)
                  (dolist (line (lines output))
-                   (unless (equal (string #\Newline) line)
+                   (unless (every (lambda (c)
+                                    ;; Part of Serapeum whitespace chars.
+                                    (member c '(#\Space #\Tab #\Linefeed #\Return #\Newline)))
+                                  line)
                      (format-both formatter line)))))
         (setf *dribble-pathname* pathname
               *dribble-stream* (open *dribble-pathname*
