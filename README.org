@@ -233,11 +233,6 @@ Dribble the REPL session to =pathname=. Unlike the implementation-specific =drib
 
 Beware: using any interactive function (like =inspect= etc.) breaks the dribble REPL. But then, it's unlikely one'd want to record interactive session into a dribble file.
 
-** TODO =inspect*= (generic-function) =object &key stream omit-empty &allow-other-keys -> (or alist string (values))=
-*** TODO =inspect-object*= (generic-function) =object &key omit-empty &allow-other-keys -> alist=
-
-** TODO =ed*= (function)
-
 * Roadmap
 - [ ] Add:
   - [ ] =inspect*=,
