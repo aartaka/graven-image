@@ -21,10 +21,11 @@
                      (decode-universal-time (get-universal-time))
                    (format-both "~&;;; ~a dribbling to ~A on ~2,'0d:~2,'0d:~2,'0d ~
 ~[~;Jan~;Feb~;Mar~;Apr~;May~;Jun~;Jul~;Aug~;Sep~;Oct~;Nov~;Dec~] ~
-~a~[th~;st~;nd~;rd~:;th~] ~a.~%"
+~a~[th~;st~;nd~;rd~:;th~] ~a (on ~a ~a).~%"
                                 action
                                 (uiop:native-namestring (translate-logical-pathname *dribble-pathname*))
-                                hour minute second month date (mod date 10) year)))
+                                hour minute second month date (mod date 10) year
+                                (lisp-implementation-type) (lisp-implementation-version))))
                (lines (string)
                  (unless (uiop:emptyp string)
                    (uiop:split-string string :separator (string #\Newline))))
