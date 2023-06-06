@@ -322,6 +322,11 @@ out."))
     (:count ,(hash-table-count object))
     (:rehash-size ,(hash-table-rehash-size object))
     (:rehash-threshold ,(hash-table-rehash-threshold object))
+    #+(or sbcl ecl ccl)
+    (:weakness
+     #+ecl ,(si:hash-table-weakness object)
+     #+sbcl ,(sb-impl::hash-table-weakness object)
+     #+ccl ,(ccl:hash-table-weak-p object))
     ,@(loop for key being the hash-key in object
               using (hash-value val)
             when (scalar-p key)
