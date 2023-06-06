@@ -13,8 +13,8 @@
   (typep object '(or symbol character string real)))
 
 (defun id (object)
-  #+sbcl (sb-kernel::get-lisp-obj-address object)
-  #+ccl (ccl::%address-of object)
+  #+sbcl (sb-kernel:get-lisp-obj-address object)
+  #+ccl (ccl:%address-of object)
   #+ecl (si:pointer object)
   #+abcl (system::identity-hash-code object)
   #+clisp (system::address-of object)
