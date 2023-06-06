@@ -222,6 +222,17 @@ Concise and informative description of =object= to the
 =stream=. Useful information from most of the implementations
 tested—united into one description header.
 
+** =dribble*= (generic-function)
+
+Signature:
+#+begin_src lisp
+dribble* &optional pathname (if-exists :append)
+#+end_src
+
+Dribble the REPL session to =pathname=. Unlike the implementation-specific =dribble=, this one formats all of the session as =load=-able Lisp file fully reproducing the session. So all the input forms are printed verbatim, and all the outputs are commented out.
+
+Beware: using any interactive function (like =inspect= etc.) breaks the dribble REPL. But then, it's unlikely one'd want to record interactive session into a dribble file.
+
 ** TODO =inspect*= (generic-function) =object &key stream omit-empty &allow-other-keys -> (or alist string (values))=
 *** TODO =inspect-object*= (generic-function) =object &key omit-empty &allow-other-keys -> alist=
 
@@ -235,7 +246,7 @@ tested—united into one description header.
   - [ ] =ed*=.
   - [ ] =invoke-debugger*=.
 - [ ] Improve
-  - [ ] =dribble=,
+  - [X] =dribble=,
   - [ ] =step=,
   - [ ] =trace=/=untrace=,
   - [ ] =documentation=?
