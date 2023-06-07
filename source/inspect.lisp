@@ -4,6 +4,7 @@
 (in-package :graven-image)
 
 ;; Stolen from Nyxt:
+(-> scalar-p (t) boolean)
 (defun scalar-p (object)
   "Return true if OBJECT is of one of the following types:
 - symbol,
@@ -12,6 +13,7 @@
 - non-complex number."
   (typep object '(or symbol character string real)))
 
+(-> id (t) integer)
 (defun id (object)
   #+sbcl (sb-kernel:get-lisp-obj-address object)
   #+ccl (ccl:%address-of object)
@@ -61,11 +63,9 @@ modify the property. For slots, this setter will likely be setting the
 When STRIP-NULL, properties with null VALUE and SETTER are filtered
 out."))
 
+(-> symbol-visibility (symbol) (or null (member :inherited :external :internal)))
 (defun symbol-visibility (symbol)
   (nth-value 1 (find-symbol (symbol-name symbol) (symbol-package symbol))))
-
-(defun cons-to-list (cons)
-  (list (car cons) (cdr cons)))
 
 (defmethod properties* ((object symbol) &key &allow-other-keys)
   `((:name ,(symbol-name object))
@@ -98,6 +98,7 @@ out."))
         `((:package-binding ,(ignore-errors (find-package object)))))
     (:plist ,(symbol-plist object))))
 
+(-> dotted-p (list) boolean)
 (defun dotted-p (cons)
   (not (null (cdr (last cons)))))
 
@@ -155,7 +156,8 @@ out."))
 
 #+sbcl
 (defun remove-sbcl-props-from (object &rest names-to-remove)
-  (mapcar #'cons-to-list
+  (mapcar #'(lambda (cons)
+              (list (car cons) (cdr cons)))
           (set-difference
            (nth-value 2 (sb-impl::inspected-parts object))
            names-to-remove
@@ -177,19 +179,23 @@ out."))
              (t (ccl:uvref object (symbol-value prop))))))
    props))
 
+(-> all-symbols ((or package symbol)) list)
 (defun all-symbols (package)
   (loop for sym being the present-symbol in package
         collect sym))
 
+(-> external-symbols ((or package symbol)) list)
 (defun external-symbols (package)
   (loop for sym being the external-symbol in package
         collect sym))
 
+(-> internal-symbols ((or package symbol)) list)
 (defun internal-symbols (package)
   (loop for sym being the present-symbol in package
         when (eql (symbol-visibility sym) :internal)
           collect sym))
 
+(-> inherited-symbols ((or package symbol)) list)
 (defun inherited-symbols (package)
   (loop for sym being the present-symbol in package
         when (eql (symbol-visibility sym) :inherited)
@@ -403,10 +409,12 @@ out."))
        object
        'sb-impl::file 'sb-impl::element-type 'sb-impl::dual-channel-p 'sb-impl::pathname)))
 
+(-> object-slots ((or standard-object structure-object)) list)
 (defun object-slots (object)
   (mapcar #'closer-mop:slot-definition-name
           (closer-mop:class-slots (class-of object))))
 
+(-> inspect-slots ((or standard-object structure-object)) list)
 (defun inspect-slots (object)
   (append
    (mapcar (lambda (name)
@@ -457,6 +465,7 @@ out."))
        object
        'sb-pcl::name 'sb-pcl::methods 'sb-pcl::%method-combination "Lambda-list" "Ftype")))
 
+(-> restart-interactive (restart))
 (defun restart-interactive (restart)
   (declare (ignorable restart))
   #+ccl (ccl::%restart-interactive restart)
@@ -623,7 +632,7 @@ not suitable for the `properties*' key-value format."))
           (second (function-type* object))
           (third (function-type* object))
           (documentation object t)))
-
+(-> object-description ((or standard-object structure-object) (or stream boolean)))
 (defun object-description (object stream)
   (format stream "~s~@[
 ~a~]"
