@@ -28,6 +28,7 @@ ABCL:
 - Prompt gets broken.
 - Multiple values get reduced to mere single value.
 + Includes the REPL prompt.
++ Creates a custom REPL exclusively for dribbling.
 
 CLISP:
 + Doesn't include the initial (dribble ...) form.
