@@ -52,8 +52,7 @@
                               (search string (all-docs sym) :test #'string-equal)))
                      do (pushnew sym symbols))))
 
-(-> apropos-list* ((or string symbol) &optional (or package symbol list) boolean boolean))
-(defun apropos-list* (string &optional (packages (list-all-packages)) external-only docs-too)
+(define-generic apropos-list* (string &optional (packages (list-all-packages)) external-only docs-too)
   "Search for symbols in PACKAGES with names (+docs when DOCS-TOO) containing STRING.
 Sorts these by the frequency of STRING appearance in the respective
 name/documentation.
@@ -92,8 +91,7 @@ Influenced by:
        (warn "apropos-list* is not implemented for this CL, help in implementing it!")
        (reduce-old-apropos string packages)))))
 
-(-> apropos* ((or string symbol) &optional (or package symbol list) boolean boolean))
-(defun apropos* (string &optional package external-only docs-too)
+(define-generic apropos* (string &optional package external-only docs-too)
   "Print a list of PACKAGE symbols with names (+docs when DOCS-TOO) containing STRING.
 
 In case the symbol is naming several things (variable, macro,
@@ -169,7 +167,6 @@ Note that you can influence the printout by let-bindings:
 
 ;;; Helpers
 
-(-> apropod* ((or string symbol) &optional (or package symbol list) boolean))
-(defun apropod* (string &optional package external-only)
+(define-generic apropod* (string &optional package external-only)
   "A version of `apropos*', but with documentation search by default."
   (apropos* string package external-only t))

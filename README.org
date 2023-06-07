@@ -44,7 +44,10 @@ The functions that Graven Image exposes come in two flavors:
   =describe=)—in =graven-image= system.
 - Functions shadowing CL symbols in =graven-image/cl= system.
 
-** =y-or-n-p*=, =yes-or-no-p*= (function)
+All of the functions exposed by Graven Image are generics, so one can
+easily define =:around= and other qualified methods for them.
+
+** =y-or-n-p*=, =yes-or-no-p*= (generic functions)
 
 Signature:
 #+begin_src lisp
@@ -58,9 +61,9 @@ Improvements are:
   allowing for "nope" or "ay" to be valid responses too.
 - Both functions mean the same now, because it makes no sense in
   differentiating them.
-- No beeps.
+- No beeps (just define a =:before= method to add beeps if you like 'em).
 
-** =apropos-list*=, =apropos*= (function)
+** =apropos-list*=, =apropos*= (generic functions)
 
 Signature:
 #+begin_src lisp
@@ -92,7 +95,7 @@ SB-IMPL::HEAP-MAXIMUM [FUNCTION (HEAP)]
 ...
 #+end_src
 
-** =function-lambda-expression*= (generic-function)
+** =function-lambda-expression*= (generic function)
 
 Signature:
 #+begin_src lisp
@@ -130,7 +133,7 @@ Which means:
 
 *** Return values
 
-Things that =function-lambda-expression= now returns are:
+Things that =function-lambda-expression*= now returns are:
 - Lambda expression.
   - For lambda functions, their source.
   - For regular functions, their =defun= turned into a =lambda=.
@@ -191,7 +194,7 @@ of the both worlds: timing data and return values. This flexibility
 enables =time*=, with its requirements of printing the data and
 returning the original values at the same time.
 
-** =describe*= (function)
+** =describe*= (generic function)
 
 Signature:
 #+begin_src lisp
@@ -210,19 +213,31 @@ As a homage to the original =describe=, Graven Image one respects the
 ignore these too, passing T to =ignore-methods= should be enough to
 get consistent Graven Image descriptions for all the objects.
 
-*** =graven-image:properties= (generic-function) =object &key strip-null &allow-other-keys=
+*** =graven-image:properties*= (generic function)
+
+Signature:
+#+begin_src lisp
+properties* object &key strip-null &allow-other-keys
+#+end_src
+
 Returns an undotted alist of properties for the =object=. Custom
 properties provided by Graven Image are named with keywords, while the
 implementation-specific ones use whatever the implementation
 uses. Arrays and hash-tables are inlined into properties to allow
 indexing these right from the inspector.
 
-*** =graven-image:description= (generic-function) =object &optional stream=
+*** =graven-image:description*= (generic function)
+
+Signature:
+#+begin_src lisp
+description* =object &optional stream
+#+end_src
+
 Concise and informative description of =object= to the
 =stream=. Useful information from most of the implementations
 tested—united into one description header.
 
-** =dribble*= (generic-function)
+** =dribble*= (generic function)
 
 Signature:
 #+begin_src lisp

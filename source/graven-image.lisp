@@ -39,3 +39,9 @@ unsafer."
   "Only funcall MAYBE-FN on ARGS when it's actually a function."
   (when (functionp maybe-fn)
     (apply maybe-fn args)))
+
+(defmacro define-generic (name (&rest method-args) &body (documentation . body))
+  `(defgeneric ,name (,@(mapcar #'first (mapcar #'uiop:ensure-list method-args)))
+     (:method (,@method-args)
+       ,@body)
+     (:documentation ,documentation)))

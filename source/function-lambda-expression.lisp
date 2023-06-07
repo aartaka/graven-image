@@ -198,72 +198,73 @@
 (defun function-source-expression (function force)
   (declare (ignorable function force))
   (or
-   (labels ((maybe-unsafe-read (stream)
-              (when stream
-                (handler-case
-                    (let ((*read-eval* nil))
-                      (read-nolocks stream))
-                  (reader-error ()
-                    (when force
-                      (ignore-errors
-                       (read-nolocks stream)))))))
-            #-sbcl ; unused on SBCL
-            (read-from-position (file position)
-              (when (and position file)
-                (ignore-errors
-                 (with-open-file (f file)
-                   (loop repeat position
-                         do (read-char f nil nil))
-                   (maybe-unsafe-read f))))))
-     #+ccl
-     (let* ((sources (ccl:find-definition-sources function))
-            ;; Generic function defs don't return the generic definition
-            ;; itself, only the method defs.
-            (note (when (= 1 (length sources)) ; Method defs are useless.
-                    (find #'ccl:source-note-p (first sources))))
-            (position (when note
-                        (ccl:source-note-start-pos note)))
-            (file (when note
-                    (translate-logical-pathname (ccl:source-note-filename note)))))
-       (read-from-position file position))
-     #+ecl
-     (multiple-value-bind (file position)
-         (ext:compiled-function-file function)
-       (when (and file position)
-         (read-from-position (translate-logical-pathname file) position)))
-     #+sbcl
-     (let* ((sources
-              (ignore-errors
-               (or (sb-introspect:find-definition-sources-by-name (function-name-symbol function) :function)
-                   (sb-introspect:find-definition-sources-by-name (function-name-symbol function) :generic-function)
-                   (sb-introspect:find-definition-sources-by-name (function-name-symbol function) :macro))))
-            (file (when sources
-                    (sb-introspect:definition-source-pathname (first sources))))
-            (form-path (when sources
-                         (sb-introspect:definition-source-form-path (first sources))))
-            (char-offset (when sources
-                           (sb-introspect:definition-source-character-offset (first sources)))))
-       ;; FIXME: Not using form number there, because it's too involved
-       ;; and likely means some macro magic which will bork the lambda
-       ;; expression anyway.
-       (cond
-        ((and char-offset file)
-         (with-open-file (f (translate-logical-pathname file))
-           (loop repeat char-offset
-                 do (read-char f nil nil))
-           (maybe-unsafe-read f)))
-        ((and form-path file)
-         (with-open-file (f (translate-logical-pathname file))
-           (loop repeat (first (uiop:ensure-list form-path))
-                 do (maybe-unsafe-read f))
-           (maybe-unsafe-read f)))))
-     #-(or ccl ecl sbcl)
-     (warn "source fetching is not implemented for this CL, help in implementing it!"))
+   (handler-case
+       (labels ((maybe-unsafe-read (stream)
+                  (when stream
+                    (handler-case
+                        (let ((*read-eval* nil))
+                          (read-nolocks stream))
+                      (reader-error ()
+                        (when force
+                          (ignore-errors
+                           (read-nolocks stream)))))))
+                #-sbcl                  ; unused on SBCL
+                (read-from-position (file position)
+                  (when (and position file)
+                    (ignore-errors
+                     (with-open-file (f file)
+                       (loop repeat position
+                             do (read-char f nil nil))
+                       (maybe-unsafe-read f))))))
+         #+ccl
+         (let* ((sources (ccl:find-definition-sources function))
+                ;; Generic function defs don't return the generic definition
+                ;; itself, only the method defs.
+                (note (when (= 1 (length sources)) ; Method defs are useless.
+                        (find #'ccl:source-note-p (first sources))))
+                (position (when note
+                            (ccl:source-note-start-pos note)))
+                (file (when note
+                        (ignore-errors (translate-logical-pathname (ccl:source-note-filename note))))))
+           (read-from-position file position))
+         #+ecl
+         (multiple-value-bind (file position)
+             (ext:compiled-function-file function)
+           (when (and file position)
+             (read-from-position (translate-logical-pathname file) position)))
+         #+sbcl
+         (let* ((sources
+                  (ignore-errors
+                   (or (sb-introspect:find-definition-sources-by-name (function-name-symbol function) :function)
+                       (sb-introspect:find-definition-sources-by-name (function-name-symbol function) :generic-function)
+                       (sb-introspect:find-definition-sources-by-name (function-name-symbol function) :macro))))
+                (file (when sources
+                        (sb-introspect:definition-source-pathname (first sources))))
+                (form-path (when sources
+                             (sb-introspect:definition-source-form-path (first sources))))
+                (char-offset (when sources
+                               (sb-introspect:definition-source-character-offset (first sources)))))
+           ;; FIXME: Not using form number there, because it's too involved
+           ;; and likely means some macro magic which will bork the lambda
+           ;; expression anyway.
+           (cond
+             ((and char-offset file)
+              (with-open-file (f (translate-logical-pathname file))
+                (loop repeat char-offset
+                      do (read-char f nil nil))
+                (maybe-unsafe-read f)))
+             ((and form-path file)
+              (with-open-file (f (translate-logical-pathname file))
+                (loop repeat (first (uiop:ensure-list form-path))
+                      do (maybe-unsafe-read f))
+                (maybe-unsafe-read f)))))
+         #-(or ccl ecl sbcl)
+         (warn "source fetching is not implemented for this CL, help in implementing it!"))
+     (error () nil))
    (when force
      (function-source-expression-fallback function))))
 
-(-> function-lambda-expression* ((or function symbol) &optional boolean))
-(defun function-lambda-expression* (function &optional force)
+(define-generic function-lambda-expression* (function &optional force)
   "Returns information about FUNCTION:
 - The defining lambda, suitable for `compile' (or the best guess at
   getting one, if the FUNCTION is not a regular one).
@@ -288,13 +289,13 @@ useful to fetch the arglist or body, though. Use at your own risk!"
            (when (listp definition)
              (transform-definition-to-lambda definition force)))
        (cond
-        ;; T is suspicious.
-        ((eq closure-p t) (function-closure-p function))
-        #+abcl
-        (closure-p (function-closure-p function))
-        #-abcl
-        (closure-p closure-p)
-        (t nil))
+         ;; T is suspicious.
+         ((eq closure-p t) (function-closure-p function))
+         #+abcl
+         (closure-p (function-closure-p function))
+         #-abcl
+         (closure-p closure-p)
+         (t nil))
        (or name
            (function-name function)
            (transform-definition-to-name definition))
@@ -307,8 +308,7 @@ useful to fetch the arglist or body, though. Use at your own risk!"
 
 ;;; Helpers
 
-(-> function-lambda-list* ((or function symbol)))
-(defun function-lambda-list* (function)
+(define-generic function-lambda-list* (function)
   "Return lambda list of the FUNCTION.
 Depends on `function-lambda-expression*'."
   (let ((expression (function-lambda-expression* function)))
@@ -316,15 +316,13 @@ Depends on `function-lambda-expression*'."
         (second expression)
         (ignore-errors (function-arglist function (function-name* function))))))
 
-(-> function-name* ((or function symbol)))
-(defun function-name* (function)
+(define-generic function-name* (function)
   "Get the name of the FUNCTION.
 It's not guaranteed that the returned value is a symbol.
 Depends on `function-lambda-expression*'."
   (nth-value 2 (function-lambda-expression* function)))
 
-(-> function-type* ((or function symbol)))
-(defun function-type* (function)
+(define-generic function-type* (function)
   "Get the ftype of the FUNCTION.
 The return value is non-nil only on some implementations.
 Depends on `function-lambda-expression*'."

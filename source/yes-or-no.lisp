@@ -34,20 +34,17 @@ answers.")
           do (print-prompt)
           finally (return value))))
 
-(defgeneric y-or-n-p* (&optional control &rest arguments)
-  (:method (&optional control &rest arguments)
-    (apply #'%y-or-n-p control arguments))
-  (:documentation "Return a boolean for whether the user input is affirmative/negative.
+(define-generic y-or-n-p* (&optional control &rest arguments)
+  "Return a boolean for whether the user input is affirmative/negative.
 Prompt for input again if the answer is neither.
 
 Influenced by:
 - `*query-io*' for the input/output.
-- `*yes-or-no-options*' for the possible answer values."))
+- `*yes-or-no-options*' for the possible answer values."
+  (apply #'%y-or-n-p control arguments))
 
-(defgeneric yes-or-no-p* (&optional control &rest arguments)
-  (:method (&optional control &rest arguments)
-    (apply #'%y-or-n-p control arguments))
-  (:documentation "Return a boolean for whether the user input is affirmative/negative.
+(define-generic yes-or-no-p* (&optional control &rest arguments)
+  "Return a boolean for whether the user input is affirmative/negative.
 Prompt for input again if the answer is neither.
 
 Influenced by:
@@ -61,4 +58,5 @@ urgent, but attracting user attention is not guaranteed to solve the
 urgency anyway—one might ignore the beeps altogether.
 
 If you want beeps, though, you can always define a :before/:around
-method that beeps as much as you want it to :)"))
+method that beeps as much as you want it to :)"
+  (apply #'%y-or-n-p control arguments))
