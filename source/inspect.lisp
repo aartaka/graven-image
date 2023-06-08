@@ -806,6 +806,7 @@ Possible inputs are:
               (:help ,#'help "Print a list of commands")
               (:length ,#'width "(:LENGTH NEW-LENGTH) Change the page size")
               (:width ,#'width "(:WIDTH NEW-LENGTH) Change the page size")
+              (:widen ,#'width "(:WIDEN NEW-LENGTH) Change the page size")
               (:next-page ,#'next-page "Show the next page of properties (if any)")
               (:previous-page ,#'previous-page "Show the previous page of properties (if any)")
               (:home ,#'home "Scroll back to the first page of properties")
