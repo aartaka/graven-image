@@ -694,3 +694,169 @@ Non-trivial, because some of the PROPERTIES have integer keys."
             collect (first indices)
             and do (setf indices (rest indices)))))
 
+(defun internal-inspect* (object strip-null)
+  (let* ((properties (properties* object :strip-null strip-null))
+         (prop-length (length properties))
+         ;; VT-100-ish pages, unless rebound.
+         (page-length (or *print-length* 20))
+         (indices (property-indices properties))
+         (offset 0)
+         (next-offset (min (+ offset page-length) prop-length))
+         commands)
+    (labels ((print-props ()
+               (loop for i from offset below next-offset
+                     for index = (elt indices i)
+                     for (key value setter) = (elt properties i)
+                     do (let ((*package* (if (symbolp key)
+                                             (symbol-package key)
+                                             *package*)))
+                          (format *query-io* "~&~@[[~d]~]~:[ ~s~;~*~] =~@[setfable=~*~] ~s"
+                                  index (integerp key) key setter value)))
+               (when (< next-offset prop-length)
+                 (format *query-io* "~&~%There's ~d more properties."
+                         (- prop-length next-offset))))
+             (find-by-key (key commands properties)
+               "Find the KEY in COMMANDS/PROPERTIES by its prefix/value.
+Returns two values:
+- The property/command matching the KEY, as a list.
+- Whether the found thing is a command (= member of COMMANDS).
+
+Search is different for different KEY types:
+- Integer: only search PROPERTIES by their indices.
+- SYMBOL: search both commands and properties, but only by symbol
+  names.
+- Anything else: search literal object."
+               (typecase key
+                 (integer (values (elt properties (position key indices)) nil))
+                 (symbol
+                  (loop for match in (append commands properties)
+                        for (match-key) = match
+                        when (and (symbolp match-key)
+                                  (uiop:string-prefix-p (symbol-name key) (symbol-name match-key)))
+                          do (return (values match (member match commands)))))
+                 (t (find key properties :key #'first :test #'equal))))
+             (next-page ()
+               (if (= next-offset prop-length)
+                   (format *query-io* "~&Nowhere to scroll, already at the last page.")
+                   (setf offset next-offset
+                         next-offset (min (+ offset page-length) prop-length)))
+               (print-props))
+             (previous-page ()
+               (if (zerop offset)
+                   (format *query-io* "~&Nowhere to scroll, already at the first page.")
+                   (setf next-offset offset
+                         offset (max 0 (- offset page-length))))
+               (print-props))
+             (home ()
+               (if (zerop offset)
+                   (format *query-io* "~&Nowhere to scroll, already at the first page.")
+                   (setf offset 0
+                         next-offset (min (+ offset page-length) prop-length)))
+               (description* object *query-io*)
+               (print-props))
+             (width (new)
+               (setf page-length new))
+             (set-property (key &optional new-value)
+               (let ((prop (find-by-key key nil properties)))
+                 (cond
+                   ((and prop
+                         (third prop))
+                    (print (funcall (third prop) new-value (second prop))))
+                   (prop
+                    (format *query-io* "~&Cannot modify this property."))
+                   (t
+                    (format *query-io* "~&No such property found.")))
+                 (when (third prop)
+                   (funcall (third prop) new-value (second prop)))))
+             (self ()
+               (description* object *query-io*)
+               (print-props))
+             (exit ()
+               (throw 'topmost-inspect* (values)))
+             (up ()
+               (return-from internal-inspect* (values)))
+             (istep (key)
+               (internal-inspect*
+                (second (find-by-key key nil properties))
+                strip-null))
+             (eval-form (form)
+               (print (eval form) *query-io*))
+             (help ()
+               (format *query-io*
+                       "~&This is an interactive inspector for ~a~%~
+~&Available commands are:
+~:{~&~a ~15t~*~a~}
+
+Possible inputs are:
+- Mere symbols: run one of the commands above, matching the symbol.
+  - If there's no matching command, then match against properties.
+    - If nothing matches, evaluate the symbol.
+- Integer: find the property indexed by this integer.
+  - If there are none, evaluate the integer.
+- Any other atom: find the property with this atom as a key.
+  - Evaluate it otherwise.
+- S-expression: match the list head against commands and properties,
+  as above.
+  - If the list head does not match anything, evaluate the
+    s-expression.~%"
+                       object commands)))
+      (description* object *query-io*)
+      (print-props)
+      ;; Rebinding the local variable to have proper references to functions.
+      (setf commands
+            `((:? ,#'help "Print a list of commands")
+              (:help ,#'help "Print a list of commands")
+              (:length ,#'width "(:LENGTH NEW-LENGTH) Change the page size")
+              (:width ,#'width "(:WIDTH NEW-LENGTH) Change the page size")
+              (:next-page ,#'next-page "Show the next page of properties (if any)")
+              (:previous-page ,#'previous-page "Show the previous page of properties (if any)")
+              (:home ,#'home "Scroll back to the first page of properties")
+              (:reset ,#'home "Scroll back to the first page of properties")
+              (:top ,#'home "Scroll back to the first page of properties")
+              ;; (:history history "Show the current inspector path")
+              ;; (:path history "Show the current inspector path")
+              (:set ,#'set-property "(:SET PROPERTY VALUE) Set the PROPERTY to VALUE.")
+              (:modify ,#'set-property "(:MODIFY PROPERTY VALUE) Set the PROPERTY to VALUE.")
+              (:this ,#'self "Show the currently inspected object")
+              (:self ,#'self "Show the currently inspected object")
+              (:redisplay ,#'self "Show the currently inspected object")
+              (:show ,#'self "Show the currently inspected object")
+              (:current ,#'self "Show the currently inspected object")
+              (:again ,#'self "Show the currently inspected object")
+              (:quit ,#'exit "Exit the inspector")
+              (:exit ,#'exit "Exit the inspector")
+              (:up ,#'up "Move to the previous/upper inspected object or exit the inspector")
+              (:pop ,#'up "Move to the previous/upper inspected object or exit the inspector")
+              (:back ,#'up "Move to the previous/upper inspected object or exit the inspector")
+              (:inspect ,#'istep "(:INSPECT KEY) Inspect the object under KEY")
+              (:istep ,#'istep "(:ISTEP KEY) Inspect the object under KEY")
+              (:evaluate ,#'eval-form "(:EVALUATE FORM) Evaluate the FORM")))
+      (loop
+        (format *query-io* "~&i> ")
+        (finish-output *query-io*)
+        (let ((input (read *query-io*)))
+          (multiple-value-bind (result command-p)
+              (find-by-key (first (uiop:ensure-list input)) commands properties)
+            (cond
+              ((and result command-p)
+               (apply (second result)
+                      (mapcar #'eval (rest (uiop:ensure-list input)))))
+              ((and result (not command-p))
+               (internal-inspect* (second result) strip-null))
+              (t (dolist (val (multiple-value-list (eval input)))
+                   (print val *query-io*))))))))))
+
+(define-generic inspect* (object &optional (strip-null t))
+  "Interactively query the OBJECT.
+
+OBJECT summary and properties are printed to and
+expressions/commands/indices/property names are read from
+`*query-io*'.
+
+Properties are paginated, with commands available to scroll,
+
+Influenced by:
+- `*query-io*'.
+- `*print-length*' for page size."
+  (catch 'topmost-inspect*
+    (internal-inspect* object strip-null)))

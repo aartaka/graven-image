@@ -236,6 +236,72 @@ description* =object &optional stream
 Concise and informative description of =object= to the
 =stream=. Useful information from most of the implementations
 tested—united into one description header.
+** =inspect*= (generic function)
+
+Signature:
+#+begin_src lisp
+inspect* object &optional strip-null
+#+end_src
+
+New'n'shiny =inspect*= has:
+- Most commands found in other implementation, with familiar names.
+- Abbreviations like =H -> HELP= (inspired by SBCL).
+- Ability to set object properties with =(:set key value)= command
+  (inspired by CCL).
+- Baked-in pagination with ways to scroll it (=:next-page=,
+  =:previous-page=, =:home=) and change it (=:length=).
+- Property indexing by both integer indices and property names (with
+  abbreviations for them too!).
+- Ability to ignore =nil= properties with =strip-null= argument
+  (inspired by SBCL). On by default!
+- And the ability to evaluate arbitrary expressions (with =:evaluate=
+  command or simply by inputting something that doesn't match any
+  command).
+
+And here's a help menu of the new =inspect*= (in this case, inspecting
+=*readtable*=), just to get you teased:
+#+begin_quote
+This is an interactive inspector for #<READTABLE {1000022513}>
+Available commands are:
+?              Print a list of commands
+HELP           Print a list of commands
+LENGTH         (:LENGTH NEW-LENGTH) Change the page size
+WIDTH          (:WIDTH NEW-LENGTH) Change the page size
+NEXT-PAGE      Show the next page of properties (if any)
+PREVIOUS-PAGE  Show the previous page of properties (if any)
+HOME           Scroll back to the first page of properties
+RESET          Scroll back to the first page of properties
+TOP            Scroll back to the first page of properties
+SET            (:SET PROPERTY VALUE) Set the PROPERTY to VALUE.
+MODIFY         (:MODIFY PROPERTY VALUE) Set the PROPERTY to VALUE.
+THIS           Show the currently inspected object
+SELF           Show the currently inspected object
+REDISPLAY      Show the currently inspected object
+SHOW           Show the currently inspected object
+CURRENT        Show the currently inspected object
+AGAIN          Show the currently inspected object
+QUIT           Exit the inspector
+EXIT           Exit the inspector
+UP             Move to the previous/upper inspected object or exit the inspector
+POP            Move to the previous/upper inspected object or exit the inspector
+BACK           Move to the previous/upper inspected object or exit the inspector
+INSPECT        (:INSPECT KEY) Inspect the object under KEY
+ISTEP          (:ISTEP KEY) Inspect the object under KEY
+EVALUATE       (:EVALUATE FORM) Evaluate the FORM
+
+Possible inputs are:
+- Mere symbols: run one of the commands above, matching the symbol.
+  - If there's no matching command, then match against properties.
+    - If nothing matches, evaluate the symbol.
+- Integer: find the property indexed by this integer.
+  - If there are none, evaluate the integer.
+- Any other atom: find the property with this atom as a key.
+  - Evaluate it otherwise.
+- S-expression: match the list head against commands and properties,
+  as above.
+  - If the list head does not match anything, evaluate the
+    s-expression.
+#+end_quote
 
 ** =dribble*= (generic function)
 
@@ -250,7 +316,7 @@ Beware: using any interactive function (like =inspect= etc.) breaks the dribble 
 
 * Roadmap
 - [ ] Add:
-  - [ ] =inspect*=,
+  - [X] =inspect*=,
   - [X] =describe*=,
   - [X] =time*=,
   - [ ] =ed*=.
