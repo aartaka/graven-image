@@ -800,8 +800,6 @@ Possible inputs are:
   - If the list head does not match anything, evaluate the
     s-expression.~%"
                        object commands)))
-      (description* object *query-io*)
-      (print-props)
       ;; Rebinding the local variable to have proper references to functions.
       (setf commands
             `((:? ,#'help "Print a list of commands")
@@ -832,6 +830,8 @@ Possible inputs are:
               (:istep ,#'istep "(:ISTEP KEY) Inspect the object under KEY")
               (:evaluate ,#'eval-form "(:EVALUATE FORM) Evaluate the FORM")))
       (loop
+        (description* object *query-io*)
+        (print-props)
         (format *query-io* "~&i> ")
         (finish-output *query-io*)
         (let ((input (read *query-io*)))
@@ -859,4 +859,7 @@ Influenced by:
 - `*query-io*'.
 - `*print-length*' for page size."
   (catch 'topmost-inspect*
-    (internal-inspect* object strip-null)))
+    (loop
+      (internal-inspect* object strip-null)
+      ;; This is to disallow :POP exiting the inspector.
+      (format *query-io* "~&Cannot pop from the toplevel inspector, use :Q instead."))))
