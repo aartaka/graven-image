@@ -579,9 +579,9 @@ not suitable for the `properties*' key-value format."))
                 collect (list key val))))
 
 (defmethod description* ((object array) &optional stream) ; string too
-  (format stream "~{~a~^ ~}[~d~@[/~d~]]~@[ ~s~]"
+  (format stream "~{~a~^ ~}[~{~d~^×~}~@[/~d~]]~@[ ~s~]"
           (uiop:ensure-list (array-element-type object))
-          (length object) (ignore-errors (fill-pointer object))
+          (array-dimensions object) (ignore-errors (fill-pointer object))
           object))
 
 (defmethod description* ((object stream) &optional stream)
