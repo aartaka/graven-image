@@ -559,7 +559,8 @@ not suitable for the `properties*' key-value format."))
           object))
 
 (defmethod description* ((object hash-table) &optional stream)
-  (format stream "[~a, ~d/~d]~:[ ~s~;~*~]"
+  (format stream "[~a, ~d/~d]~:[
+ ~s~;~*~]"
           (hash-table-test object)
           (hash-table-count object) (hash-table-size object)
           (zerop (hash-table-count object))
