@@ -34,7 +34,20 @@
        (system:environment-variables environment))
       (environment environment)
       (t nil)))
-  #-(or ccl cmucl scl sbcl abcl)
+  #+allegro
+  (let ((ht (sys::ha$h-table-ht
+             (slot-value
+              (sys::augmentable-environment-base
+               (nth-value 1 (funcall old-function-lambda-expression function)))
+              'system::variable-hashtable))))
+    (typecase ht
+      (cons
+       (cons (car ht) (caadr (cadadr ht))))
+      (hash-table
+       (loop for key being the hash-key in ht
+               using (hash-value val)
+             collect (cons key (caar (cdadar val)))))))
+  #-(or ccl cmucl scl sbcl abcl allegro)
   (warn "closure inspection is not implemented for this CL, help in implementing it!"))
 
 ;; FIXME: Phew, that's a long one... Maybe use Slynk after all? Graven
@@ -287,9 +300,10 @@ useful to fetch the arglist or body, though. Use at your own risk!"
        (cond
          ;; T is suspicious.
          ((eq closure-p t) (function-closure-p function))
-         #+abcl
+         ;; Allegro and ABCL return opaque env objects.
+         #+(or allegro abcl)
          (closure-p (function-closure-p function))
-         #-abcl
+         #-(or allegro abcl)
          (closure-p closure-p)
          (t nil))
        (or name
