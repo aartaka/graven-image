@@ -63,16 +63,17 @@ modify the property. For slots, this setter will likely be setting the
 When STRIP-NULL, properties with null VALUE and SETTER are filtered
 out."))
 
-(-> symbol-visibility (symbol) (or null (member :inherited :external :internal)))
+(-> symbol-visibility (symbol) (or null (member :inherited :external :internal :uninterned)))
 (defun symbol-visibility (symbol)
-  (nth-value 1 (find-symbol (symbol-name symbol) (symbol-package symbol))))
+  (if (symbol-package symbol)
+      (nth-value 1 (find-symbol (symbol-name symbol) (symbol-package symbol)))
+      :uninterned))
 
 (defmethod properties* ((object symbol) &key &allow-other-keys)
   `((:name ,(symbol-name object))
     (:package ,(symbol-package object))
     (:visibility ,(symbol-visibility object)
-                 ,(unless (or (null (symbol-visibility object))
-                              (eq :inherited (symbol-visibility object)))
+                 ,(unless (member (symbol-visibility object) '(nil :uninterned :inherited))
                     (lambda (new-value _)
                       (declare (ignorable _))
                       (cond
@@ -504,6 +505,15 @@ out."))
 Methods should include the most useful information and things that are
 not suitable for the `properties*' key-value format."))
 
+(defmethod description* ((object symbol) &optional stream)
+  (if (keywordp object)
+      (format stream "~a" object)
+      (format stream
+              "~a (~a~@[ to ~a~])~@[~* [bound]~]~@[~* [fbound]~]~@[~* [class]~]"
+              object
+              (symbol-visibility object)
+              (ignore-errors (package-name (symbol-package object)))
+              (boundp object) (fboundp object) (ignore-errors (find-class object nil)))))
 
 ;; TODO: integer binary layout (two's complement?).
 (defmethod description* ((object integer) &optional stream)
