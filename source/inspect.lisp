@@ -426,6 +426,7 @@ out."))
                      (declare (ignorable _))
                      (setf (slot-value object name) new-value))))
            (object-slots object))
+   (list :slot-definitions (closer-mop:class-slots (class-of object)))
    #+ccl
    (get-ccl-props
     object
