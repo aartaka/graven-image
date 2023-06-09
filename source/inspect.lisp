@@ -509,10 +509,10 @@ not suitable for the `properties*' key-value format."))
   (if (keywordp object)
       (format stream "~a" object)
       (format stream
-              "~a (~a~@[ to ~a~])~@[~* [bound]~]~@[~* [fbound]~]~@[~* [class]~]"
+              "~a (~a~@[ to ~a~]~@[, ~{~a: ~s~^, ~}~])~@[~* [bound]~]~@[~* [fbound]~]~@[~* [class]~]"
               object
-              (symbol-visibility object)
-              (ignore-errors (package-name (symbol-package object)))
+              (symbol-visibility object) (ignore-errors (package-name (symbol-package object)))
+              (symbol-plist object)
               (boundp object) (fboundp object) (ignore-errors (find-class object nil)))))
 
 ;; TODO: integer binary layout (two's complement?).
