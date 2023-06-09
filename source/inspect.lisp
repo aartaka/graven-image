@@ -143,17 +143,17 @@ out."))
     ,@(when (or (floatp object)
                 (typep object 'ratio))
         `((:nearest-integer ,(round object))))
-    ,(typecase object
-       (short-float
-        `(:most-positive-short-float ,most-positive-short-float))
-       (single-float
-        `(:most-positive-single-float ,most-positive-single-float))
-       (double-float
-        `(:most-positive-double-float ,most-positive-double-float))
-       (long-float
-        `(:most-positive-long-float ,most-positive-long-float))
-       (fixnum
-        `(:most-positive-fixnum ,most-positive-fixnum)))))
+    ,@(typecase object
+        (short-float
+         `((:most-positive-short-float ,most-positive-short-float)))
+        (single-float
+         `((:most-positive-single-float ,most-positive-single-float)))
+        (double-float
+         `((:most-positive-double-float ,most-positive-double-float)))
+        (long-float
+         `((:most-positive-long-float ,most-positive-long-float)))
+        (fixnum
+         `((:most-positive-fixnum ,most-positive-fixnum))))))
 
 #+sbcl
 (defun remove-sbcl-props-from (object &rest names-to-remove)
@@ -180,6 +180,12 @@ out."))
              (t (ccl:uvref object (symbol-value prop))))))
    props))
 
+#+abcl
+(defun abcl-props-except (object &rest except)
+  (loop for (name . value) in (system:inspected-parts object)
+        unless (member name except :test #'string=)
+          collect (list (intern name :keyword) value)))
+
 (-> all-symbols ((or package symbol)) list)
 (defun all-symbols (package)
   (loop for sym being the present-symbol in package
@@ -204,7 +210,7 @@ out."))
 
 (defmethod properties* ((object package) &key &allow-other-keys)
   `((:name ,(package-name object))
-    (:description ,(documentation object 'package))
+    (:description ,(documentation object t))
     (:nicknames ,(package-nicknames object))
     (:external-symbols ,(external-symbols object))
     (:internal-symbols ,(internal-symbols object))
@@ -301,7 +307,8 @@ out."))
     (:wild-p ,(wild-pathname-p object))
     (:namestring ,(namestring object))
     (:native-namestring ,(uiop:native-namestring object))
-    (:truename ,(truename object))
+    ,@(unless (equal (truename object) object)
+        `((:truename ,(truename object))))
     (:host ,(pathname-host object))
     (:device ,(pathname-device object))
     (:directory ,(pathname-directory object))
@@ -329,11 +336,12 @@ out."))
     (:count ,(hash-table-count object))
     (:rehash-size ,(hash-table-rehash-size object))
     (:rehash-threshold ,(hash-table-rehash-threshold object))
-    #+(or sbcl ecl ccl)
+    #+(or sbcl ecl ccl abcl)
     (:weakness
      #+ecl ,(si:hash-table-weakness object)
      #+sbcl ,(sb-impl::hash-table-weakness object)
-     #+ccl ,(ccl:hash-table-weak-p object))
+     #+ccl ,(ccl:hash-table-weak-p object)
+     #+abcl ,(system:hash-table-weakness object))
     ,@(loop for key being the hash-key in object
               using (hash-value val)
             when (scalar-p key)
@@ -365,6 +373,15 @@ out."))
                    ((typep object 'two-way-stream) :io)
                    ((input-stream-p object) :input)
                    ((output-stream-p object) :output)))
+    (:interactive ,(interactive-stream-p object))
+    #+abcl
+    ,@`((:offset ,(system::stream-offset object))
+        (:line-number ,(system::stream-line-number object))
+        (:system ,(system::system-stream-p object))
+        (:url ,(typep object 'system:url-stream))
+        (:jar ,(typep object 'system:jar-stream))
+        ,@(when (output-stream-p object)
+            `((:charpos ,(system::stream-charpos object)))))
     (:open ,(open-stream-p object)
            ,(lambda (new-value old-value)
               (when old-value
@@ -433,7 +450,9 @@ out."))
     'ccl::instance.hash 'ccl::instance.slots)
    #+sbcl
    (apply #'remove-sbcl-props-from object
-          (object-slots object))))
+          (object-slots object))
+   #+abcl
+   (abcl-props-except object "DOCUMENTATION" "DIRECT-SLOTS" "SLOTS")))
 
 (defmethod properties* ((object standard-object) &key &allow-other-keys)
   (inspect-slots object))
