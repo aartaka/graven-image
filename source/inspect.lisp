@@ -613,7 +613,7 @@ not suitable for the `properties*' key-value format."))
             (ignore-errors (file-length object)))))
 
 (defmethod description* ((object pathname) &optional stream)
-  (format stream "~a~@[ -> ~a~]"
+  (format stream "~a~@[ -~*~a-> ~2:*~a~]"
           object
           (cond
             ((uiop:logical-pathname-p object)
@@ -624,7 +624,11 @@ not suitable for the `properties*' key-value format."))
              (uiop:native-namestring object))
             (t (ignore-errors
                 (unless (equal (truename object) object)
-                  (truename object)))))))
+                  (truename object)))))
+          (cond
+            ((uiop:logical-pathname-p object) :logical)
+            ((wild-pathname-p object) :wild)
+            ((not (equal object (truename object))) :link))))
 
 (defmethod description* ((object function) &optional stream)
   (format stream "~:[λ~*~;~a ~](~:[?~*~;~{~a~^ ~}~])~@[
