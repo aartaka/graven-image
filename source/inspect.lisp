@@ -713,8 +713,8 @@ Non-trivial, because some of the PROPERTIES have integer keys."
                      do (let ((*package* (if (symbolp key)
                                              (symbol-package key)
                                              *package*)))
-                          (format *query-io* "~&~@[[~d]~]~:[ ~s~;~*~] =~@[setfable=~*~] ~s"
-                                  index (integerp key) key setter value)))
+                          (format *query-io* "~&~@[[~d]~]~:[ ~:[~s~;~a~]~;~2*~] =~@[setfable=~*~] ~s"
+                                  index (integerp key) (symbolp key) key setter value)))
                (when (< next-offset prop-length)
                  (format *query-io* "~&[Showing properties ~d-~d out of ~d]"
                          offset (1- next-offset) prop-length)))
