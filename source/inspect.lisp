@@ -757,6 +757,10 @@ Search is different for different KEY types:
                                   (uiop:string-prefix-p (symbol-name key) (symbol-name match-key)))
                           do (return (values match (member match commands)))))
                  (t (find key properties :key #'first :test #'equal))))
+             (recurse-inspect (object)
+               (internal-inspect* object strip-null)
+               (description* object *query-io*)
+               (print-props))
              (next-page ()
                (if (= next-offset prop-length)
                    (format *query-io* "~&Nowhere to scroll, already at the last page.")
@@ -777,7 +781,9 @@ Search is different for different KEY types:
                (description* object *query-io*)
                (print-props))
              (width (new)
-               (setf page-length new))
+               (setf page-length new
+                     next-offset (min prop-length (+ offset page-length)))
+               (print-props))
              (set-property (key &optional new-value)
                (let ((prop (find-by-key key nil properties)))
                  (cond
@@ -802,9 +808,7 @@ Search is different for different KEY types:
              (up ()
                (return-from internal-inspect* (values)))
              (istep (key)
-               (internal-inspect*
-                (second (find-by-key key nil properties))
-                strip-null))
+               (recurse-inspect (second (find-by-key key nil properties))))
              (eval-form (form)
                (print (eval form) *query-io*))
              (help ()
@@ -858,9 +862,9 @@ Possible inputs are:
               (:inspect ,#'istep "(:INSPECT KEY) Inspect the object under KEY")
               (:istep ,#'istep "(:ISTEP KEY) Inspect the object under KEY")
               (:evaluate ,#'eval-form "(:EVALUATE FORM) Evaluate the FORM")))
+      (description* object *query-io*)
+      (print-props)
       (loop
-        (description* object *query-io*)
-        (print-props)
         (format *query-io* "~&i> ")
         (finish-output *query-io*)
         (let ((input (read *query-io*)))
@@ -871,7 +875,7 @@ Possible inputs are:
                (apply (second result)
                       (mapcar #'eval (rest (uiop:ensure-list input)))))
               ((and result (not command-p))
-               (internal-inspect* (second result) strip-null))
+               (recurse-inspect result))
               (t (dolist (val (multiple-value-list (eval input)))
                    (print val *query-io*))))))))))
 
