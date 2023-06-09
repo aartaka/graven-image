@@ -622,6 +622,8 @@ not suitable for the `properties*' key-value format."))
                   (not (equal (namestring object)
                               (uiop:native-namestring object))))
              (uiop:native-namestring object))
+            ((wild-pathname-p object)
+             (wild-pathname-p object))
             (t (ignore-errors
                 (unless (equal (truename object) object)
                   (truename object)))))
