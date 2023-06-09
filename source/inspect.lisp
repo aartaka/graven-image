@@ -643,6 +643,7 @@ not suitable for the `properties*' key-value format."))
           (second (function-type* object))
           (third (function-type* object))
           (documentation object t)))
+
 (-> object-description ((or standard-object structure-object) (or stream boolean)))
 (defun object-description (object stream)
   (format stream "~s~@[
