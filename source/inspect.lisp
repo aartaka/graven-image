@@ -685,14 +685,17 @@ used for OBJECT info."
 (defun property-indices (properties)
   "Map integer indices to every property in PROPERTIES.
 Non-trivial, because some of the PROPERTIES have integer keys."
-  (let ((raw-indices (loop for i below (length properties) collect i)))
-    (loop with indices = raw-indices
-          for (name) in properties
-          when (integerp name)
-            collect name
-          else
-            collect (first indices)
-            and do (setf indices (rest indices)))))
+  (loop with taken = (remove-if-not #'integerp (mapcar #'first properties))
+        for (name) in properties
+        for index from 0
+        when (integerp name)
+          collect name
+        else
+          collect (loop for i from index
+                        while (member i taken)
+                        finally (return (prog1
+                                            i
+                                          (setf index i))))))
 
 (defun internal-inspect* (object strip-null)
   (let* ((properties (properties* object :strip-null strip-null))
