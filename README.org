@@ -331,3 +331,8 @@ Beware: using any interactive function (like =inspect= etc.) breaks the dribble 
 - [ ] Somehow hook into and improve over =*debugger-hook*=?
   - [ ] Not necessary if =invoke-debugger= is re-implemented.
 - [ ] Test on more implementations.
+- [ ] Maybe add an interactive file manager?
+  - Yes, this is beyond the goal of nice portable standard debugging
+    facilities that Graven Image pursues. But it kinda is intuitive,
+    and most implementations have some form of directory switching and
+    other file operations.
