@@ -602,9 +602,8 @@ not suitable for the `properties*' key-value format."))
                 ((typep object 'two-way-stream) (list :in :out))
                 ((input-stream-p object) :in)
                 ((output-stream-p object) :out)))))
-    (format stream "~s ~{~a~^+~}~@[~a~]~:[~3*~;
+    (format stream "~{~a~^+~}~@[~a~]~:[~3*~;
 ~@[ ~a~]~@[#L~d~]~@[-~d~]~]"
-            object
             (directions object)
             (uiop:ensure-list (ignore-errors (stream-external-format object)))
             (uiop:file-stream-p object)
