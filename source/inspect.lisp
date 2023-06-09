@@ -551,9 +551,9 @@ not suitable for the `properties*' key-value format."))
       (format stream "(~s . ~s)" (car object) (cdr object))
       (call-next-method)))
 
+;; TODO: ECL lists shadowed symbols and used-by list
 (defmethod description* ((object package) &optional stream)
-  (format stream "~a~@[/~{~a~^/~}~] [exports ~a/~a~:[~*~;, uses ~{~a~^, ~}~]]~@[
-~a~]"
+  (format stream "~a~@[/~{~a~^/~}~] [exports ~a/~a~:[~*~;, uses ~{~a~^, ~}~]]~@[: ~a~]"
           (package-name object)
           (package-nicknames object)
           (length (external-symbols object))
