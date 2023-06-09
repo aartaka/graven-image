@@ -716,8 +716,8 @@ Non-trivial, because some of the PROPERTIES have integer keys."
                           (format *query-io* "~&~@[[~d]~]~:[ ~s~;~*~] =~@[setfable=~*~] ~s"
                                   index (integerp key) key setter value)))
                (when (< next-offset prop-length)
-                 (format *query-io* "~&~%There's ~d more properties."
-                         (- prop-length next-offset))))
+                 (format *query-io* "~&[Showing properties ~d-~d out of ~d]"
+                         offset (1- next-offset) prop-length)))
              (find-by-key (key commands properties)
                "Find the KEY in COMMANDS/PROPERTIES by its prefix/value.
 Returns two values:
