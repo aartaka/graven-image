@@ -43,10 +43,6 @@
 (-> function-name (function) t)
 (defun function-name (function)
   (declare (ignorable function))
-  #+abcl
-  (when (fboundp 'sys::any-function-name)
-    ;; abcl-1.5.0+
-    (sys::any-function-name function))
   #+allegro
   (cross-reference::object-to-function-name function)
   #+ccl
