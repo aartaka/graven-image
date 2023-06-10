@@ -738,29 +738,150 @@ Non-trivial, because some of the PROPERTIES have integer keys."
                                             i
                                           (setf index i))))))
 
-(defun internal-inspect* (object strip-null)
-  (let* ((properties (properties* object :strip-null strip-null))
-         (prop-length (length properties))
-         ;; VT-100-ish pages, unless rebound.
-         (page-length (or *print-length* 20))
-         (indices (property-indices properties))
-         (offset 0)
-         (next-offset (min (+ offset page-length) prop-length))
-         commands)
-    (labels ((print-props ()
-               (loop for i from offset below next-offset
-                     for index = (elt indices i)
-                     for (key value setter) = (elt properties i)
-                     do (let ((*package* (if (symbolp key)
-                                             (symbol-package key)
-                                             *package*)))
-                          (format *query-io* "~&~@[[~d]~]~:[ ~:[~s~;~a~]~;~2*~] =~@[setfable=~*~] ~s"
-                                  index (integerp key) (symbolp key) key setter value)))
-               (when (< next-offset prop-length)
-                 (format *query-io* "~&[Showing properties ~d-~d out of ~d]"
-                         offset (1- next-offset) prop-length)))
-             (find-by-key (key commands properties)
-               "Find the KEY in COMMANDS/PROPERTIES by its prefix/value.
+(defvar *object* nil
+  "The object currently inspected.")
+(defvar *stream* nil
+  "The bidirectional stream to read/write to.")
+(defvar *summary-fn* nil
+  "The (OBJECT STREAM) function to print `*object*' summary to `*query-io*'.")
+(defvar *property-fn* nil
+  "The function to return `*object*' properties printable into interface.")
+(defvar *length* nil
+  "Total length of the object properties.")
+(defvar *page-length* nil
+  "Length of the interface page.")
+(defvar *offset* 0
+  "The current offset into the object properties.")
+
+(defun print-props ()
+  "Print the current page of properties."
+  (loop with properties = (funcall *property-fn* *object*)
+        with real-page-len = (min *length* (+ *offset* *page-length*))
+        for index from *offset* below real-page-Len
+        for (key value) in (subseq properties *offset*)
+        do (format *stream* "~&[~d]~:[ ~:[~s~;~a~]~;~2*~] = ~s"
+                   index (integerp key) (symbolp key) key value)
+        finally (format *stream* "~&[Showing properties ~d-~d out of ~d]"
+                        *offset* real-page-len *length*)))
+
+(defun summarize ()
+  (funcall *summary-fn* *object* *stream*))
+
+(defun exit ()
+  "Exit the interface."
+  (throw 'toplevel (values)))
+
+(defun up ()
+  "Go up to the previous level of the interface."
+  (throw 'internal (values)))
+
+(defun next-page ()
+  "Show the next page of properties (if any)."
+  (if (>= (+ *offset* *page-length*) *length*)
+      (format *stream* "~&Nowhere to scroll, already at the last page.")
+      (setf *offset* (+ *offset* *page-length*)))
+  (print-props))
+
+(defun previous-page ()
+  "Show the previous page of properties (if any)."
+  (if (zerop *offset*)
+      (format *stream* "~&Nowhere to scroll, already at the first page.")
+      (setf *offset* (max 0 (- *offset* *page-length*))))
+  (print-props))
+
+(defun home ()
+  "Scroll back to the first page of properties."
+  (if (zerop *offset*)
+      (format *stream* "~&Nowhere to scroll, already at the first page.")
+      (setf *offset* 0))
+  (summarize)
+  (print-props))
+
+(defun width (new)
+  "Change the page size."
+  (setf *page-length* new)
+  (print-props))
+
+(defun self ()
+  "Show the currently inspected object."
+  (summarize)
+  (print-props))
+
+(defun standard-print ()
+  "Print the inspected object readably."
+  (format *stream* "~&~s" *object*))
+
+(defun aesthetic-print ()
+  "Print the inspected object aesthetically."
+  (format *stream* "~&~a" *object*))
+
+(defun evaluate (expression)
+  "Evaluate the EXPRESSION."
+  (dolist (val (multiple-value-list (eval expression)))
+    (print val *stream*)))
+
+(defvar *commands*
+  `((:quit ,#'exit)
+    (:exit ,#'exit)
+    (:length ,#'width)
+    (:width ,#'width)
+    (:widen ,#'width)
+    (:next-page ,#'next-page)
+    (:previous-page ,#'previous-page)
+    (:print ,#'print-props)
+    (:page ,#'print-props)
+    (:home ,#'home)
+    (:reset ,#'home)
+    (:top ,#'home)
+    (:this ,#'self)
+    (:self ,#'self)
+    (:redisplay ,#'self)
+    (:show ,#'self)
+    (:current ,#'self)
+    (:again ,#'self)
+    (:standard ,#'standard-print)
+    (:aesthetic ,#'aesthetic-print)
+    (:evaluate ,#'evaluate)
+    (:up ,#'up)
+    (:pop ,#'up)
+    (:back ,#'up))
+  "Alist of commands accessible to the current interface.")
+
+(defun help ()
+  "Show the instructions for using this interface."
+  (format *stream*
+          "~&This is an interactive inspector for ~a~%~
+~&Available commands are:
+~:{~&~a ~20t~a~}
+
+Possible inputs are:
+- Mere symbols: run one of the commands above, matching the symbol.
+  - If there's no matching command, then match against properties.
+    - If nothing matches, evaluate the symbol.
+- Integer: act on the property indexed by this integer.
+  - If there are none, evaluate the integer.
+- Any other atom: find the property with this atom as a key.
+  - Evaluate it otherwise.
+- S-expression: match the list head against commands and properties,
+  as above.
+  - If the list head does not match anything, evaluate the
+    s-expression.~%"
+          *object* (mapcar (lambda (command)
+                             (destructuring-bind (name function)
+                                 command
+                               (list name (documentation function t))))
+                           *commands*)))
+
+(unless (find :help *commands* :key #'first)
+  (setf *commands*
+        (append
+         *commands*
+         `((:? ,#'help)
+           (:help ,#'help)))))
+
+(defun find-command-or-prop (key commands properties)
+  "Find the KEY in COMMANDS/PROPERTIES by its prefix/value.
+
 Returns two values:
 - The property/command matching the KEY, as a list.
 - Whether the found thing is a command (= member of COMMANDS).
@@ -770,151 +891,106 @@ Search is different for different KEY types:
 - SYMBOL: search both commands and properties, but only by symbol
   names.
 - Anything else: search literal object."
-               (typecase key
-                 (integer (values (elt properties (position key indices)) nil))
-                 (symbol
-                  (loop for match in (append commands properties)
-                        for (match-key) = match
-                        when (and (symbolp match-key)
-                                  (uiop:string-prefix-p (symbol-name key) (symbol-name match-key)))
-                          do (return (values match (member match commands)))))
-                 (t (find key properties :key #'first :test #'equal))))
-             (recurse-inspect (object)
-               (internal-inspect* object strip-null)
-               (description* object *query-io*)
-               (print-props))
-             (next-page ()
-               (if (= next-offset prop-length)
-                   (format *query-io* "~&Nowhere to scroll, already at the last page.")
-                   (setf offset next-offset
-                         next-offset (min (+ offset page-length) prop-length)))
-               (print-props))
-             (previous-page ()
-               (if (zerop offset)
-                   (format *query-io* "~&Nowhere to scroll, already at the first page.")
-                   (setf next-offset offset
-                         offset (max 0 (- offset page-length))))
-               (print-props))
-             (home ()
-               (if (zerop offset)
-                   (format *query-io* "~&Nowhere to scroll, already at the first page.")
-                   (setf offset 0
-                         next-offset (min (+ offset page-length) prop-length)))
-               (description* object *query-io*)
-               (print-props))
-             (width (new)
-               (setf page-length new
-                     next-offset (min prop-length (+ offset page-length)))
-               (print-props))
-             (set-property (key &optional new-value)
-               (let ((prop (find-by-key key nil properties)))
-                 (cond
-                   ((and prop
-                         (third prop))
-                    (print (funcall (third prop) new-value (second prop))))
-                   (prop
-                    (format *query-io* "~&Cannot modify this property."))
-                   (t
-                    (format *query-io* "~&No such property found.")))
-                 (when (third prop)
-                   (funcall (third prop) new-value (second prop)))))
-             (self ()
-               (description* object *query-io*)
-               (print-props))
-             (standard-print ()
-               (format *query-io* "~&~s" object))
-             (aesthetic-print ()
-               (format *query-io* "~&~a" object))
-             (exit ()
-               (throw 'topmost-inspect* (values)))
-             (up ()
-               (return-from internal-inspect* (values)))
-             (istep (key)
-               (recurse-inspect (second (find-by-key key nil properties))))
-             (eval-form (form)
-               (print (eval form) *query-io*))
-             (help ()
-               (format *query-io*
-                       "~&This is an interactive inspector for ~a~%~
-~&Available commands are:
-~:{~&~a ~15t~*~a~}
+  (typecase key
+    (integer (values (elt properties (position key (property-indices properties))) nil))
+    (symbol
+     (loop for match in (append commands properties)
+           for (match-key) = match
+           when (and (symbolp match-key)
+                     (uiop:string-prefix-p (symbol-name key) (symbol-name match-key)))
+             do (return (values match (member match commands)))))
+    (t (find key properties :key #'first :test #'equal))))
 
-Possible inputs are:
-- Mere symbols: run one of the commands above, matching the symbol.
-  - If there's no matching command, then match against properties.
-    - If nothing matches, evaluate the symbol.
-- Integer: find the property indexed by this integer.
-  - If there are none, evaluate the integer.
-- Any other atom: find the property with this atom as a key.
-  - Evaluate it otherwise.
-- S-expression: match the list head against commands and properties,
-  as above.
-  - If the list head does not match anything, evaluate the
-    s-expression.~%"
-                       object commands)))
-      ;; Rebinding the local variable to have proper references to functions.
-      (setf commands
-            `((:? ,#'help "Print a list of commands")
-              (:help ,#'help "Print a list of commands")
-              (:length ,#'width "(:LENGTH NEW-LENGTH) Change the page size")
-              (:width ,#'width "(:WIDTH NEW-LENGTH) Change the page size")
-              (:widen ,#'width "(:WIDEN NEW-LENGTH) Change the page size")
-              (:next-page ,#'next-page "Show the next page of properties (if any)")
-              (:previous-page ,#'previous-page "Show the previous page of properties (if any)")
-              (:home ,#'home "Scroll back to the first page of properties")
-              (:reset ,#'home "Scroll back to the first page of properties")
-              (:top ,#'home "Scroll back to the first page of properties")
-              ;; (:history history "Show the current inspector path")
-              ;; (:path history "Show the current inspector path")
-              (:set ,#'set-property "(:SET PROPERTY VALUE) Set the PROPERTY to VALUE.")
-              (:modify ,#'set-property "(:MODIFY PROPERTY VALUE) Set the PROPERTY to VALUE.")
-              (:this ,#'self "Show the currently inspected object")
-              (:self ,#'self "Show the currently inspected object")
-              (:redisplay ,#'self "Show the currently inspected object")
-              (:show ,#'self "Show the currently inspected object")
-              (:current ,#'self "Show the currently inspected object")
-              (:again ,#'self "Show the currently inspected object")
-              (:standard ,#'standard-print "Print the inspected object readably")
-              (:aesthetic ,#'aesthetic-print "Print the inspected object aesthetically")
-              (:quit ,#'exit "Exit the inspector")
-              (:exit ,#'exit "Exit the inspector")
-              (:up ,#'up "Move to the previous/upper inspected object or exit the inspector")
-              (:pop ,#'up "Move to the previous/upper inspected object or exit the inspector")
-              (:back ,#'up "Move to the previous/upper inspected object or exit the inspector")
-              (:inspect ,#'istep "(:INSPECT KEY) Inspect the object under KEY")
-              (:istep ,#'istep "(:ISTEP KEY) Inspect the object under KEY")
-              (:evaluate ,#'eval-form "(:EVALUATE FORM) Evaluate the FORM")))
-      (description* object *query-io*)
-      (print-props)
-      (loop
-        (format *query-io* "~&i> ")
-        (finish-output *query-io*)
-        (let ((input (read *query-io*)))
-          (multiple-value-bind (result command-p)
-              (find-by-key (first (uiop:ensure-list input)) commands properties)
-            (cond
-              ((and result command-p)
-               (apply (second result)
-                      (mapcar #'eval (rest (uiop:ensure-list input)))))
-              ((and result (not command-p))
-               (recurse-inspect result))
-              (t (dolist (val (multiple-value-list (eval input)))
-                   (print val *query-io*))))))))))
+(defmacro definterface (prompt name stream (object)
+                        ((var val) &rest vars+vals)
+                        documentation
+                        &body key+commands)
+  "Create and interactive interface for NAME function.
+The interface is centered around the OBJECT-named argument.
 
-(define-generic inspect* (object &optional (strip-null t))
+Generates the internal function named %NAME, which does most of the
+book-keeping, like reading from STREAM, dispatching `*commands*'.
+
+The body of the DEFINTERFACE is the list of (KEY COMMAND) pairs to add
+
+Provide `*summary-fn*' and `*properties-fn*' to list in the
+interface. Good examples are `description*' and `properties*' for the
+inspector."
+  (let ((internal-name (intern (uiop:strcat "%" (symbol-name name)) (symbol-package name))))
+    `(progn
+       (defun ,internal-name (,object)
+         ,(format nil "Internal function for ~a." name)
+         (catch 'internal
+           (let* ((*object* ,object)
+                  (*stream* ,stream)
+                  (*commands*
+                    (append
+                     *commands*
+                     (list ,@(loop for (key command) in key+commands
+                                   collect `(list ,key ,command)))))
+                  ,@(loop for (name initvalue) in (cons (list var val) vars+vals)
+                          collect `(,name ,initvalue))
+                  (properties (funcall *property-fn* *object*))
+                  (*length* (length properties)))
+             (summarize)
+             (print-props)
+             (loop
+               (format *stream* ,prompt)
+               (finish-output *stream*)
+               (flet (($ (&rest keys)
+                        (mapcar (lambda (key)
+                                  (second (find-command-or-prop key nil properties)))
+                                keys)))
+                 ($) ; To calm SBCL down.
+                 (let ((input (read *stream*)))
+                   (multiple-value-bind (result command-p)
+                       (find-command-or-prop (first (uiop:ensure-list input))
+                                             *commands* properties)
+                     (cond
+                       ((and result command-p)
+                        (apply (second result)
+                               (mapcar #'eval (rest (uiop:ensure-list input)))))
+                       ((and result (not command-p))
+                        (,internal-name result))
+                       (t (dolist (val (multiple-value-list (eval input)))
+                            (print val *query-io*)))))))))))
+       (defun ,name (,object)
+         ,documentation
+         (catch 'toplevel
+           (loop
+             (,internal-name ,object)))))))
+
+(defun set-property (key &optional value)
+  "Set the KEY-ed property to VALUE."
+  (let ((prop (find-command-or-prop key nil (funcall *property-fn* *object*))))
+    (cond
+      ((and prop (third prop))
+       (print (funcall (third prop) value (second prop))))
+      (prop
+       (format *query-io* "~&Cannot modify this property."))
+      (t
+       (format *query-io* "~&No such property found.")))))
+
+(defun istep (key)
+  "Inspect the object under KEY."
+  (uiop:symbol-call :graven-image :%inspect* key))
+
+(definterface "~&i> " inspect* *query-io* (object)
+  ((*page-length* (or *print-length* 20))
+   (*summary-fn* #'description*)
+   (*property-fn* #'properties*))
   "Interactively query the OBJECT.
 
 OBJECT summary and properties are printed to and
 expressions/commands/indices/property names are read from
 `*query-io*'.
 
-Properties are paginated, with commands available to scroll,
+Properties are paginated, with commands available to scroll.
 
 Influenced by:
 - `*query-io*'.
 - `*print-length*' for page size."
-  (catch 'topmost-inspect*
-    (loop
-      (internal-inspect* object strip-null)
-      ;; This is to disallow :POP exiting the inspector.
-      (format *query-io* "~&Cannot pop from the toplevel inspector, use :Q instead."))))
+  (:set-property #'set-property)
+  (:modify-property #'set-property)
+  (:istep #'istep)
+  (:inspect #'istep))
