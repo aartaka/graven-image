@@ -45,6 +45,9 @@
                         ,(lambda (new-value _)
                            (declare (ignorable _))
                            (change-class object (find-class new-value))))
+                ,@(let ((slot-defs (closer-mop:class-slots (class-of object))))
+                    (when slot-defs
+                      (list :slot-definitions slot-defs)))
                 (:type ,(type-of object))
                 #+ccl
                 (:wrapper ,(ccl::%class-own-wrapper (class-of object))))
@@ -443,7 +446,6 @@ out."))
                      (declare (ignorable _))
                      (setf (slot-value object name) new-value))))
            (object-slots object))
-   (list :slot-definitions (closer-mop:class-slots (class-of object)))
    #+ccl
    (get-ccl-props
     object
