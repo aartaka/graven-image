@@ -750,9 +750,11 @@ Non-trivial, because some of the PROPERTIES have integer keys."
 (defvar *stream* nil
   "The bidirectional stream to read/write to.")
 (defvar *summary-fn* nil
-  "The (OBJECT STREAM) function to print `*object*' summary to `*query-io*'.")
+  "The (OBJECT STREAM) function to print OBJECT summary to STREAM.")
 (defvar *property-fn* nil
-  "The function to return `*object*' properties printable into interface.")
+  "The function to return OBJECT properties printable into interface.")
+(defvar *print-property-fn*
+  "The (STREAM INDEX KEY VALUE &REST ARGS) function to print a singular property of the `*object*'.")
 (defvar *length* nil
   "Total length of the object properties.")
 (defvar *page-length* nil
@@ -765,9 +767,8 @@ Non-trivial, because some of the PROPERTIES have integer keys."
   (loop with properties = (funcall *property-fn* *object*)
         with real-page-len = (min *length* (+ *offset* *page-length*))
         for index from *offset* below real-page-Len
-        for (key value) in (subseq properties *offset*)
-        do (format *stream* "~&[~d]~:[ ~:[~s~;~a~]~;~2*~] = ~s"
-                   index (integerp key) (symbolp key) key value)
+        for (key value . args) in (subseq properties *offset*)
+        do (apply *print-property-fn* *stream* index key value args)
         finally (format *stream* "~&[Showing properties ~d-~d out of ~d]"
                         *offset* real-page-len *length*)))
 
@@ -857,7 +858,7 @@ Non-trivial, because some of the PROPERTIES have integer keys."
 (defun help ()
   "Show the instructions for using this interface."
   (format *stream*
-          "~&This is an interactive inspector for ~a~%~
+          "~&This is an interactive interface for ~a~%~
 ~&Available commands are:
 ~:{~&~a ~20t~a~}
 
@@ -872,7 +873,9 @@ Possible inputs are:
 - S-expression: match the list head against commands and properties,
   as above.
   - If the list head does not match anything, evaluate the
-    s-expression.~%"
+    s-expression.
+  - Inside this s-expression, you can use the `$' function to fetch
+    the list of values under provided keys~%"
           *object* (mapcar (lambda (command)
                              (destructuring-bind (name function)
                                  command
@@ -908,11 +911,20 @@ Search is different for different KEY types:
              do (return (values match (member match commands)))))
     (t (find key properties :key #'first :test #'equal))))
 
+(defun $ (&rest keys)
+  "Return a list of values for properties under KEYS.
+Useful inside an interface to query the values of the object one's
+interacting with."
+  (let ((properties (funcall *property-fn* *object*)))
+    (mapcar (lambda (key)
+              (second (find-command-or-prop key nil properties)))
+            keys)))
+
 (defmacro definterface (prompt name stream (object)
                         ((var val) &rest vars+vals)
                         documentation
                         &body key+commands)
-  "Create and interactive interface for NAME function.
+  "Create an interactive interface for NAME function.
 The interface is centered around the OBJECT-named argument.
 
 Generates the internal function named %NAME, which does most of the
@@ -944,23 +956,21 @@ inspector."
              (loop
                (format *stream* ,prompt)
                (finish-output *stream*)
-               (flet (($ (&rest keys)
-                        (mapcar (lambda (key)
-                                  (second (find-command-or-prop key nil properties)))
-                                keys)))
-                 ($) ; To calm SBCL down.
-                 (let ((input (read *stream*)))
-                   (multiple-value-bind (result command-p)
-                       (find-command-or-prop (first (uiop:ensure-list input))
-                                             *commands* properties)
-                     (cond
-                       ((and result command-p)
-                        (apply (second result)
-                               (mapcar #'eval (rest (uiop:ensure-list input)))))
-                       ((and result (not command-p))
-                        (,internal-name result))
-                       (t (dolist (val (multiple-value-list (eval input)))
-                            (print val *query-io*)))))))))))
+               (let ((input (read *stream*)))
+                 (multiple-value-bind (result command-p)
+                     (find-command-or-prop (first (uiop:ensure-list input))
+                                           *commands* (when (not (listp input))
+                                                        properties))
+                   (cond
+                     ((and result command-p)
+                      (apply (second result)
+                             (mapcar #'eval (rest (uiop:ensure-list input)))))
+                     ((and result (not command-p))
+                      (,internal-name result)
+                      (summarize)
+                      (print-props))
+                     (t (dolist (val (multiple-value-list (eval input)))
+                          (print val *query-io*))))))))))
        (defun ,name (,object)
          ,documentation
          (catch 'toplevel
@@ -980,12 +990,16 @@ inspector."
 
 (defun istep (key)
   "Inspect the object under KEY."
-  (uiop:symbol-call :graven-image :%inspect* key))
+  (uiop:symbol-call :graven-image :%inspect*
+                    (second (find-command-or-prop key nil (funcall *property-fn* *object*)))))
 
 (definterface "~&i> " inspect* *query-io* (object)
   ((*page-length* (or *print-length* 20))
    (*summary-fn* #'description*)
-   (*property-fn* #'properties*))
+   (*property-fn* #'properties*)
+   (*print-property-fn* #'(lambda (stream index key value &rest other-args)
+                            (format stream "~&[~d]~:[ ~:[~s~;~a~]~;~2*~] =~@[~*setfable=~] ~s"
+                                    index (integerp key) (symbolp key) key (first other-args) value))))
   "Interactively query the OBJECT.
 
 OBJECT summary and properties are printed to and
