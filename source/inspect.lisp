@@ -939,7 +939,8 @@ Provide `*summary-fn*', `*fields-fn*', and `*print-field-fn*' to list
 in the interface. Good examples for `*summary-fn*' and `*fields-fn*'
 are `description*' and `properties*' (respectively) for the
 inspector."
-  (let ((internal-name (intern (uiop:strcat "%" (symbol-name name)) (symbol-package name))))
+  (let ((internal-name (intern (uiop:strcat "%" (symbol-name name)) (symbol-package name)))
+        (vars-vals (cons (list var val) vars+vals)))
     `(progn
        (define-generic ,internal-name (,object)
          ,(format nil "Internal function for ~a." name)
@@ -951,10 +952,11 @@ inspector."
                      *commands*
                      (list ,@(loop for (key command) in key+commands
                                    collect `(list ,key ,command)))))
-                  ,@(loop for (name initvalue) in (cons (list var val) vars+vals)
+                  ,@(loop for (name initvalue) in vars-vals
                           collect `(,name ,initvalue))
                   (fields (funcall *fields-fn* *object*))
                   (*length* (length fields)))
+             (declare (special ,@(mapcar #'first vars-vals)))
              (summarize)
              (print-props)
              (loop
