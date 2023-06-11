@@ -837,8 +837,8 @@ Non-trivial, because some of the FIELDS have integer keys."
     (:length ,#'width)
     (:width ,#'width)
     (:widen ,#'width)
-    (:next-page ,#'next-page)
-    (:previous-page ,#'previous-page)
+    (:next ,#'next-page)
+    (:previous ,#'previous-page)
     (:print ,#'print-props)
     (:page ,#'print-props)
     (:home ,#'home)
@@ -852,7 +852,7 @@ Non-trivial, because some of the FIELDS have integer keys."
     (:again ,#'self)
     (:standard ,#'standard-print)
     (:aesthetic ,#'aesthetic-print)
-    (:evaluate ,#'evaluate)
+    (:eval ,#'evaluate)
     (:up ,#'up)
     (:pop ,#'up)
     (:back ,#'up))
@@ -863,7 +863,7 @@ Non-trivial, because some of the FIELDS have integer keys."
   (format *stream*
           "~&This is an interactive interface for ~a~%~
 ~&Available commands are:
-~:{~&~a ~20t~a~}
+~:{~&~:[~s~*~;(~s~{ ~a~})~]~30t~@[~a~]~}
 
 Possible inputs are:
 - Mere symbols: run one of the commands above, matching the symbol.
@@ -882,7 +882,9 @@ Possible inputs are:
           *object* (mapcar (lambda (command)
                              (destructuring-bind (name function)
                                  command
-                               (list name (documentation function t))))
+                               (list (function-lambda-list* function)
+                                     name (function-lambda-list* function)
+                                     (documentation function t))))
                            *commands*)))
 
 (unless (find :help *commands* :key #'first)
@@ -983,7 +985,7 @@ inspector."
            (loop
              (,internal-name ,object)))))))
 
-(defun set-field (key &optional value)
+(defun set-field (key value)
   "Set the KEY-ed field to VALUE."
   (let ((prop (find-command-or-prop key nil (funcall *fields-fn* *object*))))
     (cond
@@ -1017,7 +1019,7 @@ Fields are paginated, with commands available to scroll.
 Influenced by:
 - `*query-io*'.
 - `*print-length*' for page size."
-  (:set-field #'set-field)
-  (:modify-field #'set-field)
+  (:set #'set-field)
+  (:modify #'set-field)
   (:istep #'istep)
   (:inspect #'istep))
