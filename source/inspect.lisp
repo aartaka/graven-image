@@ -878,7 +878,7 @@ Possible inputs are:
   - If the list head does not match anything, evaluate the
     s-expression.
   - Inside this s-expression, you can use the `$' function to fetch
-    the list of values under provided keys~%"
+    the list of values under provided keys.~%"
           *object* (mapcar (lambda (command)
                              (destructuring-bind (name function)
                                  command
@@ -931,7 +931,7 @@ interacting with."
 The interface is centered around the OBJECT-named argument.
 
 Generates the internal function named %NAME, which does most of the
-book-keeping, like reading from STREAM, dispatching `*commands*'.
+book-keeping, like reading from STREAM and dispatching `*commands*'.
 
 The body of the DEFINTERFACE is the list of (KEY COMMAND) pairs to add
 
