@@ -941,7 +941,7 @@ are `description*' and `properties*' (respectively) for the
 inspector."
   (let ((internal-name (intern (uiop:strcat "%" (symbol-name name)) (symbol-package name))))
     `(progn
-       (defun ,internal-name (,object)
+       (define-generic ,internal-name (,object)
          ,(format nil "Internal function for ~a." name)
          (catch 'internal
            (let* ((*object* ,object)
@@ -975,7 +975,7 @@ inspector."
                       (print-props))
                      (t (dolist (val (multiple-value-list (eval input)))
                           (print val *query-io*))))))))))
-       (defun ,name (,object)
+       (define-generic ,name (,object)
          ,documentation
          (catch 'toplevel
            (loop
