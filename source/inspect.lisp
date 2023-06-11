@@ -760,15 +760,13 @@ Non-trivial, because some of the FIELDS have integer keys."
   "The (STREAM INDEX KEY VALUE &REST ARGS) function to print a singular field of the `*object*'.")
 (defvar *length* nil
   "Total length of the object fields.")
-(defvar *page-length* nil
-  "Length of the interface page.")
 (defvar *offset* 0
   "The current offset into the object fields.")
 
-(defun print-props ()
+(defun print-fields ()
   "Print the current page of fields."
   (loop with fields = (funcall *fields-fn* *object*)
-        with real-page-len = (min *length* (+ *offset* *page-length*))
+        with real-page-len = (min *length* (+ *offset* *print-lines*))
         for index from *offset* below real-page-Len
         for (key value . args) in (subseq fields *offset*)
         do (apply *print-field-fn* *stream* index key value args)
@@ -788,17 +786,17 @@ Non-trivial, because some of the FIELDS have integer keys."
 
 (defun next-page ()
   "Show the next page of fields (if any)."
-  (if (>= (+ *offset* *page-length*) *length*)
+  (if (>= (+ *offset* *print-lines*) *length*)
       (format *stream* "~&Nowhere to scroll, already at the last page.")
-      (setf *offset* (+ *offset* *page-length*)))
-  (print-props))
+      (setf *offset* (+ *offset* *print-lines*)))
+  (print-fields))
 
 (defun previous-page ()
   "Show the previous page of fields (if any)."
   (if (zerop *offset*)
       (format *stream* "~&Nowhere to scroll, already at the first page.")
-      (setf *offset* (max 0 (- *offset* *page-length*))))
-  (print-props))
+      (setf *offset* (max 0 (- *offset* *print-lines*))))
+  (print-fields))
 
 (defun home ()
   "Scroll back to the first page of fields."
@@ -806,17 +804,17 @@ Non-trivial, because some of the FIELDS have integer keys."
       (format *stream* "~&Nowhere to scroll, already at the first page.")
       (setf *offset* 0))
   (summarize)
-  (print-props))
+  (print-fields))
 
 (defun width (new)
   "Change the page size."
-  (setf *page-length* new)
-  (print-props))
+  (setf *print-lines* new)
+  (print-fields))
 
 (defun self ()
   "Show the currently inspected object."
   (summarize)
-  (print-props))
+  (print-fields))
 
 (defun standard-print ()
   "Print the inspected object readably."
@@ -839,8 +837,8 @@ Non-trivial, because some of the FIELDS have integer keys."
     (:widen ,#'width)
     (:next ,#'next-page)
     (:previous ,#'previous-page)
-    (:print ,#'print-props)
-    (:page ,#'print-props)
+    (:print ,#'print-fields)
+    (:page ,#'print-fields)
     (:home ,#'home)
     (:reset ,#'home)
     (:top ,#'home)
@@ -958,9 +956,8 @@ inspector."
                           collect `(,name ,initvalue))
                   (fields (funcall *fields-fn* *object*))
                   (*length* (length fields)))
-             (declare (special ,@(mapcar #'first vars-vals)))
              (summarize)
-             (print-props)
+             (print-fields)
              (loop
                (format *stream* ,prompt)
                (finish-output *stream*)
@@ -976,7 +973,7 @@ inspector."
                      ((and result (not command-p))
                       (,internal-name (second result))
                       (summarize)
-                      (print-props))
+                      (print-fields))
                      (t (dolist (val (multiple-value-list (eval input)))
                           (print val *query-io*))))))))))
        (define-generic ,name (,object)
@@ -1002,7 +999,7 @@ inspector."
                     (second (find-command-or-prop key nil (funcall *fields-fn* *object*)))))
 
 (definterface "~&inspect> " inspect* *query-io* (object)
-  ((*page-length* (or *print-length* 20))
+  ((*print-lines* (or *print-lines* 20))
    (*summary-fn* #'description*)
    (*fields-fn* #'properties*)
    (*print-field-fn* #'(lambda (stream index key value &rest other-args)
@@ -1018,7 +1015,8 @@ Fields are paginated, with commands available to scroll.
 
 Influenced by:
 - `*query-io*'.
-- `*print-length*' for page size."
+- `*print-lines*' for page size.
+- Other printer variables for the display of the field values."
   (:set #'set-field)
   (:modify #'set-field)
   (:istep #'istep)
