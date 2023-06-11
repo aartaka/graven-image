@@ -25,7 +25,8 @@
    (*fields-fn* #'properties*)
    (*print-field-fn* #'(lambda (stream index key value &rest other-args)
                             (format stream "~&[~d]~:[ ~:[~s~;~a~]~;~2*~] =~@[~*setfable=~] ~s"
-                                    index (integerp key) (symbolp key) key (first other-args) value))))
+                                    index (integerp key) (symbolp key) key (first other-args) value)))
+   (*action-fn* #'%inspect*))
   "Interactively query the OBJECT.
 
 OBJECT summary and fields are printed to and

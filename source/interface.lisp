@@ -30,6 +30,9 @@ Non-trivial, because some of the FIELDS have integer keys."
   "The function to return OBJECT fields printable into interface.")
 (defvar *print-field-fn*
   "The (STREAM INDEX KEY VALUE &REST ARGS) function to print a singular field of the `*object*'.")
+(defvar *action-fn*
+  "The (VALUE) function that does whatever action is suitable for the property value in the current context.
+For inspector, that's a recursive inspection.")
 (defvar *length* nil
   "Total length of the object fields.")
 (defvar *offset* 0
@@ -243,7 +246,7 @@ inspector."
                       (apply (second result)
                              (mapcar #'eval (rest (uiop:ensure-list input)))))
                      ((and result (not command-p))
-                      (,internal-name (second result))
+                      (funcall *action-fn* (second result))
                       (summarize)
                       (print-fields))
                      (t (dolist (val (multiple-value-list (eval input)))
