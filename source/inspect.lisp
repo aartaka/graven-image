@@ -338,7 +338,7 @@ out."))
       #+sbcl
       ,@(remove-sbcl-props-from
          object
-         'sb-impl::device 'sb-impl::name 'sb-impl::version 'type 'namestring))))
+         'sb-impl::host 'sb-impl::device 'sb-impl::name 'sb-impl::version 'type 'namestring))))
 
 (defmethod properties* ((object hash-table) &key &allow-other-keys)
   `((:test ,(hash-table-test object))
