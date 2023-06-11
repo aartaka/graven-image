@@ -1001,7 +1001,7 @@ inspector."
   (uiop:symbol-call :graven-image :%inspect*
                     (second (find-command-or-prop key nil (funcall *fields-fn* *object*)))))
 
-(definterface "~&i> " inspect* *query-io* (object)
+(definterface "~&inspect> " inspect* *query-io* (object)
   ((*page-length* (or *print-length* 20))
    (*summary-fn* #'description*)
    (*fields-fn* #'properties*)
