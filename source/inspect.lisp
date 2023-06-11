@@ -86,10 +86,11 @@ out."))
                          (unexport object (symbol-package object)))))))
     ,@(when (fboundp object)
         `((:function-binding
-           ,(symbol-value object)
+           ,(symbol-function object)
            ,(lambda (new-value _)
               (declare (ignorable _))
-              (setf (symbol-value object) new-value)))))
+              ;; `fdefinition'? `compile'?
+              (setf (symbol-function object) new-value)))))
     ,@(when (boundp object)
         `((:value-binding
            ,(symbol-value object)
