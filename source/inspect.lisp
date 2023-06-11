@@ -968,7 +968,7 @@ inspector."
                       (apply (second result)
                              (mapcar #'eval (rest (uiop:ensure-list input)))))
                      ((and result (not command-p))
-                      (,internal-name result)
+                      (,internal-name (second result))
                       (summarize)
                       (print-props))
                      (t (dolist (val (multiple-value-list (eval input)))
