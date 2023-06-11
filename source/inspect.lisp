@@ -731,12 +731,13 @@ used for OBJECT info."
         (get-output-stream-string stream)
         (values))))
 
-(-> property-indices (list) list)
-(defun property-indices (properties)
-  "Map integer indices to every property in PROPERTIES.
-Non-trivial, because some of the PROPERTIES have integer keys."
-  (loop with taken = (remove-if-not #'integerp (mapcar #'first properties))
-        for (name) in properties
+(-> field-indices (list) list)
+(defun field-indices (fields)
+  "Map integer indices to every property in FIELDS.
+Implies that FIELDS have a (KEY VALUE . ARGS) structure
+Non-trivial, because some of the FIELDS have integer keys."
+  (loop with taken = (remove-if-not #'integerp (mapcar #'first fields))
+        for (name) in fields
         for index from 0
         when (integerp name)
           collect name
@@ -753,25 +754,25 @@ Non-trivial, because some of the PROPERTIES have integer keys."
   "The bidirectional stream to read/write to.")
 (defvar *summary-fn* nil
   "The (OBJECT STREAM) function to print OBJECT summary to STREAM.")
-(defvar *property-fn* nil
-  "The function to return OBJECT properties printable into interface.")
-(defvar *print-property-fn*
-  "The (STREAM INDEX KEY VALUE &REST ARGS) function to print a singular property of the `*object*'.")
+(defvar *fields-fn* nil
+  "The function to return OBJECT fields printable into interface.")
+(defvar *print-field-fn*
+  "The (STREAM INDEX KEY VALUE &REST ARGS) function to print a singular field of the `*object*'.")
 (defvar *length* nil
-  "Total length of the object properties.")
+  "Total length of the object fields.")
 (defvar *page-length* nil
   "Length of the interface page.")
 (defvar *offset* 0
-  "The current offset into the object properties.")
+  "The current offset into the object fields.")
 
 (defun print-props ()
-  "Print the current page of properties."
-  (loop with properties = (funcall *property-fn* *object*)
+  "Print the current page of fields."
+  (loop with fields = (funcall *fields-fn* *object*)
         with real-page-len = (min *length* (+ *offset* *page-length*))
         for index from *offset* below real-page-Len
-        for (key value . args) in (subseq properties *offset*)
-        do (apply *print-property-fn* *stream* index key value args)
-        finally (format *stream* "~&[Showing properties ~d-~d out of ~d]"
+        for (key value . args) in (subseq fields *offset*)
+        do (apply *print-field-fn* *stream* index key value args)
+        finally (format *stream* "~&[Showing fields ~d-~d out of ~d]"
                         *offset* real-page-len *length*)))
 
 (defun summarize ()
@@ -786,21 +787,21 @@ Non-trivial, because some of the PROPERTIES have integer keys."
   (throw 'internal (values)))
 
 (defun next-page ()
-  "Show the next page of properties (if any)."
+  "Show the next page of fields (if any)."
   (if (>= (+ *offset* *page-length*) *length*)
       (format *stream* "~&Nowhere to scroll, already at the last page.")
       (setf *offset* (+ *offset* *page-length*)))
   (print-props))
 
 (defun previous-page ()
-  "Show the previous page of properties (if any)."
+  "Show the previous page of fields (if any)."
   (if (zerop *offset*)
       (format *stream* "~&Nowhere to scroll, already at the first page.")
       (setf *offset* (max 0 (- *offset* *page-length*))))
   (print-props))
 
 (defun home ()
-  "Scroll back to the first page of properties."
+  "Scroll back to the first page of fields."
   (if (zerop *offset*)
       (format *stream* "~&Nowhere to scroll, already at the first page.")
       (setf *offset* 0))
@@ -866,13 +867,13 @@ Non-trivial, because some of the PROPERTIES have integer keys."
 
 Possible inputs are:
 - Mere symbols: run one of the commands above, matching the symbol.
-  - If there's no matching command, then match against properties.
+  - If there's no matching command, then match against fields.
     - If nothing matches, evaluate the symbol.
-- Integer: act on the property indexed by this integer.
+- Integer: act on the field indexed by this integer.
   - If there are none, evaluate the integer.
-- Any other atom: find the property with this atom as a key.
+- Any other atom: find the field with this atom as a key.
   - Evaluate it otherwise.
-- S-expression: match the list head against commands and properties,
+- S-expression: match the list head against commands and fields,
   as above.
   - If the list head does not match anything, evaluate the
     s-expression.
@@ -891,35 +892,35 @@ Possible inputs are:
          `((:? ,#'help)
            (:help ,#'help)))))
 
-(defun find-command-or-prop (key commands properties)
-  "Find the KEY in COMMANDS/PROPERTIES by its prefix/value.
+(defun find-command-or-prop (key commands fields)
+  "Find the KEY in COMMANDS/FIELDS by its prefix/value.
 
 Returns two values:
-- The property/command matching the KEY, as a list.
+- The field/command matching the KEY, as a list.
 - Whether the found thing is a command (= member of COMMANDS).
 
 Search is different for different KEY types:
-- Integer: only search PROPERTIES by their indices.
-- SYMBOL: search both commands and properties, but only by symbol
+- Integer: only search FIELDS by their indices.
+- SYMBOL: search both commands and fields, but only by symbol
   names.
 - Anything else: search literal object."
   (typecase key
-    (integer (values (elt properties (position key (property-indices properties))) nil))
+    (integer (values (elt fields (position key (field-indices fields))) nil))
     (symbol
-     (loop for match in (append commands properties)
+     (loop for match in (append commands fields)
            for (match-key) = match
            when (and (symbolp match-key)
                      (uiop:string-prefix-p (symbol-name key) (symbol-name match-key)))
              do (return (values match (member match commands)))))
-    (t (find key properties :key #'first :test #'equal))))
+    (t (find key fields :key #'first :test #'equal))))
 
 (defun $ (&rest keys)
-  "Return a list of values for properties under KEYS.
+  "Return a list of values for fields under KEYS.
 Useful inside an interface to query the values of the object one's
 interacting with."
-  (let ((properties (funcall *property-fn* *object*)))
+  (let ((fields (funcall *fields-fn* *object*)))
     (mapcar (lambda (key)
-              (second (find-command-or-prop key nil properties)))
+              (second (find-command-or-prop key nil fields)))
             keys)))
 
 (defmacro definterface (prompt name stream (object)
@@ -934,8 +935,9 @@ book-keeping, like reading from STREAM, dispatching `*commands*'.
 
 The body of the DEFINTERFACE is the list of (KEY COMMAND) pairs to add
 
-Provide `*summary-fn*' and `*properties-fn*' to list in the
-interface. Good examples are `description*' and `properties*' for the
+Provide `*summary-fn*', `*fields-fn*', and `*print-field-fn*' to list
+in the interface. Good examples for `*summary-fn*' and `*fields-fn*'
+are `description*' and `properties*' (respectively) for the
 inspector."
   (let ((internal-name (intern (uiop:strcat "%" (symbol-name name)) (symbol-package name))))
     `(progn
@@ -951,8 +953,8 @@ inspector."
                                    collect `(list ,key ,command)))))
                   ,@(loop for (name initvalue) in (cons (list var val) vars+vals)
                           collect `(,name ,initvalue))
-                  (properties (funcall *property-fn* *object*))
-                  (*length* (length properties)))
+                  (fields (funcall *fields-fn* *object*))
+                  (*length* (length fields)))
              (summarize)
              (print-props)
              (loop
@@ -962,7 +964,7 @@ inspector."
                  (multiple-value-bind (result command-p)
                      (find-command-or-prop (first (uiop:ensure-list input))
                                            *commands* (when (not (listp input))
-                                                        properties))
+                                                        fields))
                    (cond
                      ((and result command-p)
                       (apply (second result)
@@ -979,41 +981,41 @@ inspector."
            (loop
              (,internal-name ,object)))))))
 
-(defun set-property (key &optional value)
-  "Set the KEY-ed property to VALUE."
-  (let ((prop (find-command-or-prop key nil (funcall *property-fn* *object*))))
+(defun set-field (key &optional value)
+  "Set the KEY-ed field to VALUE."
+  (let ((prop (find-command-or-prop key nil (funcall *fields-fn* *object*))))
     (cond
       ((and prop (third prop))
        (print (funcall (third prop) value (second prop))))
       (prop
-       (format *query-io* "~&Cannot modify this property."))
+       (format *query-io* "~&Cannot modify this field."))
       (t
-       (format *query-io* "~&No such property found.")))))
+       (format *query-io* "~&No such field found.")))))
 
 (defun istep (key)
   "Inspect the object under KEY."
   (uiop:symbol-call :graven-image :%inspect*
-                    (second (find-command-or-prop key nil (funcall *property-fn* *object*)))))
+                    (second (find-command-or-prop key nil (funcall *fields-fn* *object*)))))
 
 (definterface "~&i> " inspect* *query-io* (object)
   ((*page-length* (or *print-length* 20))
    (*summary-fn* #'description*)
-   (*property-fn* #'properties*)
-   (*print-property-fn* #'(lambda (stream index key value &rest other-args)
+   (*fields-fn* #'properties*)
+   (*print-field-fn* #'(lambda (stream index key value &rest other-args)
                             (format stream "~&[~d]~:[ ~:[~s~;~a~]~;~2*~] =~@[~*setfable=~] ~s"
                                     index (integerp key) (symbolp key) key (first other-args) value))))
   "Interactively query the OBJECT.
 
-OBJECT summary and properties are printed to and
-expressions/commands/indices/property names are read from
+OBJECT summary and fields are printed to and
+expressions/commands/indices/field names are read from
 `*query-io*'.
 
-Properties are paginated, with commands available to scroll.
+Fields are paginated, with commands available to scroll.
 
 Influenced by:
 - `*query-io*'.
 - `*print-length*' for page size."
-  (:set-property #'set-property)
-  (:modify-property #'set-property)
+  (:set-field #'set-field)
+  (:modify-field #'set-field)
   (:istep #'istep)
   (:inspect #'istep))
