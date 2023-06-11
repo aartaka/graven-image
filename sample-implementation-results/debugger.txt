@@ -1,0 +1,261 @@
+SBCL:
+* (+ 1 nil)
+
+debugger invoked on a TYPE-ERROR @52A0214E in thread
+#<THREAD "main thread" RUNNING {100AE90113}>:
+  The value
+    NIL
+  is not of type
+    NUMBER
+
+Type HELP for debugger help, or (SB-EXT:EXIT) to exit from SBCL.
+
+restarts (invokable by number or by possibly-abbreviated name):
+  0: [ABORT] Exit debugger, returning to top level.
+
+(SB-KERNEL:TWO-ARG-+ 1 NIL)
+
+The debug prompt is square brackets, with number(s) indicating the current
+  control stack level and, if you've entered the debugger recursively, how
+  deeply recursed you are.
+Any command -- including the name of a restart -- may be uniquely abbreviated.
+The debugger rebinds various special variables for controlling i/o, sometimes
+  to defaults (much like WITH-STANDARD-IO-SYNTAX does) and sometimes to
+  its own special values, based on SB-EXT:*DEBUG-PRINT-VARIABLE-ALIST*.
+Debug commands do not affect *, //, and similar variables, but evaluation in
+  the debug loop does affect these variables.
+SB-DEBUG:*FLUSH-DEBUG-ERRORS* controls whether errors at the debug prompt
+  drop you deeper into the debugger. The default NIL allows recursive entry
+  to debugger.
+
+Getting in and out of the debugger:
+  TOPLEVEL, TOP  exits debugger and returns to top level REPL
+  RESTART        invokes restart numbered as shown (prompt if not given).
+  ERROR          prints the error condition and restart cases.
+
+  The number of any restart, or its name, or a unique abbreviation for its
+   name, is a valid command, and is the same as using RESTART to invoke
+   that restart.
+
+Changing frames:
+  UP     up frame         DOWN     down frame
+  BOTTOM bottom frame     FRAME n  frame n (n=0 for top frame)
+
+Inspecting frames:
+  BACKTRACE [n]  shows n frames going down the stack.
+  LIST-LOCALS, L lists locals in current frame.
+  PRINT, P       displays function call for current frame.
+  SOURCE [n]     displays frame's source form with n levels of enclosing forms.
+
+Stepping:
+  START Selects the CONTINUE restart if one exists and starts
+        single-stepping. Single stepping affects only code compiled with
+        under high DEBUG optimization quality. See User Manual for details.
+  STEP  Steps into the current form.
+  NEXT  Steps over the current form.
+  OUT   Stops stepping temporarily, but resumes it when the topmost frame that
+        was stepped into returns.
+  STOP  Stops single-stepping.
+
+Function and macro commands:
+ (SB-DEBUG:ARG n)
+    Return the n'th argument in the current frame.
+ (SB-DEBUG:VAR string-or-symbol [id])
+    Returns the value of the specified variable in the current frame.
+
+Other commands:
+  RETURN expr
+    Return the values resulting from evaluation of expr from the
+    current frame, if this frame was compiled with a sufficiently high
+    DEBUG optimization quality.
+
+  RESTART-FRAME
+    Restart execution of the current frame, if this frame is for a
+    global function which was compiled with a sufficiently high
+    DEBUG optimization quality.
+
+  SLURP
+    Discard all pending input on *STANDARD-INPUT*. (This can be
+    useful when the debugger was invoked to handle an error in
+    deeply nested input syntax, and now the reader is confused.)
+
+(The HELP string is stored in *DEBUG-HELP-STRING*.)
+
+
+
+
+
+
+CCL:
+? (+ 1 nil)
+> Error: The value NIL is not of the expected type NUMBER.
+> While executing: CCL::+-2-INTO, in process listener(1).
+> Type :POP to abort, :R for a list of available restarts.
+> Type :? for other options.
+1 > :r
+>   Type (:C <n>) to invoke one of the following restarts:
+0. Return to break level 1.
+1. #<RESTART ABORT-BREAK #x7F1B859C008D>
+2. Use a new value of type NUMBER instead of NIL.
+3. Return to toplevel.
+4. #<RESTART ABORT-BREAK #x7F1B859C067D>
+5. Reset this thread
+6. Kill this thread
+1 > :?
+The following toplevel commands are available:
+ <n>    the same as (:C <n>)
+ (:FUNCTION FRAME-NUMBER)  Returns the function invoked in backtrace frame <frame-number>.  This may be useful for, e.g., disassembly
+ (:FORM FRAME-NUMBER)  Return a form which looks like the call which established the stack frame identified by <frame-number>.  This is only well-defined in certain cases: when the function is globally named and not a lexical closure and when it was compiled with *SAVE-LOCAL-SYMBOLS* in effect.
+ (:SET-LOCAL NAME FRAME-NUMBER NEW)  Set value of argument denoted <name> (see :LOCAL) in frame <frame-number> to value <new>.
+ (:LOCAL NAME FRAME-NUMBER)  Return value of local denoted by <name> in frame <frame-number> <name> can either be a symbol - in which case the most recent
+binding of that symbol is used - or an integer index into the frame's set of local bindings.
+ (:SET-ARG NAME FRAME-NUMBER NEW)  Set value of argument named <name> in frame <frame-number> to value <new>.
+ (:ARG NAME FRAME-NUMBER)  Return value of argument named <name> in frame <frame-number>
+ (:V N FRAME-NUMBER)  Return value <n> in frame <frame-number>
+ (:RAW N)  Show raw contents of backtrace frame <n>
+ (:APPLY-IN-FRAME I FUNCTION &REST ARGS)  Applies FUNCTION to ARGS in the execution context of the Ith stack frame
+ (:RETURN-FROM-FRAME I &REST VALUES)  Return VALUES from the I'th stack frame
+ (:F N)  Show backtrace frame <n>
+ (:C &OPTIONAL N)  Choose restart <n>. If no <n>, continue
+ (:B &KEY START COUNT SHOW-FRAME-CONTENTS)  backtrace
+ :NFRAMES   print the number of stack frames accessible from this break loop
+ :R     list restarts
+ :Q     return to toplevel
+ :GO    continue
+ :A     exit current break loop
+ :POP   exit current break loop
+ :?     help
+ :PWD   Print the pathame of the current directory
+ (:CD DIR)  Change to directory DIR (e.g., #p"ccl:" or "/some/dir")
+ (:PROC &OPTIONAL P)  Show information about specified process <p>/all processes
+ (:KILL P)  Kill process whose name or ID matches <p>
+ (:Y &OPTIONAL P)  Yield control of terminal-input to process
+whose name or ID matches <p>, or to any process if <p> is null
+Any other form is evaluated and its results are printed out.
+
+
+
+
+
+ECL:
+> (+ 1 nil)
+
+Condition of type: SIMPLE-TYPE-ERROR
+In function +, the value of the second argument is
+  NIL
+which is not of the expected type NUMBER
+
+Available restarts:
+
+1. (RESTART-TOPLEVEL) Go back to Top-Level REPL.
+
+Broken at +. In: #<process TOP-LEVEL 0x7f7ae1774f80>.
+>> :help
+
+Top level commands:
+:cf              Compile file.
+:exit            Exit Lisp.
+:ld              Load file.
+:step            Single step form.
+:tr(ace)         Trace function.
+:untr(ace)       Untrace function.
+:s(witch)        Switch to next process to debug.
+:br(eak)         Stop a given process.
+:w(aiting)       Display list of active toplevels.
+
+Help commands:
+:apropos         Apropos.
+:doc(ument)      Document.
+:h(elp) or ?     Help.  Type ":help help" for more information.
+
+Break commands:
+:q(uit)          Return to some previous break level.
+:pop             Pop to previous break level.
+:c(ontinue)      Continue execution.
+:b(acktrace)     Print backtrace.
+:f(unction)      Show current function.
+:p(revious)      Go to previous function.
+:d(own)          Alias to :previous.
+:n(ext)          Go to next function.
+:u(p)            Alias to :next.
+:g(o)            Go to next function.
+:fs              Search forward for function.
+:bs              Search backward for function.
+:disassemble     Disassemble current function.
+:l(ambda-)e(expression) Show lisp code for current function.
+:v(ariables)     Show local variables, functions, blocks, and tags.
+:hide            Hide function.
+:unhide          Unhide function.
+:hp              Hide package.
+:unhp            Unhide package.
+:unhide-all      Unhide all variables and packages.
+:bds             Show binding stack.
+:frs             Show frame stack.
+:m(essage)       Show error message.
+:hs              Help stack.
+:i(nspect)       Inspect value of local variable.
+:c(-)b(acktrace) Print a raw C backtrace.
+
+Restart commands:
+:r1             Go back to Top-Level REPL. (RESTART-TOPLEVEL).
+
+
+
+
+
+ABCL:
+CL-USER(1): (+ 1 nil)
+#<THREAD "interpreter" {323177B7}>: Debugger invoked on condition of type TYPE-ERROR
+  The value NIL is not of type NUMBER.
+Restarts:
+  0: TOP-LEVEL Return to top level.
+[1] CL-USER(2): :help
+
+  COMMAND     ABBR DESCRIPTION
+  apropos     ap   apropos
+  bt               backtrace n stack frames (default 8)
+  cd               change default directory
+  cf               compile file(s)
+  cload       cl   compile and load file(s)
+  continue    cont invoke restart n
+  describe    de   describe an object
+  error       err  print the current error message
+  exit        ex   exit lisp
+  frame       fr   set the value of cl:* to be frame n (default 0)
+  help        he   print this help
+  inspect     in   inspect an object
+  istep       i    navigate within inspection of an object
+  ld               load a file
+  ls               list directory
+  macroexpand ma   macroexpand an expression
+  package     pa   change *PACKAGE*
+  pwd         pw   print current directory
+  reset       res  return to top level
+  rq               require a module
+  trace       tr   trace function(s)
+  untrace     untr untrace function(s)
+
+Commands must be prefixed by the command character, which is ':' by default.
+
+[1] CL-USER(3): :bt
+
+  0: (SYSTEM:BACKTRACE)
+  1: (INVOKE-DEBUGGER #<TYPE-ERROR {CC15E23}>)
+  2: org.armedbear.lisp.Lisp.error(Lisp.java:383)
+  3: org.armedbear.lisp.Lisp.type_error(Lisp.java:457)
+  4: org.armedbear.lisp.Fixnum.add(Fixnum.java:386)
+  5: org.armedbear.lisp.Primitives$pf_add.execute(Primitives.java:753)
+  6: (+ 1 NIL)
+  7: (SYSTEM::%EVAL (+ 1 NIL))
+
+
+
+
+Allegro:
+CL-USER(1): (+ 1 nil)
+Error: `NIL' is not of the expected type `NUMBER'
+  [condition type: TYPE-ERROR]
+
+Restart actions (select using :continue):
+ 0: Return to Top Level (an "abort" restart).
+ 1: Abort entirely from this (lisp) process.
