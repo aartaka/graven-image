@@ -195,7 +195,7 @@ interacting with."
               (second (find-command-or-prop key nil fields)))
             keys)))
 
-(defmacro definterface (prompt name stream (object)
+(defmacro definterface (name stream (object)
                         ((var val) &rest vars+vals)
                         documentation
                         &body key+commands)
@@ -231,7 +231,7 @@ inspector."
              (summarize)
              (print-fields)
              (loop
-               (format *stream* ,prompt)
+               (format *stream* "~&~a> " (quote ,name))
                (finish-output *stream*)
                (let ((input (read *stream*)))
                  (multiple-value-bind (result command-p)
