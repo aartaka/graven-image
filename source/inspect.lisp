@@ -549,9 +549,11 @@ not suitable for the `properties*' key-value format."))
   (multiple-value-bind (second minute hour date month year)
       (decode-universal-time object)
     (format stream
-            "~s (~a bits, #b~b, #o~o, #x~x, ~2,'0d:~2,'0d:~2,'0d ~
+            "~s (~a bits):
+#b~b, #o~o, #x~x
+~2,'0d:~2,'0d:~2,'0d ~
 ~[~;Jan~;Feb~;Mar~;Apr~;May~;Jun~;Jul~;Aug~;Sep~;Oct~;Nov~;Dec~] ~
-~a~[th~;st~;nd~;rd~:;th~], year ~a)"
+~a~[th~;st~;nd~;rd~:;th~], year ~a."
             object (ceiling (log object 2)) object object object
             hour minute second month date (mod date 10) year)))
 
