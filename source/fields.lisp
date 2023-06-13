@@ -24,6 +24,37 @@
   #+allegro (excl:lispval-to-address object)
   #-(or sbcl ccl ecl abcl clisp gcl allegro) (sxhash object))
 
+#+sbcl
+(defun remove-sbcl-props-from (object &rest names-to-remove)
+  (mapcar #'(lambda (cons)
+              (list (car cons) (cdr cons)))
+          (set-difference
+           (nth-value 2 (sb-impl::inspected-parts object))
+           names-to-remove
+           :key (lambda (x)
+                  (typecase x
+                    (cons (car x))
+                    (symbol x)
+                    (string x)))
+           :test #'equal)))
+
+#+ccl
+(defun get-ccl-props (object &rest props)
+  (mapcar
+   (lambda (prop)
+     (list prop
+           (typecase object
+             (generic-function
+              (ccl::nth-immediate object (symbol-value prop)))
+             (t (ccl:uvref object (symbol-value prop))))))
+   props))
+
+#+abcl
+(defun abcl-props-except (object &rest except)
+  (loop for (name . value) in (system:inspected-parts object)
+        unless (member name except :test #'string=)
+          collect (list (intern name :keyword) value)))
+
 (defgeneric properties* (object &key strip-null &allow-other-keys)
   (:method :around (object &key (strip-null t) &allow-other-keys)
     (delete
@@ -52,6 +83,11 @@
                 #+ccl
                 (:wrapper ,(ccl::%class-own-wrapper (class-of object))))
               (call-next-method)))))
+  (:method (object &key &allow-other-keys)
+    (warn "PROPERTIES* are not implemented for ~a" (type-of object))
+    #+sbcl (remove-sbcl-props-from object)
+    #+abcl (abcl-props-except object)
+    #-(or sbcl abcl) nil)
   (:documentation "Return a list of OBJECT properties to inspect.
 Every property is a list of (NAME VALUE &optional SETTER) lists, where
 
@@ -158,37 +194,6 @@ out."))
          `((:most-positive-long-float ,most-positive-long-float)))
         (fixnum
          `((:most-positive-fixnum ,most-positive-fixnum))))))
-
-#+sbcl
-(defun remove-sbcl-props-from (object &rest names-to-remove)
-  (mapcar #'(lambda (cons)
-              (list (car cons) (cdr cons)))
-          (set-difference
-           (nth-value 2 (sb-impl::inspected-parts object))
-           names-to-remove
-           :key (lambda (x)
-                  (typecase x
-                    (cons (car x))
-                    (symbol x)
-                    (string x)))
-           :test #'equal)))
-
-#+ccl
-(defun get-ccl-props (object &rest props)
-  (mapcar
-   (lambda (prop)
-     (list prop
-           (typecase object
-             (generic-function
-              (ccl::nth-immediate object (symbol-value prop)))
-             (t (ccl:uvref object (symbol-value prop))))))
-   props))
-
-#+abcl
-(defun abcl-props-except (object &rest except)
-  (loop for (name . value) in (system:inspected-parts object)
-        unless (member name except :test #'string=)
-          collect (list (intern name :keyword) value)))
 
 (-> all-symbols ((or package symbol)) list)
 (defun all-symbols (package)
