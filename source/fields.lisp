@@ -185,15 +185,20 @@ out."))
         `((:nearest-integer ,(round object))))
     ,@(typecase object
         (short-float
-         `((:most-positive-short-float ,most-positive-short-float)))
+         `((:most-positive-short-float ,most-positive-short-float)
+           (:most-negative-short-float ,most-negative-short-float)))
         (single-float
-         `((:most-positive-single-float ,most-positive-single-float)))
+         `((:most-positive-single-float ,most-positive-single-float)
+           (:most-negative-single-float ,most-negative-single-float)))
         (double-float
-         `((:most-positive-double-float ,most-positive-double-float)))
+         `((:most-positive-double-float ,most-positive-double-float)
+           (:most-negative-double-float ,most-negative-double-float)))
         (long-float
-         `((:most-positive-long-float ,most-positive-long-float)))
+         `((:most-positive-long-float ,most-positive-long-float)
+           (:most-negative-long-float ,most-negative-long-float)))
         (fixnum
-         `((:most-positive-fixnum ,most-positive-fixnum))))))
+         `((:most-positive-fixnum ,most-positive-fixnum)
+           (:most-negative-fixnum ,most-negative-fixnum))))))
 
 (-> all-symbols ((or package symbol)) list)
 (defun all-symbols (package)
