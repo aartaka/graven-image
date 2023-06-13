@@ -255,4 +255,6 @@ inspector."
          ,documentation
          (catch 'toplevel
            (loop
-             (,internal-name ,object)))))))
+             (,internal-name ,object)
+             (when (yes-or-no-p "Exit the ~a for ~s?" (quote ,name) ,object)
+               (throw 'toplevel (values)))))))))
