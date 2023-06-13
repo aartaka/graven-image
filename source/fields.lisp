@@ -604,6 +604,15 @@ not suitable for the `properties*' key-value format."))
           (restart-name object) (restart-interactive object)
           object))
 
+(defmethod description* ((object condition) &optional stream)
+  (format stream "~s:
+~a
+
+~:[~;~@(~s~) is:
+~a~]"
+          object object (documentation (class-of object) 't)
+          (type-of object) (documentation (class-of object) 't)))
+
 (defmethod description* ((object hash-table) &optional stream)
   (format stream "[~a, ~d/~d]~:[
  ~s~;~*~]"
