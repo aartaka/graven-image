@@ -559,7 +559,10 @@ not suitable for the `properties*' key-value format."))
 ~2,'0d:~2,'0d:~2,'0d ~
 ~[~;Jan~;Feb~;Mar~;Apr~;May~;Jun~;Jul~;Aug~;Sep~;Oct~;Nov~;Dec~] ~
 ~a~[th~;st~;nd~;rd~:;th~], year ~a."
-            object (ceiling (log object 2)) object object object
+            object (if (zerop object)
+                       1
+                       (ceiling (log object 2)))
+            object object object
             hour minute second month date (mod date 10) year)))
 
 ;; TODO: float/double etc. binary layout
