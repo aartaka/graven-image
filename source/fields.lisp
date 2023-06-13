@@ -551,19 +551,32 @@ not suitable for the `properties*' key-value format."))
 
 ;; TODO: integer binary layout (two's complement?).
 (defmethod description* ((object integer) &optional stream)
-  (multiple-value-bind (second minute hour date month year)
-      (decode-universal-time object)
-    (format stream
-            "~s (~a bit~:p):
-#b~b, #o~o, #x~x
-~2,'0d:~2,'0d:~2,'0d ~
+  (format stream
+          "~s (~a bit~:p):
+#b~b, #o~o, #x~x~
+~{~&Universal time: ~2,'0d:~2,'0d:~2,'0d ~
 ~[~;Jan~;Feb~;Mar~;Apr~;May~;Jun~;Jul~;Aug~;Sep~;Oct~;Nov~;Dec~] ~
-~a~[th~;st~;nd~;rd~:;th~], year ~a."
-            object (if (zerop object)
-                       1
-                       (ceiling (log object 2)))
-            object object object
-            hour minute second month date (mod date 10) year)))
+~a~[th~;st~;nd~;rd~:;th~], year ~a.~} ~
+~{~&Approximate UNIX time: ~2,'0d:~2,'0d:~2,'0d ~
+~[~;Jan~;Feb~;Mar~;Apr~;May~;Jun~;Jul~;Aug~;Sep~;Oct~;Nov~;Dec~] ~
+~a~[th~;st~;nd~;rd~:;th~], year ~a.~}"
+          object (integer-length object)
+          object object object
+          (when (>= object 0)
+            (multiple-value-bind (second minute hour date month year)
+                (decode-universal-time object)
+              (list hour minute second month date (mod date 10) year)))
+          ;; FIXME: Doesn't account for leap seconds.
+          (when (>= object 0)
+            (let* ((unix-epoch (encode-universal-time 0 0 0 1 1 1970))
+                   (unadjusted-time (+ object unix-epoch)))
+              (multiple-value-bind (usecond uminute uhour udate umonth uyear?)
+                  (decode-universal-time unadjusted-time)
+                (declare (ignorable usecond uminute uhour udate umonth))
+                ;; Leap seconds, one per year.
+                (multiple-value-bind (usecond uminute uhour udate umonth uyear)
+                    (decode-universal-time (+ unadjusted-time (- uyear? 1970)))
+                  (list uhour uminute usecond umonth udate (mod udate 10) uyear)))))))
 
 ;; TODO: float/double etc. binary layout
 (defmethod description* ((object float) &optional stream)
