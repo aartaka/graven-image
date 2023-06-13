@@ -606,12 +606,8 @@ not suitable for the `properties*' key-value format."))
 
 (defmethod description* ((object condition) &optional stream)
   (format stream "~s:
-~a
-
-~:[~;~@(~s~) is:
-~a~]"
-          object object (documentation (class-of object) 't)
-          (type-of object) (documentation (class-of object) 't)))
+~a"
+          object object))
 
 (defmethod description* ((object hash-table) &optional stream)
   (format stream "[~a, ~d/~d]~:[
