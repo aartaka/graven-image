@@ -69,20 +69,31 @@
                    (value (list name value))
                    (strip-null nil)
                    (t prop))))
-             (append
-              `((:self ,object)  ; From CCL.
-                (:id ,(id object))
-                (:class ,(class-of object)
-                        ,(lambda (new-value _)
-                           (declare (ignorable _))
-                           (change-class object (find-class new-value))))
-                ,@(let ((slot-defs (closer-mop:class-slots (class-of object))))
-                    (when slot-defs
-                      (list (list :slot-definitions slot-defs))))
-                (:type ,(type-of object))
-                #+ccl
-                (:wrapper ,(ccl::%class-own-wrapper (class-of object))))
-              (call-next-method)))))
+             (let ((slot-defs (closer-mop:class-slots (class-of object)))
+                   (values (call-next-method)))
+               (append
+                `((:self ,object)       ; From CCL.
+                  (:id ,(id object))
+                  (:class ,(class-of object)
+                          ,(lambda (new-value _)
+                             (declare (ignorable _))
+                             (change-class object (find-class new-value))))
+                  ,@(when slot-defs
+                      (list (list :slot-definitions slot-defs)))
+                  (:type ,(type-of object))
+                  #+ccl
+                  (:wrapper ,(ccl::%class-own-wrapper (class-of object))))
+                values
+                (when slot-defs
+                  (loop for def in slot-defs
+                        for name = (closer-mop:slot-definition-name def)
+                        unless (assoc name values)
+                          collect (list name (if (slot-boundp object name)
+                                                 (slot-value object name)
+                                                 :unbound)
+                                        (lambda (new-value _)
+                                          (declare (ignorable _))
+                                          (setf (slot-value object name) new-value))))))))))
   (:method (object &key &allow-other-keys)
     (warn "PROPERTIES* are not implemented for ~a" (type-of object))
     #+sbcl (remove-sbcl-props-from object)
