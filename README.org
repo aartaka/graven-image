@@ -332,6 +332,9 @@ dribble* &optional pathname (if-exists :append)
 Dribble the REPL session to =pathname=. Unlike the implementation-specific =dribble=, this one formats all of the session as =load=-able Lisp file fully reproducing the session. So all the input forms are printed verbatim, and all the outputs are commented out.
 
 Beware: using any interactive function (like =inspect= etc.) breaks the dribble REPL. But then, it's unlikely one'd want to record interactive session into a dribble file.
+** =debugger*= (generic function)
+
+Intended to replace =invoke-debugger=. Somewhat barebones right now. Backtrace inspection is there, but it's a wrapper around =inspect*= on =dissect:environment=, instead of self-sufficient interface.
 
 * Roadmap
 - [ ] Add:
@@ -339,7 +342,7 @@ Beware: using any interactive function (like =inspect= etc.) breaks the dribble 
   - [X] =describe*=,
   - [X] =time*=,
   - [ ] =ed*=.
-  - [ ] =invoke-debugger*=.
+  - [X] =invoke-debugger*=.
 - [ ] Improve
   - [X] =dribble=,
   - [ ] =step=,

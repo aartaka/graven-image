@@ -45,8 +45,9 @@ For inspector, that's a recursive inspection.")
         for index from *offset* below real-page-Len
         for (key value . args) in (subseq fields *offset*)
         do (apply *print-field-fn* *stream* index key value args)
-        finally (format *stream* "~&[Showing fields ~d-~d out of ~d]"
-                        *offset* (1- real-page-len) (1- *length*))))
+        finally (unless (= real-page-len *length*)
+                  (format *stream* "~&[Showing fields ~d-~d out of ~d]"
+                          *offset* (1- real-page-len) (1- *length*)))))
 
 (defun summarize ()
   (funcall *summary-fn* *object* *stream*))

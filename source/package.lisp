@@ -13,6 +13,7 @@
    #:function-lambda-expression* #:function-lambda-list* #:function-name* #:function-type*
    #:time* #:with-time*
    #:dribble*
+   #:debugger*
    ;; #:step* #:trace* #:untrace*
    )
   (:import-from
