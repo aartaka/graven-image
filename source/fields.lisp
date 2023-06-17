@@ -543,6 +543,12 @@ out."))
      #+ecl ,(si::restart-report-function object)
      #-(or ccl sbcl ecl) nil)))
 
+(defmethod properties* ((object condition) &key &allow-other-keys)
+  (let ((env (dissect:capture-environment object)))
+    `((restarts ,(dissect:environment-restarts env))
+      (stack ,(dissect:environment-stack env))
+      (thread ,(dissect:environment-thread env)))))
+
 (defgeneric description* (object &optional stream)
   (:method :around (object &optional stream)
     (let* ((type (first (uiop:ensure-list (type-of object)))))
