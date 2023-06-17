@@ -69,7 +69,7 @@
                    (value (list name value))
                    (strip-null nil)
                    (t prop))))
-             (let ((slot-defs (closer-mop:class-slots (class-of object)))
+             (let ((slot-defs (ignore-errors (closer-mop:class-slots (class-of object))))
                    (values (call-next-method)))
                (append
                 `((:self ,object)       ; From CCL.
