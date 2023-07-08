@@ -345,6 +345,7 @@ Intended to replace =invoke-debugger=. Somewhat barebones right now. Backtrace i
   - [X] =invoke-debugger*=.
 - [ ] Improve
   - [X] =dribble=,
+    - [ ] Make dribble file prettier, strip off the REPL prompt.
   - [ ] =step=,
   - [ ] =trace= and =untrace=
   - [ ] =documentation=?
