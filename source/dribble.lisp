@@ -44,18 +44,15 @@
 
 (define-generic dribble* (&optional (pathname (merge-pathnames #p".dribble.lisp" (user-homedir-pathname)) pathname-p)
                           (if-exists :append) (if-does-not-exist :create))
-  "Start a new REPL recording the inputted forms, their result, and outputs.
+  "Save the recording of the current REPL session at PATHNAME (defaults to ~/.dribble.lisp).
 
-Save the recording at PATHNAME (defaults to ~/.dribble.lisp).  If the
-PATHNAME already exists, do IF-EXISTS (as per `cl:open').
+If PATHNAME already exists, do IF-EXISTS (as per `cl:open').
 
 The file resulting from the dribbling has:
 - Opening and closing commentaries showing the time boundaries of
   dribbling.
 - Inputted forms verbatim.
-- Regular output of the forms with \";;\" prepended.
-- Error output with \";;!\" prepended.
-- Listing of values with \";;=>\" prepended to each value.
+- Values and outputs prefixed by semicolons.
 
 With such a format, dribble file can be loaded into the running Lisp
 image to reproduce the recorded session."
