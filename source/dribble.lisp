@@ -48,7 +48,7 @@
 
 If PATHNAME already exists, do IF-EXISTS (as per `cl:open').
 
-The file resulting from the dribbling has:
+The file resulting from DRIBBLE* has:
 - Opening and closing commentaries showing the time boundaries of
   dribbling.
 - Inputted forms verbatim.
