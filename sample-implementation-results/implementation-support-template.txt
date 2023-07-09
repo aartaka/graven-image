@@ -34,13 +34,27 @@
     - [ ]
   - [ ] MOP object inspection.
   - [ ] Proper function/funcallable hierarchy inspection.
+- [ ] DRIBBLE*
+  - [ ] Trivial Gray Streams support.
+  - [ ] Error output.
+  - [ ] REPL prompt cleanup.
+  - [ ] Empty line stripping.
 - [ ] ED*
   - [ ] Function s-expr editing.
-    - [ ] Persisting the edited code into the function itself.
+    - [ ] Persisting the edited code into the function itself (compilation).
   - [ ] File editing.
     - [ ] Big files fetching.
+    - [ ] Binary files.
+    - [ ] Lisp files.
+    - [ ] Plaintext files.
   - [ ] String editing.
     - [ ] Modifying the string in memory.
 - [ ] INVOKE-DEBUGGER*
   - [ ] Overriding the implementation-specific debugger.
   - [ ] Running standard debugger hooks unobtrusively.
+  - [ ] Listing restarts.
+  - [ ] Backtrace inspection (dissect).
+    - [ ] Functions name.
+    - [ ] Arguments.
+    - [ ] Locals.
+    - [ ] Eval-in-frame.
