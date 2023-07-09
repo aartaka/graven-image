@@ -2,6 +2,7 @@
   - [ ] Ensure that I/O (FINISH-OUTPUT etc.) is not buggy.
 - [ ] APROPOS*, APROPOS-LIST*
   - [ ] Make it fast enough.
+    - (time (prog1 t (graven-image:apropos-list* "A")))
   - [ ] Make sure that Graven Image APROPOS-LIST* returns the same
     data as the standard APROPOS-LIST when used with standard params.
     - (set-difference (apropos-list "A") (graven-image:apropos-list* "A"))
@@ -11,7 +12,6 @@
   - [ ] Closure fetching.
   - [ ] Ftype fetching.
   - [ ] Source search.
-  - [ ] Source parsing.
   - [ ] Generic functions support.
     - [ ] Methods support.
 - [ ] TIME*
