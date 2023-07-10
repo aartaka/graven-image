@@ -203,9 +203,9 @@ describe* object &optional (stream t) ignore-methods
 #+end_src
 
 Describes the =object= to the stream, but this time with portable
-format of description (determined by =graven-image:description= and
+format of description (determined by =graven-image:description*= and
 specified for many standard classes) and with predictable set of
-properties (=graven-image:properties=). In Graven Image, both
+properties (=graven-image:properties*=). In Graven Image, both
 =describe= and =inspect= have the same format and the same set of
 properties.
 
