@@ -79,15 +79,15 @@ image to reproduce the recorded session."
       (*dribble-pathname*
        (cerror "Do nothing" "~%Already dribbling to ~a~%" *dribble-pathname*))
       (pathname
-       (setf *dribble-pathname* pathname
-             actual-stream (open *dribble-pathname*
-                                 :direction :io
-                                 :if-exists if-exists
-                                 :if-does-not-exist if-does-not-exist)
-             *dribble-stream* (make-instance 'dribble-out-stream :actual-stream actual-stream)
-             ;; *error-output* (make-broadcast-stream *error-output* *dribble-stream*)
-             *standard-output* (make-broadcast-stream *standard-output* *dribble-stream*)
-             *standard-input* (make-echo-stream
-                               *standard-input*
-                               (make-instance 'dribble-in-stream :actual-stream actual-stream)))
+       (let* ((actual-stream (open pathname
+                                   :direction :io
+                                   :if-exists if-exists
+                                   :if-does-not-exist if-does-not-exist)))
+         (setf *dribble-pathname* pathname
+               *dribble-stream* (make-instance 'dribble-out-stream :actual-stream actual-stream)
+               ;; *error-output* (make-broadcast-stream *error-output* *dribble-stream*)
+               *standard-output* (make-broadcast-stream *standard-output* *dribble-stream*)
+               *standard-input* (make-echo-stream
+                                 *standard-input*
+                                 (make-instance 'dribble-in-stream :actual-stream actual-stream))))
        (print-dribble "Started")))))
