@@ -11,7 +11,7 @@
   :version "0.0.1"
   :serial t
   :pathname "source/"
-  :depends-on ("closer-mop" "dissect" "trivial-gray-streams")
+  :depends-on ("closer-mop" "trivial-gray-streams")
   :components ((:file "package")
                (:file "graven-image")
                (:file "function-lambda-expression")
@@ -22,8 +22,7 @@
                (:file "interface")
                (:file "describe")
                (:file "inspect")
-               (:file "dribble")
-               (:file "debugger"))
+               (:file "dribble"))
   :in-order-to ((test-op (test-op "graven-image/tests"))))
 
 (defsystem "graven-image/cl"
