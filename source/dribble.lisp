@@ -56,6 +56,9 @@ The file resulting from DRIBBLE* has:
 
 With such a format, dribble file can be loaded into the running Lisp
 image to reproduce the recorded session."
+  #+abcl
+  (warn "Dribble* is not implemented for ABCL, doint nothing. Help in implementing it!")
+  #-abcl
   (labels ((print-dribble (action)
              (multiple-value-bind (second minute hour date month year)
                  (decode-universal-time (get-universal-time))
