@@ -56,6 +56,7 @@
           collect (list (intern name :keyword) value)))
 
 (defgeneric properties* (object &key strip-null &allow-other-keys)
+  (:method-combination append)
   (:method :around (object &key (strip-null t) &allow-other-keys)
     (delete
      nil
@@ -94,7 +95,7 @@
                                         (lambda (new-value _)
                                           (declare (ignorable _))
                                           (setf (slot-value object name) new-value))))))))))
-  (:method (object &key &allow-other-keys)
+  (:method append (object &key &allow-other-keys)
     (warn "PROPERTIES* are not implemented for ~a" (type-of object))
     #+sbcl (remove-sbcl-props-from object)
     #+abcl (abcl-props-except object)
@@ -119,7 +120,15 @@ out."))
       (nth-value 1 (find-symbol (symbol-name symbol) (symbol-package symbol)))
       :uninterned))
 
-(defmethod properties* ((object symbol) &key &allow-other-keys)
+(defmacro defproperties ((name specifier) &body properties)
+  `(defmethod properties* append ((,name ,specifier) &key &allow-other-keys)
+     ,@properties))
+
+(defmacro defproperty (specifier name function)
+  `(defmethod properties* append ((object ,specifier) &key &allow-other-keys)
+     (list (list ,name (,function object)))))
+
+(defproperties (object symbol)
   `((:name ,(symbol-name object))
     (:package ,(symbol-package object))
     (:visibility ,(symbol-visibility object)
@@ -154,62 +163,69 @@ out."))
 (defun dotted-p (cons)
   (not (null (cdr (last cons)))))
 
-(defmethod properties* ((object cons) &key &allow-other-keys)
-  (if (dotted-p object)
-      `((:car ,(car object)
-              ,(lambda (new-value _)
-                 (declare (ignorable _))
-                 (rplaca object new-value)))
-        (:cdr ,(cdr object)
-              ,(lambda (new-value _)
-                 (declare (ignorable _))
-                 (rplacd object new-value))))
-      (append
-       `((:length ,(length object)))
-       (loop for i from 0
-             for elem in object
-             collect (let ((i i)
-                           (elem elem))
-                       (list i elem (lambda (new-value _)
-                                      (declare (ignorable _))
-                                      (setf (nth i object) new-value))))))))
+(defproperties (object null)
+  (call-next-method))
+
+(defproperties (object list)
+  `((:length ,(length object))
+    ,@(loop for i from 0
+            for elem in object
+            collect (let ((i i)
+                          (elem elem))
+                      (list i elem (lambda (new-value _)
+                                     (declare (ignorable _))
+                                     (setf (nth i object) new-value)))))))
+
+(defproperties (object cons)
+  (when (dotted-p object)
+    `((:car ,(car object)
+            ,(lambda (new-value _)
+               (declare (ignorable _))
+               (rplaca object new-value)))
+      (:cdr ,(cdr object)
+            ,(lambda (new-value _)
+               (declare (ignorable _))
+               (rplacd object new-value))))))
 
 
-(defmethod properties* ((object complex) &key &allow-other-keys)
+(defproperties (object complex)
   `((:imagpart ,(imagpart object))
     (:realpart ,(realpart object))))
 
-(defmethod properties* ((object number) &key &allow-other-keys)
-  `(,@(when (typep object 'ratio)
-        `((:numerator ,(numerator object))
-          (:denominator ,(denominator object))))
-    ,@(when (floatp object)
-        (multiple-value-bind (significand exponent sign)
-            (integer-decode-float object)
-          `((:exponent ,exponent)
-            (:mantissa ,significand)
-            (:sign ,sign)
-            (:radix ,(float-radix object))
-            (:precision ,(float-precision object)))))
-    ,@(when (or (floatp object)
-                (typep object 'ratio))
-        `((:nearest-integer ,(round object))))
-    ,@(typecase object
-        (short-float
-         `((:most-positive-short-float ,most-positive-short-float)
-           (:most-negative-short-float ,most-negative-short-float)))
-        (single-float
-         `((:most-positive-single-float ,most-positive-single-float)
-           (:most-negative-single-float ,most-negative-single-float)))
-        (double-float
-         `((:most-positive-double-float ,most-positive-double-float)
-           (:most-negative-double-float ,most-negative-double-float)))
-        (long-float
-         `((:most-positive-long-float ,most-positive-long-float)
-           (:most-negative-long-float ,most-negative-long-float)))
-        (fixnum
-         `((:most-positive-fixnum ,most-positive-fixnum)
-           (:most-negative-fixnum ,most-negative-fixnum))))))
+(defproperties (object ratio)
+  `((:numerator ,(numerator object))
+    (:denominator ,(denominator object))
+    (:nearest-integer ,(round object))))
+
+(defproperties (object float)
+  (multiple-value-bind (significand exponent sign)
+      (integer-decode-float object)
+    `((:exponent ,exponent)
+      (:mantissa ,significand)
+      (:sign ,sign)
+      (:radix ,(float-radix object))
+      (:precision ,(float-precision object))
+      ,@(typecase object
+          (long-float
+           `((:most-positive-long-float ,most-positive-long-float)
+             (:most-negative-long-float ,most-negative-long-float)))
+          (double-float
+           `((:most-positive-double-float ,most-positive-double-float)
+             (:most-negative-double-float ,most-negative-double-float)))
+          (single-float
+           `((:most-positive-single-float ,most-positive-single-float)
+             (:most-negative-single-float ,most-negative-single-float)))
+          (short-float
+           `((:most-positive-short-float ,most-positive-short-float)
+             (:most-negative-short-float ,most-negative-short-float))))
+      (:nearest-integer ,(round object)))))
+
+(defproperties (object integer)
+  (append
+   `((:integer-length (integer-length object)))
+   (when (typep object 'fixnum)
+     `((:most-positive-fixnum ,most-positive-fixnum)
+       (:most-negative-fixnum ,most-negative-fixnum)))))
 
 (-> all-symbols ((or package symbol)) list)
 (defun all-symbols (package)
@@ -233,7 +249,7 @@ out."))
         when (eql (symbol-visibility sym) :inherited)
           collect sym))
 
-(defmethod properties* ((object package) &key &allow-other-keys)
+(defproperties (object package)
   `((:name ,(package-name object))
     (:description ,(documentation object t))
     (:nicknames ,(package-nicknames object))
@@ -264,7 +280,7 @@ out."))
        'sb-impl::internal-symbols 'sb-impl::external-symbols
        'sb-impl::doc-string 'sb-impl::%local-nicknames)))
 
-(defmethod properties* ((object readtable) &key &allow-other-keys)
+(defproperties (object readtable)
   `((:case ,(readtable-case object)
       ,(lambda (new-value _)
          (declare (ignorable _))
@@ -285,13 +301,13 @@ out."))
        object
        'sb-impl::%readtable-normalization 'sb-impl::%readtable-case)))
 
-(defmethod properties* ((object random-state) &key &allow-other-keys)
+(defproperties (object random-state)
   `(#+ccl
     ,@(get-ccl-props object 'ccl::random.mrg31k3p-state)
     #+sbcl
     ,@(remove-sbcl-props-from object)))
 
-(defmethod properties* ((object character) &key &allow-other-keys)
+(defproperties (object character)
   `((:code ,(char-code object))
     (:name ,(char-name object))
     (:digit-char-p ,(digit-char-p object))
@@ -300,15 +316,19 @@ out."))
     (:alphanumericp ,(alphanumericp object))
     (:char-code-limit ,char-code-limit)))
 
-(defmethod properties* ((object array) &key &allow-other-keys)
+(defproperties (object string)
+  `((:uppercase ,(every #'upper-case-p object))
+    (:lowercase ,(every #'lower-case-p object))
+    (:graphic ,(every #'graphic-char-p object))))
+
+(defproperties (object array)
   `((:dimensions ,(array-dimensions object)
                  ,(lambda (new-value _)
                     (declare (ignorable _))
                     (adjust-array object new-value)))
-    ,@(unless (stringp object)
-        `((:rank ,(array-rank object))
-          (:element-type ,(array-element-type object))
-          (:upgraded-element-type ,(upgraded-array-element-type (type-of object)))))
+    (:rank ,(array-rank object))
+    (:element-type ,(array-element-type object))
+    (:upgraded-element-type ,(upgraded-array-element-type (type-of object)))
     ,@(when (array-displacement object)
         (multiple-value-bind (displaced-to offset)
             (array-displacement object)
@@ -326,13 +346,14 @@ out."))
                             (declare (ignorable _))
                             (setf (elt object i) new-value))))))
 
-(defmethod properties* ((object pathname) &key &allow-other-keys)
+(defproperty logical-pathname
+  :translation translate-logical-pathname)
+
+(defproperties (object pathname)
   (let ((wild-p (wild-pathname-p object))
         (logical-p (uiop:logical-pathname-p object))
         (link-p (not (equal (truename object) object))))
-    `(,@(when logical-p
-          `((:translation ,(translate-logical-pathname object))))
-      (:wild-p ,wild-p)
+    `((:wild-p ,wild-p)
       (:namestring ,(namestring object))
       ,@(unless (or logical-p
                     (string= (namestring object)
@@ -361,7 +382,7 @@ out."))
          object
          'sb-impl::host 'sb-impl::device 'sb-impl::name 'sb-impl::version 'type 'namestring))))
 
-(defmethod properties* ((object hash-table) &key &allow-other-keys)
+(defproperties (object hash-table)
   `((:test ,(hash-table-test object))
     (:size ,(hash-table-size object))
     (:count ,(hash-table-count object))
@@ -399,6 +420,43 @@ out."))
        object
        'sb-impl::test 'sb-impl::rehash-size 'sb-impl::rehash-threshold 'sb-impl::%count)))
 
+(defproperties (object two-way-stream)
+  `((:input ,(two-way-stream-input-stream object))
+    (:output ,(two-way-stream-output-stream object))))
+
+;; On SBCL, echo-stream is an instance of two-way-stream...
+(defproperties (object echo-stream)
+  `((:echo-input ,(echo-stream-input-stream object))
+    (:echo-output ,(echo-stream-output-stream object))))
+
+(defproperty concatenated-stream
+  :concatenates concatenated-stream-streams)
+
+(defproperty broadcast-stream
+  :broadcasts broadcast-stream-streams)
+
+(defproperty synonym-stream
+  :synonym synonym-stream-symbol)
+
+(defproperties (object file-stream)
+  `((:pathname ,(pathname object))
+    (:position ,(file-position object))
+    (:length (file-length object))
+    (:probe ,(probe-file object)
+            ,(lambda (new-value old-value)
+               (let* ((file (pathname object))
+                      (exists-p old-value))
+                 (cond
+                   ((and exists-p (null new-value))
+                    (delete-file file)
+                    (close object))
+                   ((and new-value (not exists-p))
+                    (open file
+                          :direction :probe
+                          :if-does-not-exist :create))))))
+    #+ccl
+    ,@(get-ccl-props object 'ccl::basic-file-stream.actual-filename)))
+
 (defmethod properties* ((object stream) &key &allow-other-keys)
   `((:direction ,(cond
                    ((typep object 'two-way-stream) :io)
@@ -421,38 +479,6 @@ out."))
                   (:abort (close object :abort t))))))
     (:element-type ,(stream-element-type object))
     (:format ,(stream-external-format object))
-    ,@(typecase object
-        ;; On SBCL, echo-stream is an instance of two-way-stream...
-        (echo-stream
-         `((:in-echo ,(echo-stream-input-stream object))
-           (:out-echo ,(echo-stream-output-stream object))))
-        (two-way-stream
-         `((:input ,(two-way-stream-input-stream object))
-           (:output ,(two-way-stream-output-stream object))))
-        (concatenated-stream
-         `((:concatenates ,(concatenated-stream-streams object))))
-        (broadcast-stream
-         `((:broadcasts ,(broadcast-stream-streams object))))
-        (synonym-stream
-         `((:synonym ,(synonym-stream-symbol object))))
-        (file-stream
-         `((:pathname ,(pathname object))
-           (:position ,(file-position object))
-           (:length (file-length object))
-           (:probe ,(probe-file object)
-                   ,(lambda (new-value old-value)
-                      (let* ((file (pathname object))
-                             (exists-p old-value))
-                        (cond
-                          ((and exists-p (null new-value))
-                           (delete-file file)
-                           (close object))
-                          ((and new-value (not exists-p))
-                           (open file
-                                 :direction :probe
-                                 :if-does-not-exist :create))))))
-           #+ccl
-           ,@(get-ccl-props object 'ccl::basic-file-stream.actual-filename))))
     #+sbcl
     ,@(remove-sbcl-props-from
        object
@@ -484,13 +510,13 @@ out."))
    #+abcl
    (abcl-props-except object "DOCUMENTATION" "DIRECT-SLOTS" "SLOTS")))
 
-(defmethod properties* ((object standard-object) &key &allow-other-keys)
+(defproperties (object standard-object)
   (inspect-slots object))
 
-(defmethod properties* ((object structure-object) &key &allow-other-keys)
+(defproperties (object structure-object)
   (inspect-slots object))
 
-(defmethod properties* ((object function) &key &allow-other-keys)
+(defproperties (object function)
   `((:name ,(function-name* object)
            ,(lambda (new-name old-name)
               (compile new-name (fdefinition old-name))))
@@ -501,20 +527,21 @@ out."))
                     (declare (ignorable _))
                     (compile (function-name* object)
                              new-value)))
-    ,@(when (typep object 'generic-function)
-        `((:methods ,(closer-mop:generic-function-methods object))
-          (:method-combination ,(closer-mop:generic-function-method-combination object))
-          #+ccl
-          ,@(get-ccl-props
-             object
-             'ccl::gf.code-vector 'ccl::gf.slots 'ccl::gf.dispatch-table 'ccl::gf.dcode 'ccl::gf.hash 'ccl::gf.bits)
-          #+ccl
-          ,@(when (typep object 'standard-generic-function)
-              (get-ccl-props object 'ccl::sgf.method-class 'ccl::sgf.decls 'ccl::sgf.dependents))))
     #+sbcl
     ,@(remove-sbcl-props-from
        object
        'sb-pcl::name 'sb-pcl::methods 'sb-pcl::%method-combination "Lambda-list" "Ftype")))
+
+(defproperties (object generic-function)
+  `((:methods ,(closer-mop:generic-function-methods object))
+    (:method-combination ,(closer-mop:generic-function-method-combination object))
+    #+ccl
+    ,@(get-ccl-props
+       object
+       'ccl::gf.code-vector 'ccl::gf.slots 'ccl::gf.dispatch-table 'ccl::gf.dcode 'ccl::gf.hash 'ccl::gf.bits)
+    #+ccl
+    ,@(when (typep object 'standard-generic-function)
+        (get-ccl-props object 'ccl::sgf.method-class 'ccl::sgf.decls 'ccl::sgf.dependents))))
 
 (-> restart-interactive (restart))
 (defun restart-interactive (restart)
@@ -524,7 +551,7 @@ out."))
   #+ecl (si::restart-interactive-function restart)
   #-(or ccl sbcl ecl) nil)
 
-(defmethod properties* ((object restart) &key &allow-other-keys)
+(defproperties (object restart)
   `((:name ,(restart-name object))
     (:interactive ,(restart-interactive object))
     (:test
@@ -543,11 +570,29 @@ out."))
      #+ecl ,(si::restart-report-function object)
      #-(or ccl sbcl ecl) nil)))
 
-(defmethod properties* ((object condition) &key &allow-other-keys)
+(defproperties (object condition)
   `((:restarts ,(compute-restarts object))
-    ,@(when (typep object 'simple-condition)
-        `((:format-control ,(simple-condition-format-control object))
-          (:format-arguments ,(simple-condition-format-arguments object))))))
+    (:continuable ,(find 'continue (compute-restarts object) :key #'restart-name))))
+
+(defproperties (object simple-condition)
+  `((:format-control ,(simple-condition-format-control object))
+    (:format-arguments ,(simple-condition-format-arguments object))))
+
+(defproperties (object arithmetic-error)
+  `((:operation ,(arithmetic-error-operation object))
+    (:operands ,(arithmetic-error-operands object))))
+
+(defproperty cell-error :name cell-error-name)
+(defproperty package-error :package package-error-package)
+(defproperty stream-error :stream stream-error-stream)
+(defproperty print-not-readable :object print-not-readable-object)
+
+(defproperties (object type-error)
+  `((:datum ,(type-error-datum object))
+    (:expected ,(type-error-expected-type object))))
+
+(defproperty unbound-slot :instance unbound-slot-instance)
+(defproperty file-error :pathname file-error-pathname)
 
 (defgeneric description* (object &optional stream)
   (:method :around (object &optional stream)
