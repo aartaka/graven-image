@@ -320,7 +320,8 @@ useful to fetch the arglist or body, though. Use at your own risk!"
 
 (define-generic function-lambda-list* (function)
   "Return lambda list of the FUNCTION.
-Depends on `function-lambda-expression*'."
+Depends on `function-lambda-expression*', but has an
+implementation-dependent fallback."
   (let ((expression (function-lambda-expression* function)))
     (if expression
         (second expression)
