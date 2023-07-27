@@ -42,4 +42,14 @@ Influenced by:
   (:set #'set-field)
   (:modify #'set-field)
   (:istep #'istep)
-  (:inspect #'istep))
+  (:inspect #'istep)
+  (:standard #'standard-print)
+  (:aesthetic #'aesthetic-print))
+
+(defun standard-print ()
+  "Print the inspected object readably."
+  (format *stream* "~&~s" *object*))
+
+(defun aesthetic-print ()
+  "Print the inspected object aesthetically."
+  (format *stream* "~&~a" *object*))

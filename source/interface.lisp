@@ -92,14 +92,6 @@ For inspector, that's a recursive inspection.")
   (summarize)
   (print-fields))
 
-(defun standard-print ()
-  "Print the inspected object readably."
-  (format *stream* "~&~s" *object*))
-
-(defun aesthetic-print ()
-  "Print the inspected object aesthetically."
-  (format *stream* "~&~a" *object*))
-
 (defun evaluate (expression)
   "Evaluate the EXPRESSION."
   (dolist (val (multiple-value-list (eval expression)))
@@ -124,8 +116,6 @@ For inspector, that's a recursive inspection.")
     (:show ,#'self)
     (:current ,#'self)
     (:again ,#'self)
-    (:standard ,#'standard-print)
-    (:aesthetic ,#'aesthetic-print)
     (:eval ,#'evaluate)
     (:up ,#'up)
     (:pop ,#'up)
