@@ -460,7 +460,7 @@ When STRIP-NULL, fields with null VALUE and SETTER are filtered out."))
     #+ccl
     ,@(get-ccl-props object 'ccl::basic-file-stream.actual-filename)))
 
-(defmethod fields* ((object stream) &key &allow-other-keys)
+(deffields (object stream)
   `((:direction ,(cond
                    ((typep object 'two-way-stream) :io)
                    ((input-stream-p object) :input)
