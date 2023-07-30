@@ -7,7 +7,7 @@
    #:y-or-n-p* #:yes-or-no-p* #:*yes-or-no-options*
    #:apropos-list* #:apropos* #:apropod*
    ;; #:ed*
-   #:describe* #:properties*
+   #:describe* #:fields*
    #:$ #:definterface
    #:inspect* #:description*
    #:function-lambda-expression* #:function-lambda-list* #:function-name* #:function-type*

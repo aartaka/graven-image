@@ -203,7 +203,7 @@ The body of the DEFINTERFACE is the list of (KEY COMMAND) pairs to add
 
 Provide `*summary-fn*', `*fields-fn*', and `*print-field-fn*' to list
 in the interface. Good examples for `*summary-fn*' and `*fields-fn*'
-are `description*' and `properties*' (respectively) for the
+are `description*' and `fields*' (respectively) for the
 inspector."
   (let ((internal-name (intern (uiop:strcat "%" (symbol-name name)) (symbol-package name)))
         (vars-vals (cons (list var val) vars+vals)))
@@ -215,7 +215,9 @@ inspector."
                   (*stream* ,stream)
                   (*commands*
                     (append
-                     *commands*
+                     ;; Override old commands, if necessary.
+                     (remove-if (lambda (name) (member name (list ,@(mapcar #'first key+commands))))
+                                *commands* :key #'first)
                      (list ,@(loop for (key command) in key+commands
                                    collect `(list ,key ,command)))))
                   ,@(loop for (name initvalue) in vars-vals

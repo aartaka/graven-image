@@ -55,7 +55,7 @@
         unless (member name except :test #'string=)
           collect (list (intern name :keyword) value)))
 
-(defgeneric properties* (object &key strip-null &allow-other-keys)
+(defgeneric fields* (object &key strip-null &allow-other-keys)
   (:method-combination append)
   (:method :around (object &key (strip-null t) &allow-other-keys)
     (delete
@@ -74,7 +74,7 @@
                (multiple-value-bind (values error)
                    (ignore-errors (call-next-method))
                  (when (typep error 'error)
-                   (warn "PROPERTIES* are not implemented for ~a" (type-of object)))
+                   (warn "FIELDS* are not implemented for ~a" (type-of object)))
                  (append
                   `((:self ,object)     ; From CCL.
                     (:id ,(id object))
@@ -101,7 +101,7 @@
                   #+sbcl (remove-sbcl-props-from object)
                   #+abcl (abcl-props-except object)
                   #-(or sbcl abcl) nil))))))
-  (:documentation "Return a list of OBJECT properties to inspect.
+  (:documentation "Return a list of OBJECT fields to inspect.
 Every property is a list of (NAME VALUE &optional SETTER) lists, where
 
 - NAME is a thing (preferably symbol) naming the property.
@@ -112,7 +112,7 @@ Every property is a list of (NAME VALUE &optional SETTER) lists, where
 modify the property. For slots, this setter will likely be setting the
 `slot-value'.
 
-When STRIP-NULL, properties with null VALUE and SETTER are filtered
+When STRIP-NULL, fields with null VALUE and SETTER are filtered
 out."))
 
 (-> symbol-visibility (symbol) (or null (member :inherited :external :internal :uninterned)))
@@ -121,15 +121,15 @@ out."))
       (nth-value 1 (find-symbol (symbol-name symbol) (symbol-package symbol)))
       :uninterned))
 
-(defmacro defproperties ((name specifier) &body properties)
-  `(defmethod properties* append ((,name ,specifier) &key &allow-other-keys)
-     ,@properties))
+(defmacro deffields ((name specifier) &body fields)
+  `(defmethod fields* append ((,name ,specifier) &key &allow-other-keys)
+     ,@fields))
 
 (defmacro defproperty (specifier name function)
-  `(defmethod properties* append ((object ,specifier) &key &allow-other-keys)
+  `(defmethod fields* append ((object ,specifier) &key &allow-other-keys)
      (list (list ,name (,function object)))))
 
-(defproperties (object symbol)
+(deffields (object symbol)
   `((:name ,(symbol-name object))
     (:package ,(symbol-package object))
     (:visibility ,(symbol-visibility object)
@@ -168,10 +168,10 @@ out."))
 (defun dotted-p (cons)
   (not (null (cdr (last cons)))))
 
-(defproperties (object null)
+(deffields (object null)
   (call-next-method))
 
-(defproperties (object list)
+(deffields (object list)
   `((:length ,(length object))
     ,@(loop for i from 0
             for elem in object
@@ -181,7 +181,7 @@ out."))
                                      (declare (ignorable _))
                                      (setf (nth i object) new-value)))))))
 
-(defproperties (object cons)
+(deffields (object cons)
   (when (dotted-p object)
     `((:car ,(car object)
             ,(lambda (new-value _)
@@ -193,16 +193,16 @@ out."))
                (rplacd object new-value))))))
 
 
-(defproperties (object complex)
+(deffields (object complex)
   `((:imagpart ,(imagpart object))
     (:realpart ,(realpart object))))
 
-(defproperties (object ratio)
+(deffields (object ratio)
   `((:numerator ,(numerator object))
     (:denominator ,(denominator object))
     (:nearest-integer ,(round object))))
 
-(defproperties (object float)
+(deffields (object float)
   (multiple-value-bind (significand exponent sign)
       (integer-decode-float object)
     `((:exponent ,exponent)
@@ -225,7 +225,7 @@ out."))
              (:most-negative-short-float ,most-negative-short-float))))
       (:nearest-integer ,(round object)))))
 
-(defproperties (object integer)
+(deffields (object integer)
   (append
    `((:integer-length (integer-length object)))
    (when (typep object 'fixnum)
@@ -254,7 +254,7 @@ out."))
         when (eql (symbol-visibility sym) :inherited)
           collect sym))
 
-(defproperties (object package)
+(deffields (object package)
   `((:name ,(package-name object))
     (:description ,(documentation object t))
     (:nicknames ,(package-nicknames object))
@@ -285,7 +285,7 @@ out."))
        'sb-impl::internal-symbols 'sb-impl::external-symbols
        'sb-impl::doc-string 'sb-impl::%local-nicknames)))
 
-(defproperties (object readtable)
+(deffields (object readtable)
   `((:case ,(readtable-case object)
       ,(lambda (new-value _)
          (declare (ignorable _))
@@ -306,13 +306,13 @@ out."))
        object
        'sb-impl::%readtable-normalization 'sb-impl::%readtable-case)))
 
-(defproperties (object random-state)
+(deffields (object random-state)
   `(#+ccl
     ,@(get-ccl-props object 'ccl::random.mrg31k3p-state)
     #+sbcl
     ,@(remove-sbcl-props-from object)))
 
-(defproperties (object character)
+(deffields (object character)
   `((:code ,(char-code object))
     (:name ,(char-name object))
     (:digit-char-p ,(digit-char-p object))
@@ -321,12 +321,12 @@ out."))
     (:alphanumericp ,(alphanumericp object))
     (:char-code-limit ,char-code-limit)))
 
-(defproperties (object string)
+(deffields (object string)
   `((:uppercase ,(every #'upper-case-p object))
     (:lowercase ,(every #'lower-case-p object))
     (:graphic ,(every #'graphic-char-p object))))
 
-(defproperties (object array)
+(deffields (object array)
   `((:dimensions ,(array-dimensions object)
                  ,(lambda (new-value _)
                     (declare (ignorable _))
@@ -354,7 +354,7 @@ out."))
 (defproperty logical-pathname
   :translation translate-logical-pathname)
 
-(defproperties (object pathname)
+(deffields (object pathname)
   (let ((wild-p (wild-pathname-p object))
         (logical-p (uiop:logical-pathname-p object))
         (link-p (not (equal (truename object) object))))
@@ -387,7 +387,7 @@ out."))
          object
          'sb-impl::host 'sb-impl::device 'sb-impl::name 'sb-impl::version 'type 'namestring))))
 
-(defproperties (object hash-table)
+(deffields (object hash-table)
   `((:test ,(hash-table-test object))
     (:size ,(hash-table-size object))
     (:count ,(hash-table-count object))
@@ -425,12 +425,12 @@ out."))
        object
        'sb-impl::test 'sb-impl::rehash-size 'sb-impl::rehash-threshold 'sb-impl::%count)))
 
-(defproperties (object two-way-stream)
+(deffields (object two-way-stream)
   `((:input ,(two-way-stream-input-stream object))
     (:output ,(two-way-stream-output-stream object))))
 
 ;; On SBCL, echo-stream is an instance of two-way-stream...
-(defproperties (object echo-stream)
+(deffields (object echo-stream)
   `((:echo-input ,(echo-stream-input-stream object))
     (:echo-output ,(echo-stream-output-stream object))))
 
@@ -443,7 +443,7 @@ out."))
 (defproperty synonym-stream
   :synonym synonym-stream-symbol)
 
-(defproperties (object file-stream)
+(deffields (object file-stream)
   `((:pathname ,(pathname object))
     (:position ,(file-position object))
     (:length (file-length object))
@@ -462,7 +462,7 @@ out."))
     #+ccl
     ,@(get-ccl-props object 'ccl::basic-file-stream.actual-filename)))
 
-(defmethod properties* ((object stream) &key &allow-other-keys)
+(defmethod fields* ((object stream) &key &allow-other-keys)
   `((:direction ,(cond
                    ((typep object 'two-way-stream) :io)
                    ((input-stream-p object) :input)
@@ -515,13 +515,13 @@ out."))
    #+abcl
    (abcl-props-except object "DOCUMENTATION" "DIRECT-SLOTS" "SLOTS")))
 
-(defproperties (object standard-object)
+(deffields (object standard-object)
   (inspect-slots object))
 
-(defproperties (object structure-object)
+(deffields (object structure-object)
   (inspect-slots object))
 
-(defproperties (object function)
+(deffields (object function)
   `((:name ,(function-name* object)
            ,(lambda (new-name old-name)
               (compile new-name (fdefinition old-name))))
@@ -537,7 +537,7 @@ out."))
        object
        'sb-pcl::name 'sb-pcl::methods 'sb-pcl::%method-combination "Lambda-list" "Ftype")))
 
-(defproperties (object generic-function)
+(deffields (object generic-function)
   `((:methods ,(closer-mop:generic-function-methods object))
     (:method-combination ,(closer-mop:generic-function-method-combination object))
     #+ccl
@@ -556,7 +556,7 @@ out."))
   #+ecl (si::restart-interactive-function restart)
   #-(or ccl sbcl ecl) nil)
 
-(defproperties (object restart)
+(deffields (object restart)
   `((:name ,(restart-name object))
     (:interactive ,(restart-interactive object))
     (:test
@@ -575,15 +575,15 @@ out."))
      #+ecl ,(si::restart-report-function object)
      #-(or ccl sbcl ecl) nil)))
 
-(defproperties (object condition)
+(deffields (object condition)
   `((:restarts ,(compute-restarts object))
     (:continuable ,(find 'continue (compute-restarts object) :key #'restart-name))))
 
-(defproperties (object simple-condition)
+(deffields (object simple-condition)
   `((:format-control ,(simple-condition-format-control object))
     (:format-arguments ,(simple-condition-format-arguments object))))
 
-(defproperties (object arithmetic-error)
+(deffields (object arithmetic-error)
   `((:operation ,(arithmetic-error-operation object))
     (:operands ,(arithmetic-error-operands object))))
 
@@ -592,7 +592,7 @@ out."))
 (defproperty stream-error :stream stream-error-stream)
 (defproperty print-not-readable :object print-not-readable-object)
 
-(defproperties (object type-error)
+(deffields (object type-error)
   `((:datum ,(type-error-datum object))
     (:expected ,(type-error-expected-type object))))
 
@@ -609,7 +609,7 @@ out."))
   (:documentation "Print human-readable description of OBJECT to STREAM.
 
 Methods should include the most useful information and things that are
-not suitable for the `properties*' key-value format."))
+not suitable for the `fields*' key-value format."))
 
 (defmethod description* ((object symbol) &optional stream)
   (if (keywordp object)

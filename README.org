@@ -205,26 +205,26 @@ describe* object &optional (stream t) ignore-methods
 Describes the =object= to the stream, but this time with portable
 format of description (determined by =graven-image:description*= and
 specified for many standard classes) and with predictable set of
-properties (=graven-image:properties*=). In Graven Image, both
+properties (=graven-image:fields*=). In Graven Image, both
 =describe= and =inspect= have the same format and the same set of
-properties.
+fields.
 
 As a homage to the original =describe=, Graven Image one respects the
 =describe-object= methods defined for user classes. If one needs to
 ignore these too, passing T to =ignore-methods= should be enough to
 get consistent Graven Image descriptions for all the objects.
 
-*** =graven-image:properties*= (generic function)
+*** =graven-image:fields*= (generic function)
 
 Signature:
 #+begin_src lisp
-properties* object &key strip-null &allow-other-keys
+fields* object &key strip-null &allow-other-keys
 #+end_src
 
 Returns an undotted alist of properties for the =object=. Custom
-properties provided by Graven Image are named with keywords, while the
+fields provided by Graven Image are named with keywords, while the
 implementation-specific ones use whatever the implementation
-uses. Arrays and hash-tables are inlined into properties to allow
+uses. Arrays and hash-tables are inlined into fields to allow
 indexing these right from the inspector.
 
 *** =graven-image:description*= (generic function)
@@ -247,7 +247,7 @@ inspect* object &optional strip-null
 New'n'shiny =inspect*= has:
 - Most commands found in other implementation, with familiar names.
 - Abbreviations like =H -> HELP= (inspired by SBCL).
-- Ability to set object properties with =(:set key value)= command
+- Ability to set object field values with =(:set key value)= command
   (inspired by CCL).
 - Baked-in pagination with ways to scroll it (=:next-page=,
   =:previous-page=, =:home=) and change it (=:length=).

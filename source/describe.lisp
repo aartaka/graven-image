@@ -31,7 +31,7 @@ used for OBJECT info."
           (fresh-line stream)
           (description* object stream)
           (fresh-line stream)
-          (loop for (name value) in (properties* object)
+          (loop for (name value) in (fields* object)
                 do (if (symbolp name)
                        (format stream "~&~a = ~s~%" name value)
                        (format stream "~&~s = ~s~%" name value)))))

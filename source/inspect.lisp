@@ -22,7 +22,7 @@
 (definterface inspect* *query-io* (object)
   ((*print-lines* (or *print-lines* 20))
    (*summary-fn* #'description*)
-   (*fields-fn* #'properties*)
+   (*fields-fn* #'fields*)
    (*print-field-fn* #'(lambda (stream index key value &rest other-args)
                             (format stream "~&[~d]~:[ ~:[~s~;~a~]~;~2*~] =~@[~*setfable=~] ~s"
                                     index (integerp key) (symbolp key) key (first other-args) value)))
