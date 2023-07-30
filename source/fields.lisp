@@ -112,8 +112,7 @@ Every property is a list of (NAME VALUE &optional SETTER) lists, where
 modify the property. For slots, this setter will likely be setting the
 `slot-value'.
 
-When STRIP-NULL, fields with null VALUE and SETTER are filtered
-out."))
+When STRIP-NULL, fields with null VALUE and SETTER are filtered out."))
 
 (-> symbol-visibility (symbol) (or null (member :inherited :external :internal :uninterned)))
 (defun symbol-visibility (symbol)
