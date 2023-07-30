@@ -69,7 +69,8 @@ Improvements are:
   allowing for "nope" or "ay" to be valid responses too.
 - Both functions mean the same now, because it makes no sense in
   differentiating them.
-- No beeps (just define a =:before= method to add beeps if you like 'em).
+- No beeps (just define a =yes-or-no-p* :before= method to add beeps
+  if you like 'em).
 
 ** =apropos-list*=, =apropos*= (generic functions)
 
