@@ -210,19 +210,18 @@ out."))
       (:sign ,sign)
       (:radix ,(float-radix object))
       (:precision ,(float-precision object))
-      ,@(typecase object
-          (long-float
-           `((:most-positive-long-float ,most-positive-long-float)
-             (:most-negative-long-float ,most-negative-long-float)))
-          (double-float
-           `((:most-positive-double-float ,most-positive-double-float)
-             (:most-negative-double-float ,most-negative-double-float)))
-          (single-float
-           `((:most-positive-single-float ,most-positive-single-float)
-             (:most-negative-single-float ,most-negative-single-float)))
-          (short-float
-           `((:most-positive-short-float ,most-positive-short-float)
-             (:most-negative-short-float ,most-negative-short-float))))
+      ,@(when (typep object 'long-float)
+          `((:most-positive-long-float ,most-positive-long-float)
+            (:most-negative-long-float ,most-negative-long-float)))
+      ,@(when (typep object 'double-float)
+          `((:most-positive-double-float ,most-positive-double-float)
+            (:most-negative-double-float ,most-negative-double-float)))
+      ,@(when (typep object 'single-float)
+         `((:most-positive-single-float ,most-positive-single-float)
+           (:most-negative-single-float ,most-negative-single-float)))
+      ,@(when (typep object 'short-float)
+          `((:most-positive-short-float ,most-positive-short-float)
+            (:most-negative-short-float ,most-negative-short-float)))
       (:nearest-integer ,(round object)))))
 
 (deffields (object integer)
