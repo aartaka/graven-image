@@ -236,6 +236,8 @@ implementation-specific ones use whatever the implementation
 uses. Arrays and hash-tables are inlined into fields to allow
 indexing these right from the inspector.
 
+See =fields*= documentation for more details.
+
 *** =graven-image:description*= (generic function)
 
 Signature:
