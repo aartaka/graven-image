@@ -44,7 +44,7 @@
    (lambda (prop)
      (list prop
            (typecase object
-             (generic-function
+             (function
               (ccl::nth-immediate object (symbol-value prop)))
              (t (ccl:uvref object (symbol-value prop))))))
    props))
