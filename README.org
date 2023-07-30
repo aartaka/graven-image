@@ -29,13 +29,21 @@ And then load ~:graven-image~ in the REPL:
   (ql:quickload :graven-image)
 #+end_src
 
-Then, if you want to have all the Graven Image star functions
-(=apropos*=, =function-lambda-expression*= etc.) in =:common-lisp=
-package, then just load =:graven-image/import=.
+If you want the default CL constructs replaced by Graven Image ones,
+then load =:graven-image/cl= and =cl:apropos= will magically become
+more useful :D
 
-And if you want the default CL constructs replaced by Graven Image
-ones, then load =:graven-image/cl= and =cl:apropos= will magically
-become more useful :D
+If you want your REPL to start with Graven Image constructs accessible
+without package prefix, then add this to your implementation config file:
+#+begin_src lisp
+  ;; Implies you have ASDF and have Closer Mop and Trivial Gray Streams
+  ;; accessible in ~/common-lisp/ or Quicklisp local projects.
+  (asdf:load-system :graven-image)
+  ;; Or :gimage-user nickname. Note that Graven Image itself has a
+  ;; :gimage nickname.
+  (in-package :graven-image-user)
+#+end_src
+
 
 * Enhanced functions (mostly from ANSI CL [[https://cl-community-spec.github.io/pages/Debugging-Utilities.html][Debugging Utilities]] chapter)
 
