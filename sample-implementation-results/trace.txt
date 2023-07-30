@@ -1,0 +1,76 @@
+SBCL:
+Objects:
+- symbol
+- fname
+- (method fname qualifiers* (specializers*))
+- (compiler-macro symbol)
+- (labels fname :in outer-name)
+- (flet fname :in outer-name)
+- string
+Options:
+- :report
+- :condition, :condition-after, :condition-all
+- :break, :break-after, :break-all
+- :print, :print-after, :print-all
+- :wherein
+- :encapsulate
+- :methods
+- :function
+Variables (functions for var access, rather):
+- sb-debug:var
+- (sb-debug:arg n)
+Output:
+
+CCL:
+Objects:
+- Function names?
+Options:
+- :before
+- :after
+- :methods
+- :if, :condition, :before-if, :if-before, :after-if, :if-after
+- :print, :print-before, :print-after
+- :eval, :eval-before, :eval-after
+- :break, :break-before, :break-after
+- :backtrace, :backtrace-before, :backtrace-after
+- :inside, :wherein
+- :define-if-not
+Variables:
+???
+Output:
+
+ECL:
+Objects:
+- Function names
+Options:
+- :break, :break-after
+- :cond, :cond-before, :cond-after
+- :print, :print-after
+- :step
+Variables:
+- si::args
+Output:
+
+CLISP
+Objects
+- Function names
+Options (per function name):
+- :suppress-if
+- :max-depth
+- :step-if
+- :bindings
+- :pre, :post
+- :pre-break-if, :post-break-if
+- :pre-print, :post-print, :print
+Variables:
+- *trace-function*, *trace-args*, *trace-form*, *trace-values*
+Output:
+
+ABCL:
+Objects:
+- Function names
+Options:
+- :break
+Variables:
+???
+Output:
