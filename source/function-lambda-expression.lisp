@@ -227,13 +227,11 @@
                                do (read-char f nil nil))
                          (maybe-unsafe-read f))))))
            #+ccl
-           (let* ((sources (ccl:find-definition-sources function))
-                  ;; Generic function defs don't return the generic definition
-                  ;; itself, only the method defs.
-                  (note (when (= 1 (length sources)) ; Method defs are useless.
-                          (find-if #'ccl:source-note-p (first sources))))
+           (let* ((note (or (ccl:function-source-note function)
+                            (find-if #'ccl:source-note-p (first (ccl:find-definition-sources function)))))
                   (text (when note
-                          (ccl:source-note-text note)))
+                          (or (ccl:source-note-text note)
+                              (ccl:ensure-source-note-text note))))
                   (position (when (and note (not text))
                               (ccl:source-note-start-pos note)))
                   (file (when (and note (not text))
