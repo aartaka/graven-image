@@ -22,8 +22,15 @@ Variables (functions for var access, rather):
 Output:
 
 CCL:
+Also has an
+- ADVICE/UNADVICE (general function advising.)
+- WATCH/UNWATCH (write tracking.)
 Objects:
-- Function names?
+- Name
+- (setf name)
+- (:method name qualifier (specializers))
+- String package
+- (:package package)
 Options:
 - :before
 - :after
@@ -35,13 +42,19 @@ Options:
 - :backtrace, :backtrace-before, :backtrace-after
 - :inside, :wherein
 - :define-if-not
-Variables:
-???
+Variables/functions:
+- ccl:*trace-level*
+- ccl:*trace-max-indent*
+- (ccl:trace-function spec &key { keyword value }*)
+- ccl:*trace-print-level*
+- ccl:*trace-print-length*
+- ccl:*trace-bar-frequency*
 Output:
 
 ECL:
 Objects:
 - Function names
+- Warnings on special forms, macros, undefined functions, and already traced functions
 Options:
 - :break, :break-after
 - :cond, :cond-before, :cond-after
