@@ -218,7 +218,7 @@ properties (=graven-image:fields*=). In Graven Image, both
 =describe= and =inspect= have the same format and the same set of
 fields.
 
-As a homage to the original =describe=, Graven Image one respects the
+As an homage to the original =describe=, Graven Image one respects the
 =describe-object= methods defined for user classes. If one needs to
 ignore these too, passing T to =ignore-methods= should be enough to
 get consistent Graven Image descriptions for all the objects.
