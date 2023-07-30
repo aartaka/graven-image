@@ -345,6 +345,8 @@ Beware: using any interactive function (like =inspect= etc.) breaks the dribble 
 
 * Roadmap
 - [ ] Add:
+  - [X] =apropos*=, =apropos-list*=
+    - [ ] Add a way to sort symbols by relevance/name match.
   - [X] =inspect*=,
   - [X] =describe*=,
   - [X] =time*=,
