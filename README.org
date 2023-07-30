@@ -91,11 +91,11 @@ gone for a better and more unified listing:
 
 #+begin_src
 > (apropos* :max)
-MAX [FUNCTION (NUMBER &REST MORE-NUMBERS) (Return the greatest of its arguments; among EQUALP greatest, return)]
+MAX [FUNCTION (NUMBER &REST MORE-NUMBERS) :Return the greatest of its arguments; among EQUALP greatest, return...]
 :MAX [SELF-EVALUATING]
 ...
 SB-C::MAXREST
-ALEXANDRIA:MAXF [MACRO (Modify-macro for MAX. Sets place designated by the first argument to the)]
+ALEXANDRIA:MAXF [MACRO : Modify-macro for MAX. Sets place designated by the first argument to the...]
 ...
 SB-UNICODE::MAX-MATCH
 SB-C::MAX-VOP-TN-REFS [CONSTANT: 256]

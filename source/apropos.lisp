@@ -123,8 +123,17 @@ Note that you can influence the printout by let-bindings:
   (handler-bind ((warning #'muffle-warning))
     (dolist (symbol (apropos-list* string package external-only docs-too))
       (flet ((crop-docs (docs)
-               (when docs
-                 (first (uiop:split-string docs :separator '(#\newline))))))
+               (let ((line (when docs
+                             (first (uiop:split-string docs :separator '(#\newline))))))
+                 (cond
+                   ((equal line docs)
+                    line)
+                   ;; If it's a finished sentence, then return.
+                   ((uiop:string-suffix-p line ".")
+                    line)
+                   ;; If unfinished, add ellipsis.
+                   (t
+                    (uiop:strcat line "..."))))))
         (fresh-line)
         (format t "~s" symbol)
         (when (boundp symbol)
