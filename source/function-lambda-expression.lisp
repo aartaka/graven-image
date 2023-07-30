@@ -208,67 +208,74 @@
   (declare (ignorable function force))
   (or
    (handler-case
-       (labels ((maybe-unsafe-read (stream)
-                  (when stream
-                    (handler-case
-                        (let ((*read-eval* nil))
-                          (read-nolocks stream))
-                      (reader-error ()
-                        (when force
-                          (ignore-errors
-                           (read-nolocks stream)))))))
-                #-sbcl                  ; unused on SBCL
-                (read-from-position (file position)
-                  (when (and position file)
+       (let ((*package* (symbol-package (function-name function))))
+         (labels ((maybe-unsafe-read (stream)
+                    (when stream
+                      (handler-case
+                          (let ((*read-eval* nil))
+                            (read-nolocks stream))
+                        (reader-error ()
+                          (when force
+                            (ignore-errors
+                             (read-nolocks stream)))))))
+                  #-sbcl              ; unused on SBCL
+                  (read-from-position (file position)
+                    (when (and position file)
+                      (ignore-errors
+                       (with-open-file (f file)
+                         (loop repeat position
+                               do (read-char f nil nil))
+                         (maybe-unsafe-read f))))))
+           #+ccl
+           (let* ((sources (ccl:find-definition-sources function))
+                  ;; Generic function defs don't return the generic definition
+                  ;; itself, only the method defs.
+                  (note (when (= 1 (length sources)) ; Method defs are useless.
+                          (find-if #'ccl:source-note-p (first sources))))
+                  (text (when note
+                          (ccl:source-note-text note)))
+                  (position (when (and note (not text))
+                              (ccl:source-note-start-pos note)))
+                  (file (when (and note (not text))
+                          (ignore-errors (translate-logical-pathname (ccl:source-note-filename note))))))
+             (cond
+               (text
+                (read-from-string text nil nil))
+               ((and file position)
+                (read-from-position file position))))
+           #+ecl
+           (multiple-value-bind (file position)
+               (ext:compiled-function-file function)
+             (when (and file position)
+               (read-from-position (translate-logical-pathname file) position)))
+           #+sbcl
+           (let* ((sources
                     (ignore-errors
-                     (with-open-file (f file)
-                       (loop repeat position
-                             do (read-char f nil nil))
-                       (maybe-unsafe-read f))))))
-         #+ccl
-         (let* ((sources (ccl:find-definition-sources function))
-                ;; Generic function defs don't return the generic definition
-                ;; itself, only the method defs.
-                (note (when (= 1 (length sources)) ; Method defs are useless.
-                        (find #'ccl:source-note-p (first sources))))
-                (position (when note
-                            (ccl:source-note-start-pos note)))
-                (file (when note
-                        (ignore-errors (translate-logical-pathname (ccl:source-note-filename note))))))
-           (read-from-position file position))
-         #+ecl
-         (multiple-value-bind (file position)
-             (ext:compiled-function-file function)
-           (when (and file position)
-             (read-from-position (translate-logical-pathname file) position)))
-         #+sbcl
-         (let* ((sources
-                  (ignore-errors
-                   (or (sb-introspect:find-definition-sources-by-name (function-name-symbol function) :function)
-                       (sb-introspect:find-definition-sources-by-name (function-name-symbol function) :generic-function)
-                       (sb-introspect:find-definition-sources-by-name (function-name-symbol function) :macro))))
-                (file (when sources
-                        (sb-introspect:definition-source-pathname (first sources))))
-                (form-path (when sources
-                             (sb-introspect:definition-source-form-path (first sources))))
-                (char-offset (when sources
-                               (sb-introspect:definition-source-character-offset (first sources)))))
-           ;; FIXME: Not using form number there, because it's too involved
-           ;; and likely means some macro magic which will bork the lambda
-           ;; expression anyway.
-           (cond
-             ((and char-offset file)
-              (with-open-file (f (translate-logical-pathname file))
-                (loop repeat char-offset
-                      do (read-char f nil nil))
-                (maybe-unsafe-read f)))
-             ((and form-path file)
-              (with-open-file (f (translate-logical-pathname file))
-                (loop repeat (first (uiop:ensure-list form-path))
-                      do (maybe-unsafe-read f))
-                (maybe-unsafe-read f)))))
-         #-(or ccl ecl sbcl)
-         (warn "source fetching is not implemented for this CL, help in implementing it!"))
+                     (or (sb-introspect:find-definition-sources-by-name (function-name-symbol function) :function)
+                         (sb-introspect:find-definition-sources-by-name (function-name-symbol function) :generic-function)
+                         (sb-introspect:find-definition-sources-by-name (function-name-symbol function) :macro))))
+                  (file (when sources
+                          (sb-introspect:definition-source-pathname (first sources))))
+                  (form-path (when sources
+                               (sb-introspect:definition-source-form-path (first sources))))
+                  (char-offset (when sources
+                                 (sb-introspect:definition-source-character-offset (first sources)))))
+             ;; FIXME: Not using form number there, because it's too involved
+             ;; and likely means some macro magic which will bork the lambda
+             ;; expression anyway.
+             (cond
+               ((and char-offset file)
+                (with-open-file (f (translate-logical-pathname file))
+                  (loop repeat char-offset
+                        do (read-char f nil nil))
+                  (maybe-unsafe-read f)))
+               ((and form-path file)
+                (with-open-file (f (translate-logical-pathname file))
+                  (loop repeat (first (uiop:ensure-list form-path))
+                        do (maybe-unsafe-read f))
+                  (maybe-unsafe-read f)))))
+           #-(or ccl ecl sbcl)
+           (warn "source fetching is not implemented for this CL implementation, help in implementing it!")))
      (error () nil))
    (when force
      (function-source-expression-fallback function))))
