@@ -89,11 +89,13 @@
   #-(or abcl allegro ccl clasp cmucl cormanlisp ecl lispworks mkcl sbcl scl)
   (warn "function name fetching is not implemented for this CL, help in implementing it!"))
 
-(-> function-name-symbol (function) symbol)
+(-> function-name-symbol (function))
 (defun function-name-symbol (function)
   (let ((name (function-name function)))
-    (when (symbolp name)
-      name)))
+    (typecase name
+      (symbol name)
+      ((cons (eql macro-function) t)
+       (second name)))))
 
 (-> transform-definition-to-lambda (list boolean) list)
 (defun transform-definition-to-lambda (definition force)
@@ -278,6 +280,14 @@
    (when force
      (function-source-expression-fallback function))))
 
+(-> ensure-function ((or symbol function)) function)
+(defun ensure-function (function)
+  (typecase function
+    (symbol
+     (or (macro-function function)
+         (symbol-function function)))
+    (function function)))
+
 (define-generic function-lambda-expression* (function &optional force)
   "Returns information about FUNCTION:
 - The defining lambda, suitable for `compile' (or the best guess at
@@ -292,9 +302,7 @@
 When FORCE, return the lambda even if it's not suitable for `compile'
 or is otherwise not representing the FUNCTION truthfully. Might be
 useful to fetch the arglist or body, though. Use at your own risk!"
-  (let* ((function (typecase function
-                     (symbol (symbol-function function))
-                     (function function)))
+  (let* ((function (ensure-function function))
          (definition (function-source-expression function force)))
     (multiple-value-bind (expression closure-p name)
         (funcall old-function-lambda-expression function)
@@ -330,7 +338,9 @@ implementation-dependent fallback."
   (let ((expression (function-lambda-expression* function)))
     (if expression
         (second expression)
-        (ignore-errors (function-arglist function (function-name* function))))))
+        ;; INTERNAL APIS!
+        (let ((fn (ensure-function function)))
+          (function-arglist fn (function-name-symbol fn))))))
 
 (define-generic function-name* (function)
   "Get the name of the FUNCTION.
