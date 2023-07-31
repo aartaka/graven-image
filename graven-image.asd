@@ -22,7 +22,10 @@
                (:file "interface")
                (:file "describe")
                (:file "inspect")
-               (:file "dribble"))
+               (:file "dribble")
+               ;; TODO:
+               ;; (:file "trace")
+               )
   :in-order-to ((test-op (test-op "graven-image/tests"))))
 
 (defsystem "graven-image/cl"
