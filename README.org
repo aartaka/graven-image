@@ -108,7 +108,9 @@ SB-IMPL::HEAP-MAXIMUM [FUNCTION (HEAP)]
 
 Signature:
 #+begin_src lisp
-function-lambda-expression* function-or-macro-designator &optional force => list, list, symbol, list
+  function-lambda-expression* function-or-macro-designator &optional force => list, list, symbol, list
+  ;; Alias:
+  lambda-expression* function-or-macro-designator &optional force => list, list, symbol, list
 #+end_src
 
 This function tries to read source files, process the definitions of
@@ -162,13 +164,15 @@ Things that =function-lambda-expression*= now returns are:
 Based on these new features of =function-lambda-expression*=, here are
 some Graven Image-specific helpers:
 - =function-lambda-list*= :: Get the lambda list of a function.
+  - =lambda-list*= :: Alias for =function-lambda-list*=.
 - =function-name*= :: Get the name of a function.
 - =function-type*= :: Get its ftype.
 
 #+begin_src lisp
-function-lambda-list* function => lambda-list
-function-name* function => name
-function-type* function => ftype
+  function-lambda-list* function => lambda-list
+  lambda-list* function => lambda-list
+  function-name* function => name
+  function-type* function => ftype
 #+end_src
 
 

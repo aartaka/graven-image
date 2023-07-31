@@ -371,3 +371,11 @@ Depends on `function-lambda-expression*'."
 The return value is non-nil only on some implementations.
 Depends on `function-lambda-expression*'."
   (nth-value 3 (function-lambda-expression* function)))
+
+(defmacro defalias (new-name old-name)
+  `(setf (fdefinition ',new-name) (fdefinition ',old-name)
+         (documentation (fdefinition ',new-name) t) (documentation (fdefinition ',old-name) t)
+         (documentation ',new-name 'function) (documentation ',old-name 'function)))
+
+(defalias lambda-expression* function-lambda-expression*)
+(defalias lambda-list* function-lambda-list*)
