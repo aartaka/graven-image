@@ -58,7 +58,7 @@ With such a format, dribble file can be loaded into the running Lisp
 image to reproduce the recorded session."
   (declare (ignorable pathname pathname-p if-exists if-does-not-exist))
   #+abcl
-  (warn "Dribble* is not implemented for ABCL, doint nothing. Help in implementing it!")
+  (warn "Dribble* is not implemented for ABCL. Doing nothing. Help in implementing it!")
   #-abcl
   (labels ((print-dribble (action)
              (multiple-value-bind (second minute hour date month year)
