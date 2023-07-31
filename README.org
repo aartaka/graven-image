@@ -108,7 +108,7 @@ SB-IMPL::HEAP-MAXIMUM [FUNCTION (HEAP)]
 
 Signature:
 #+begin_src lisp
-function-lambda-expression* function-designator &optional force => list, list, symbol, list
+function-lambda-expression* function-or-macro-designator &optional force => list, list, symbol, list
 #+end_src
 
 This function tries to read source files, process the definitions of
