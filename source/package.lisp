@@ -44,8 +44,3 @@
 - `time' -> `time*'.
   - Also see `with-time*' with the exposed `time'-internal APIs.
 - `dribble' -> `dribble*'."))
-
-(uiop:define-package :graven-image-user
-  (:use :common-lisp :graven-image)
-  (:nicknames :gimage-user)
-  (:documentation "A user packages that's safe to use instead of CL-USER."))

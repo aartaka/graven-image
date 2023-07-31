@@ -37,13 +37,15 @@ If you want your REPL to start with Graven Image constructs accessible
 without package prefix, then add this to your implementation config file:
 #+begin_src lisp
   ;; Implies you have ASDF and have Closer Mop and Trivial Gray Streams
-  ;; accessible in ~/common-lisp/ or Quicklisp local projects.
+  ;; accessible in ~/common-lisp/, Quicklisp local projects, or ASDF
+  ;; registries.
   (asdf:load-system :graven-image)
-  ;; Or :gimage-user nickname. Note that Graven Image itself has a
-  ;; :gimage nickname.
-  (in-package :graven-image-user)
+  ;; Imports external symbols of Graven Image into the current package
+  ;; (CL-USER?) Safe, because Graven Image shadows no CL symbols.
+  (use-package :graven-image)
 #+end_src
 
+# TODO: Mention method redefinitions for output configuration.
 
 * Enhanced functions (mostly from ANSI CL [[https://cl-community-spec.github.io/pages/Debugging-Utilities.html][Debugging Utilities]] chapter)
 
