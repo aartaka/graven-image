@@ -274,7 +274,25 @@
                   (loop repeat (first (uiop:ensure-list form-path))
                         do (maybe-unsafe-read f))
                   (maybe-unsafe-read f)))))
-           #-(or ccl ecl sbcl)
+           #+abcl
+           (let* ((name (function-name function))
+                  (sources (get name 'sys::source nil))
+                  (source-triplet (find-if #'(lambda (triplet)
+                                               (typecase (first triplet)
+                                                 ((eql :macro)
+                                                  triplet)
+                                                 ((eql :compiler-macro)
+                                                  triplet)
+                                                 ((cons (eql :function) (cons symbol))
+                                                  triplet)
+                                                 (t nil)))
+                                           sources)))
+             (when source-triplet
+               (destructuring-bind (_ file position)
+                   source-triplet
+                 (declare (ignore _))
+                 (read-from-position (translate-logical-pathname file) position))))
+           #-(or ccl ecl sbcl abcl)
            (warn "source fetching is not implemented for this CL implementation, help in implementing it!")))
      (error () nil))
    (when force
