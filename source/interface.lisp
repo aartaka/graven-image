@@ -30,6 +30,7 @@ Non-trivial, because some of the FIELDS have integer keys."
   "The function to return OBJECT fields printable into interface.")
 (defvar *print-field-fn*
   "The (STREAM INDEX KEY VALUE &REST ARGS) function to print a singular field of the `*object*'.")
+;; TODO: Allow action to be marking or cursor movement.
 (defvar *action-fn*
   "The (VALUE) function that does whatever action is suitable for the property value in the current context.
 For inspector, that's a recursive inspection.")
