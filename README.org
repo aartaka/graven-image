@@ -13,7 +13,28 @@ Graven Image reuses compiler internals to improve/redefine the
 existing standard functions. This "improvement" often comes at a cost
 of changing the API of a function (for better customizability) or
 making it slightly less reliable (due to unstable, compiler-internal,
-or otherwise hacky implementation).
+or otherwise hacky implementation.)
+
+The library is purposefully limited in scope:
+- Improving the standard functions has a priority over introducing new
+  ones.
+  - [[https://github.com/m-n/repl-utilities][repl-utilities]] as a contrasting approach: it defines lots of
+    "DWIM" functions, significantly altering the REPL interaction.
+  - There are helpers like =function-lambda-list*=, but these are
+    merely aliases/one-liners over standard/improved functions.
+- The interaction paradigm of the improved functions should stay
+  standard (i.e. use =*query-io*= where standard requires
+  =*query-io*=.)
+  - This is to ensure that libraries like [[https://github.com/atlas-engineer/ndebug/][Ndebug]] can rely on standard
+    facilities safely when used with Graven Image.
+- Function arglist can be modified for convenience, but it should
+  preferably stay as close to standard/implementation-specific arglist
+  as possible.
+- Graven Image strives to not modify the REPL/image/shell in any way,
+  relying on implementation defaults instead.
+  - [[https://github.com/ciel-lang/CIEL][CIEL]] is taking a different direction: redefining the REPL for
+    increased utility.
+
 
 * Getting started
 
