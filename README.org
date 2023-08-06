@@ -405,6 +405,9 @@ things by =string= occurence:
     (let ((result (call-next-method)))
       (sort
        (remove-duplicates result)
+       ;; For more comprehensive matching, see
+       ;; a1b4ebd649e0268b1566e80709e7cea41363d006 and other commits
+       ;; before c090d6dc14e05c561cf5c39cf5f6cc02e8cd04c5.
        #'> :key (lambda (sym)
                   (let ((match-count 0))
                     (uiop:frob-substrings
@@ -422,7 +425,7 @@ TODO!
 * Roadmap
 - [ ] Add:
   - [X] =apropos*=, =apropos-list*=
-    - [ ] Add a way to sort symbols by relevance/name match.
+    - [X] Add a way to sort symbols by relevance/name match.
   - [X] =inspect*=,
   - [X] =describe*=,
   - [X] =time*=,
