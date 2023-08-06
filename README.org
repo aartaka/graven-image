@@ -345,6 +345,18 @@ Dribble the REPL session to =pathname=. Unlike the implementation-specific =drib
 
 Beware: using any interactive function (like =inspect= etc.) breaks the dribble REPL. But then, it's unlikely one'd want to record interactive session into a dribble file.
 
+** =documentation*= (generic function)
+
+Signature:
+#+begin_src lisp
+  documentation* object &optional (doc-type t)
+  doc* object &optional (doc-type t)
+#+end_src
+
+Improved version of =documentation=. Two main improvements are: =doc-type= is now optional, and =doc*= alias is available for convenience.
+
+documentation.lisp also defines a method for =(symbol (eql t))=, which should simplify documentation fetching and setting.
+
 * Roadmap
 - [ ] Add:
   - [X] =apropos*=, =apropos-list*=
@@ -359,7 +371,7 @@ Beware: using any interactive function (like =inspect= etc.) breaks the dribble 
     - [ ] Support ABCL somehow.
   - [ ] =step=,
   - [ ] =trace= and =untrace=
-  - [ ] =documentation=?
+  - [X] =documentation=?
   - [ ] =disassemble=?
   - [ ] =room=?
 - [X] Somehow hook into and improve over =*debugger-hook*=?

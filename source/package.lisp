@@ -15,6 +15,7 @@
    #:lambda-expression* #:function-arlist* #:lambda-list* #:arlist*
    #:time* #:with-time*
    #:dribble*
+   #:documentation* #:doc*
    ;; #:step* #:trace* #:untrace*
    )
   (:import-from
