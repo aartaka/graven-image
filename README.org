@@ -285,50 +285,38 @@ And here's a help menu of the new =inspect*= (in this case, inspecting
 =*readtable*=), just to get you teased:
 
 #+begin_src
-This is an interactive interface for %READTABLE-SYMBOL-PREFERENCE
+This is an interactive interface for BASE-CHAR
 Available commands are:
-QUIT                Exit the interface.
-EXIT                Exit the interface.
-LENGTH              Change the page size.
-WIDTH               Change the page size.
-WIDEN               Change the page size.
-NEXT-PAGE           Show the next page of fields (if any).
-PREVIOUS-PAGE       Show the previous page of fields (if any).
-PRINT               Print the current page of fields.
-PAGE                Print the current page of fields.
-HOME                Scroll back to the first page of fields.
-RESET               Scroll back to the first page of fields.
-TOP                 Scroll back to the first page of fields.
-THIS                Show the currently inspected object.
-SELF                Show the currently inspected object.
-REDISPLAY           Show the currently inspected object.
-SHOW                Show the currently inspected object.
-CURRENT             Show the currently inspected object.
-AGAIN               Show the currently inspected object.
-STANDARD            Print the inspected object readably.
-AESTHETIC           Print the inspected object aesthetically.
-EVALUATE            Evaluate the EXPRESSION.
-UP                  Go up to the previous level of the interface.
-POP                 Go up to the previous level of the interface.
-BACK                Go up to the previous level of the interface.
-?                   Show the instructions for using this interface.
-HELP                Show the instructions for using this interface.
-SET-FIELD           Set the KEY-ed field to VALUE.
-MODIFY-FIELD        Set the KEY-ed field to VALUE.
-ISTEP               Inspect the object under KEY.
-INSPECT             Inspect the object under KEY.
-SET-FIELD           Set the KEY-ed field to VALUE.
-MODIFY-FIELD        Set the KEY-ed field to VALUE.
-ISTEP               Inspect the object under KEY.
-INSPECT             Inspect the object under KEY.
-SET-FIELD           Set the KEY-ed field to VALUE.
-MODIFY-FIELD        Set the KEY-ed field to VALUE.
-ISTEP               Inspect the object under KEY.
-INSPECT             Inspect the object under KEY.
-SET-FIELD           Set the KEY-ed field to VALUE.
-MODIFY-FIELD        Set the KEY-ed field to VALUE.
-ISTEP               Inspect the object under KEY.
-INSPECT             Inspect the object under KEY.
+:QUIT                         Exit the interface.
+:EXIT                         Exit the interface.
+(:LENGTH NEW)                 Change the page size.
+(:WIDTH NEW)                  Change the page size.
+(:WIDEN NEW)                  Change the page size.
+:NEXT                         Show the next page of fields (if any).
+:PREVIOUS                     Show the previous page of fields (if any).
+:PRINT                        Print the current page of fields.
+:PAGE                         Print the current page of fields.
+:HOME                         Scroll back to the first page of fields.
+:RESET                        Scroll back to the first page of fields.
+:TOP                          Scroll back to the first page of fields.
+:THIS                         Show the currently inspected object.
+:SELF                         Show the currently inspected object.
+:REDISPLAY                    Show the currently inspected object.
+:SHOW                         Show the currently inspected object.
+:CURRENT                      Show the currently inspected object.
+:AGAIN                        Show the currently inspected object.
+(:EVAL EXPRESSION)            Evaluate the EXPRESSION.
+:UP                           Go up to the previous level of the interface.
+:POP                          Go up to the previous level of the interface.
+:BACK                         Go up to the previous level of the interface.
+:?                            Show the instructions for using this interface.
+:HELP                         Show the instructions for using this interface.
+(:SET KEY VALUE)              Set the KEY-ed field to VALUE.
+(:MODIFY KEY VALUE)           Set the KEY-ed field to VALUE.
+(:ISTEP KEY)                  Inspect the object under KEY.
+(:INSPECT KEY)                Inspect the object under KEY.
+:STANDARD                     Print the inspected object readably.
+:AESTHETIC                    Print the inspected object aesthetically.
 
 Possible inputs are:
 - Mere symbols: run one of the commands above, matching the symbol.
