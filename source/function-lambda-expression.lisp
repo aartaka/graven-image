@@ -3,93 +3,102 @@
 
 (in-package :graven-image)
 
+(deftype function-designator ()
+  '(or function generic-function standard-method))
+
 (defvar old-function-lambda-expression (symbol-function 'function-lambda-expression))
 
-(-> function-closure-p (function) (or boolean list))
+(-> function-closure-p (function-designator) (or boolean list))
 (defun function-closure-p (function)
   (declare (ignorable function))
   ;; TODO: ECL returns closures somehow, but the implementation is
   ;; terribly obscure...
-  #+ccl
-  (and (typep function 'ccl:compiled-lexical-closure)
-       ;; Convert to alist.
-       (loop for (name value) in (ccl::closure-closed-over-values function)
-             collect (cons name value)))
-  #+(or cmucl scl)
-  (and (= (kernel:get-type function) vm:closure-header-type)
-       (loop for i below (- (kernel:get-closure-length function)
-                            #+cmucl 1
-                            #+scl (1- vm:closure-info-offset))
-             collect (cons i (kernel:%closure-index-ref function i))))
-  #+sbcl
-  (and (sb-kernel:closurep function)
-       ;; Is that the right one?
-       (loop for i below (1- (sb-kernel:get-closure-length function))
-             collect (cons i (sb-kernel:%closure-index-ref function i))))
-  #+abcl
-  (let ((environment (nth-value 1 (funcall old-function-lambda-expression function))))
-    (cond
-      ((and environment
-            (typep environment 'system::environment))
-       (system:environment-variables environment))
-      (environment environment)
-      (t nil)))
-  #+allegro
-  (let ((ht (sys::ha$h-table-ht
-             (slot-value
-              (sys::augmentable-environment-base
-               (nth-value 1 (funcall old-function-lambda-expression function)))
-              'system::variable-hashtable))))
-    (typecase ht
-      (cons
-       (cons (car ht) (caadr (cadadr ht))))
-      (hash-table
-       (loop for key being the hash-key in ht
-               using (hash-value val)
-             collect (cons key (caar (cdadar val)))))))
-  #-(or ccl cmucl scl sbcl abcl allegro)
-  (warn "closure inspection is not implemented for this CL, help in implementing it!"))
+  (let ((function (if (typep function 'standard-method)
+                      (closer-mop:method-generic-function function)
+                      function)))
+    #+ccl
+    (and (typep function 'ccl:compiled-lexical-closure)
+         ;; Convert to alist.
+         (loop for (name value) in (ccl::closure-closed-over-values function)
+               collect (cons name value)))
+    #+(or cmucl scl)
+    (and (= (kernel:get-type function) vm:closure-header-type)
+         (loop for i below (- (kernel:get-closure-length function)
+                              #+cmucl 1
+                              #+scl (1- vm:closure-info-offset))
+               collect (cons i (kernel:%closure-index-ref function i))))
+    #+sbcl
+    (and (sb-kernel:closurep function)
+         ;; Is that the right one?
+         (loop for i below (1- (sb-kernel:get-closure-length function))
+               collect (cons i (sb-kernel:%closure-index-ref function i))))
+    #+abcl
+    (let ((environment (nth-value 1 (funcall old-function-lambda-expression function))))
+      (cond
+        ((and environment
+              (typep environment 'system::environment))
+         (system:environment-variables environment))
+        (environment environment)
+        (t nil)))
+    #+allegro
+    (let ((ht (sys::ha$h-table-ht
+               (slot-value
+                (sys::augmentable-environment-base
+                 (nth-value 1 (funcall old-function-lambda-expression function)))
+                'system::variable-hashtable))))
+      (typecase ht
+        (cons
+         (cons (car ht) (caadr (cadadr ht))))
+        (hash-table
+         (loop for key being the hash-key in ht
+                 using (hash-value val)
+               collect (cons key (caar (cdadar val)))))))
+    #-(or ccl cmucl scl sbcl abcl allegro)
+    (warn "closure inspection is not implemented for this CL, help in implementing it!")))
 
 ;; FIXME: Phew, that's a long one... Maybe use Slynk after all? Graven
 ;;  Image won't be dependency-free and will have dangerous recursive
 ;;  references to `function-lambda-expression' on some implementations, though.
-(-> function-name (function) t)
+(-> function-name (function-designator) t)
 (defun function-name (function)
   (declare (ignorable function))
-  #+allegro
-  (cross-reference::object-to-function-name function)
-  #+ccl
-  (ccl:function-name function)
-  #+clasp
-  (if (typep function 'generic-function)
-      (clos::generic-function-name function)
-      (ext:compiled-function-name function))
-  #+(or cmucl scl)
-  (cond ((eval:interpreted-function-p function)
-         (eval:interpreted-function-name function))
-        #+cmucl
-        ((pcl::generic-function-p function)
-         (pcl::generic-function-name function))
-        #+scl
-        ((typep function 'generic-function)
-         (clos:generic-function-name function))
-        ((c::byte-function-or-closure-p function)
-         (c::byte-function-name function))
-        (t (kernel:%function-name (kernel:%function-self function))))
-  #+cormanlisp
-  (ignore-errors (getf (cl::function-info-list function) 'cl::function-name))
-  #+ecl
-  (if (typep function 'generic-function)
-      (clos:generic-function-name function)
-      (si:compiled-function-name function))
-  #+mkcl
-  (si:compiled-function-name function)
-  #+sbcl
-  (sb-impl::%fun-name function)
-  #-(or abcl allegro ccl clasp cmucl cormanlisp ecl lispworks mkcl sbcl scl)
-  (warn "function name fetching is not implemented for this CL, help in implementing it!"))
+  (let ((function (if (typep function 'standard-method)
+                      (closer-mop:method-generic-function function)
+                      function)))
+    #+allegro
+    (cross-reference::object-to-function-name function)
+    #+ccl
+    (ccl:function-name function)
+    #+clasp
+    (if (typep function 'generic-function)
+        (clos::generic-function-name function)
+        (ext:compiled-function-name function))
+    #+(or cmucl scl)
+    (cond ((eval:interpreted-function-p function)
+           (eval:interpreted-function-name function))
+          #+cmucl
+          ((pcl::generic-function-p function)
+           (pcl::generic-function-name function))
+          #+scl
+          ((typep function 'generic-function)
+           (clos:generic-function-name function))
+          ((c::byte-function-or-closure-p function)
+           (c::byte-function-name function))
+          (t (kernel:%function-name (kernel:%function-self function))))
+    #+cormanlisp
+    (ignore-errors (getf (cl::function-info-list function) 'cl::function-name))
+    #+ecl
+    (if (typep function 'generic-function)
+        (clos:generic-function-name function)
+        (si:compiled-function-name function))
+    #+mkcl
+    (si:compiled-function-name function)
+    #+sbcl
+    (sb-impl::%fun-name function)
+    #-(or abcl allegro ccl clasp cmucl cormanlisp ecl lispworks mkcl sbcl scl)
+    (warn "function name fetching is not implemented for this CL, help in implementing it!")))
 
-(-> function-name-symbol (function))
+(-> function-name-symbol (function-designator))
 (defun function-name-symbol (function)
   (let ((name (function-name function)))
     (typecase name
@@ -131,7 +140,7 @@
       ((defmacro defun defgeneric defmethod) (second definition))
       (t nil))))
 
-(-> function-arglist (function symbol))
+(-> function-arglist (function-designator symbol))
 (defun function-arglist (function name)
   ;; Slynk hooks into `function-lambda-expression', but that's a
   ;; dangerous recursive reference for us, thus
@@ -140,72 +149,91 @@
   ;; Slynk often hooks into `function-lambda-expression', but that's a
   ;; dangerous recursive reference for us, thus
   ;; `old-function-lambda-expression'.
-  (or (ignore-errors (second (funcall old-function-lambda-expression function)))
-      (ignore-errors
-       #+abcl
-       (or (sys::arglist name)
-           (when (typep function 'standard-generic-function)
-             (mop::generic-function-lambda-list function)))
-       #+allegro
-       (excl:arglist name)
-       #+ccl
-       ;; Why `*break-on-signals*' NIL in Slynk?
-
-       (let ((*break-on-signals* nil))
-         (ignore-errors
-          (ccl:arglist name)))
-       #+clasp
-       (sys:function-lambda-list name)
-       #+clisp
-       (ignore-errors (ext:arglist name))
-       #+cmucl
-       ;; Copied from Slynk
-       (cond ((eval:interpreted-function-p fun)
-              (eval:interpreted-function-arglist fun))
-             ((pcl::generic-function-p fun)
-              (pcl:generic-function-lambda-list fun))
-             ((c::byte-function-or-closure-p fun)
-              (byte-code-function-arglist fun))
-             ((kernel:%function-arglist (kernel:%function-self fun))
-              (handler-case (read-arglist fun)
-                (error () :not-available)))
-             (t
-              (ignore-errors (debug-function-arglist (di::function-debug-function fun)))))
-       #+cormanlisp
-       (cond
-         ((macro-function name)
-          (ccl::macro-lambda-list function))
-         ((eq (class-of name) cl::the-class-standard-gf)
-          (generic-function-lambda-list name))
-         (ccl:function-lambda-list name))
-       #+ecl
-       (ext:function-lambda-list name)
-       #+lispworks
-       (let ((arglist (lw:function-lambda-list function)))
-         (unless (eq arglist :dont-know)
-           (labels ((to-symbols (thing)
-                      "A primitive rewrite of Slynk's replace-strings-with-symbols."
-                      (typecase thing
-                        (list (mapcar #'to-symbols thing))
-                        (string (intern thing))
-                        (t thing)))))
-           (to-symbols arglist)))
-       #+sbcl
-       (sb-introspect:function-lambda-list name)
-       #+scl
-       (ext:function-arglist name))
+  (or (when (typep function 'generic-function)
+        (closer-mop:generic-function-lambda-list function))
+      (when (typep function 'standard-method)
+        (closer-mop:method-lambda-list function))
+      (ignore-errors (second (funcall old-function-lambda-expression function)))
+      (macrolet ((try-arglist (&rest vars)
+                   `(or ,@(loop for var in vars
+                                collect `(ignore-errors
+                                          (#+abcl
+                                           sys::arglist
+                                           #+allegro
+                                           excl:arglist
+                                           #+ccl
+                                           ccl:arglist
+                                           #+clisp
+                                           ext:arglist
+                                           #+sbcl
+                                           sb-introspect:function-lambda-list
+                                           ,var))))))
+        (ignore-errors
+         #+abcl
+         (try-arglist function name)
+         #+allegro
+         (try-arglist function name)
+         #+ccl
+         ;; Why `*break-on-signals*' NIL in Slynk?
+         (let ((*break-on-signals* nil))
+           (try-arglist function name))
+         #+clasp
+         (sys:function-lambda-list name)
+         #+clisp
+         (ignore-errors (or (ext:arglist function)
+                            (ext:arglist name)))
+         #+cmucl
+         ;; Copied from Slynk
+         (cond ((eval:interpreted-function-p fun)
+                (eval:interpreted-function-arglist fun))
+               ((pcl::generic-function-p fun)
+                (pcl:generic-function-lambda-list fun))
+               ((c::byte-function-or-closure-p fun)
+                (byte-code-function-arglist fun))
+               ((kernel:%function-arglist (kernel:%function-self fun))
+                (handler-case (read-arglist fun)
+                  (error () :not-available)))
+               (t
+                (ignore-errors (debug-function-arglist (di::function-debug-function fun)))))
+         #+cormanlisp
+         (cond
+           ((macro-function name)
+            (ccl::macro-lambda-list function))
+           ((eq (class-of name) cl::the-class-standard-gf)
+            (generic-function-lambda-list name))
+           (ccl:function-lambda-list name))
+         #+ecl
+         (ext:function-lambda-list name)
+         #+lispworks
+         (let ((arglist (lw:function-lambda-list function)))
+           (unless (eq arglist :dont-know)
+             (labels ((to-symbols (thing)
+                        "A primitive rewrite of Slynk's replace-strings-with-symbols."
+                        (typecase thing
+                          (list (mapcar #'to-symbols thing))
+                          (string (intern thing))
+                          (t thing)))))
+             (to-symbols arglist)))
+         #+sbcl
+         (try-arglist function name)
+         #+scl
+         (ext:function-arglist name)))
       #-(or abcl allegro ccl clasp clisp cmucl cormanlisp ecl ecl lispworks sbcl scl)
       (warn "arglist fetching is not implemented for this CL, help in implementing it!")))
 
-(-> function-source-expression-fallback (function) list)
+(-> function-source-expression-fallback (function-designator) list)
 (defun function-source-expression-fallback (function)
   (let* ((name (function-name-symbol function))
          (arglist (function-arglist function name)))
     `(lambda (,@arglist)
-       ,@(when (documentation name 'function)
-           (list (documentation name 'function))))))
+       ,@(let ((doc (or (documentation function t)
+                        (when (typep function 'standard-method)
+                          (documentation (closer-mop:method-generic-function function) t))
+                        (documentation name 'function))))
+           (when doc
+             (list doc))))))
 
-(-> function-source-expression (function boolean))
+(-> function-source-expression (function-designator boolean))
 (defun function-source-expression (function force)
   (declare (ignorable function force))
   (or
@@ -298,13 +326,13 @@
    (when force
      (function-source-expression-fallback function))))
 
-(-> ensure-function ((or symbol function)) function)
+(-> ensure-function ((or symbol function-designator)) (or null function-designator))
 (defun ensure-function (function)
   (typecase function
     (symbol
      (or (macro-function function)
          (symbol-function function)))
-    (function function)))
+    ((or function standard-method) function)))
 
 (define-generic function-lambda-expression* (function &optional force)
   "Returns information about FUNCTION:
@@ -319,16 +347,19 @@
 
 When FORCE, return the lambda even if it's not suitable for `compile'
 or is otherwise not representing the FUNCTION truthfully. Might be
-useful to fetch the arglist or body, though. Use at your own risk!"
+useful to fetch the arglist (`function-lambda-list*' might work
+better) or body, though. Use at your own risk!"
   (let* ((function (ensure-function function))
          (definition (function-source-expression function force)))
     (multiple-value-bind (expression closure-p name)
-        (funcall old-function-lambda-expression function)
+        (ignore-errors (funcall old-function-lambda-expression function))
       (values
        (or expression
            (when (listp definition)
              (transform-definition-to-lambda definition force)))
        (cond
+         ;; Error from `old-function-lambda-expression'.
+         ((typep closure-p 'error) nil)
          ;; T is suspicious.
          ((eq closure-p t) (function-closure-p function))
          ;; Allegro and ABCL return opaque env objects.
