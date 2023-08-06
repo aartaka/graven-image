@@ -34,7 +34,8 @@ The library is purposefully limited in scope:
   relying on implementation defaults instead.
   - [[https://github.com/ciel-lang/CIEL][CIEL]] is taking a different direction: redefining the REPL for
     increased utility.
-
+- Reuse of implementation-specific functionality is better than
+  re-implementing it.
 
 * Getting started
 
