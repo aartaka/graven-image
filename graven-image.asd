@@ -27,8 +27,3 @@
                ;; TODO:
                ;; (:file "trace")
                ))
-
-(defsystem "graven-image/cl"
-  :depends-on ("graven-image")
-  :description "Binding CL functions/macros to Graven Image counterparts."
-  :components ((:file "source/cl")))
