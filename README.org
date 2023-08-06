@@ -283,7 +283,8 @@ New'n'shiny =inspect*= has:
 
 And here's a help menu of the new =inspect*= (in this case, inspecting
 =*readtable*=), just to get you teased:
-#+begin_verse
+
+#+begin_src
 This is an interactive interface for %READTABLE-SYMBOL-PREFERENCE
 Available commands are:
 QUIT                Exit the interface.
@@ -343,7 +344,7 @@ Possible inputs are:
     s-expression.
   - Inside this s-expression, you can use the `$' function to fetch
     the list of values under provided keys.
-#+end_verse
+#+end_src
 
 ** =dribble*= (generic function)
 
