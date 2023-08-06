@@ -157,9 +157,9 @@ Possible inputs are:
 (unless (find :help *commands* :key #'first)
   (setf *commands*
         (append
-         *commands*
          `((:? ,#'help)
-           (:help ,#'help)))))
+           (:help ,#'help))
+         *commands*)))
 
 (defun find-command-or-prop (key commands fields)
   "Find the KEY in COMMANDS/FIELDS by its prefix/value.
