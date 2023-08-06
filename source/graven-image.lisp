@@ -45,3 +45,8 @@ unsafer."
      (:method (,@method-args)
        ,@body)
      (:documentation ,documentation)))
+
+(defmacro defalias (new-name old-name)
+  `(setf (fdefinition ',new-name) (fdefinition ',old-name)
+         (documentation (fdefinition ',new-name) t) (documentation (fdefinition ',old-name) t)
+         (documentation ',new-name 'function) (documentation ',old-name 'function)))
