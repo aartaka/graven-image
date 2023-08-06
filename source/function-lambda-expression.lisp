@@ -409,4 +409,6 @@ Depends on `function-lambda-expression*'."
          (documentation ',new-name 'function) (documentation ',old-name 'function)))
 
 (defalias lambda-expression* function-lambda-expression*)
+(defalias function-arglist* function-lambda-list*)
 (defalias lambda-list* function-lambda-list*)
+(defalias arglist* function-lambda-list*)
