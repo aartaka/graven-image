@@ -34,8 +34,13 @@ The library is purposefully limited in scope:
   relying on implementation defaults instead.
   - [[https://github.com/ciel-lang/CIEL][CIEL]] is taking a different direction: redefining the REPL for
     increased utility.
-- Reusing implementation-specific functionality is better than
-  re-implementing it.
+  - [[https://github.com/vseloved/flight-recorder][flight-recorder]] uses a separate shell script to add a new
+    functionality.
+- Portably reusing implementation-specific functionality is better
+  than re-implementing it. But if some functionality is e.g. unique to
+  SBCL, it might be dropped as non-portable.
+  - [[https://github.com/TeMPOraL/tracer][tracer]], [[https://github.com/fukamachi/supertrace][supertrace]], [[https://github.com/40ants/cl-flamegraph][cl-framegraph]], and other non-portable
+    SBCL-specific improvements.
 
 * Getting started
 
