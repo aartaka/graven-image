@@ -155,10 +155,11 @@ Things that =function-lambda-expression*= now returns are:
 - Whether the thing is a closure
   - If it is, might return an alist of the actual closed-over values,
     whenever accessible (not for all implementations).
-  - If it's not, returns NIL.
+  - If closed-over values are not accessible, returns T.
+  - If it's not a closure, returns NIL.
 - Function name. Mostly falls back to the standard
   =function-lambda-expression=, but also inspects
-  implementation-specific function objects, if necessary.
+  implementation-specific function objects if necessary.
 - Function type, whenever accessible.
 
 *** Helpers
