@@ -370,7 +370,7 @@ Restoring the standard-ish (beeping with bell (ASCII 7) character) behavior:
     (finish-output *query-io*))
 #+end_src
 
-** Changing the accepted yes/no options for =yes-or-no-p*=/=y-or-n-p*=
+** Changing the accepted yes/no options for =yes-or-no-p*= and =y-or-n-p*=
 #+begin_src lisp
   ;; Make it strict yes/no as per standard.
   (defmethod gimage:yes-or-no-p* :around (&optional control &rest arguments)
