@@ -3,6 +3,9 @@
 
 (in-package :graven-image)
 
+(defvar *traced-functions* (make-hash-table)
+  "A table from the traced version of the function to the \"clean\" untraced one.")
+
 (defun trace-function (function
                        &key report
                          if-all if-before if-after ;; condition/cond
