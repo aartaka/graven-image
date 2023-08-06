@@ -253,7 +253,7 @@ See =fields*= documentation for more details.
 
 Signature:
 #+begin_src lisp
-description* =object &optional stream
+description* object &optional stream
 #+end_src
 
 Concise and informative description of =object= to the
