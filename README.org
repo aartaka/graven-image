@@ -285,8 +285,10 @@ And here's a help menu of the new =inspect*= (in this case, inspecting
 =*readtable*=), just to get you teased:
 
 #+begin_src
-This is an interactive interface for BASE-CHAR
+This is an interactive interface for 5
 Available commands are:
+:?                            Show the instructions for using this interface.
+:HELP                         Show the instructions for using this interface.
 :QUIT                         Exit the interface.
 :EXIT                         Exit the interface.
 (:LENGTH NEW)                 Change the page size.
@@ -309,8 +311,6 @@ Available commands are:
 :UP                           Go up to the previous level of the interface.
 :POP                          Go up to the previous level of the interface.
 :BACK                         Go up to the previous level of the interface.
-:?                            Show the instructions for using this interface.
-:HELP                         Show the instructions for using this interface.
 (:SET KEY VALUE)              Set the KEY-ed field to VALUE.
 (:MODIFY KEY VALUE)           Set the KEY-ed field to VALUE.
 (:ISTEP KEY)                  Inspect the object under KEY.
