@@ -25,8 +25,7 @@
                (:file "dribble")
                ;; TODO:
                ;; (:file "trace")
-               )
-  :in-order-to ((test-op (test-op "graven-image/tests"))))
+               ))
 
 (defsystem "graven-image/cl"
   :depends-on ("graven-image")
