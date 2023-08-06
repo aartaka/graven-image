@@ -149,7 +149,9 @@ Possible inputs are:
                                  command
                                (list (function-lambda-list* function)
                                      name (function-lambda-list* function)
-                                     (documentation function t))))
+                                     (or (documentation function t)
+                                         (ignore-errors
+                                          (documentation (function-name function) 'function))))))
                            *commands*)))
 
 (unless (find :help *commands* :key #'first)
