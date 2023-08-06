@@ -189,8 +189,9 @@ always the case that some are missing."
   "Execute FORMS and print timing information for them.
 The values of FORMS evaluation are returned unaltered.
 
-Based on `with-time*', use it for increased control.
-Prints to `*trace-output*', rebind to redirect output."
+Influenced by:
+- `with-time*' implementation support.
+- `*trace-output*' for printing."
   (let ((form (if (= 1 (length forms))
                   (first forms)
                   (cons 'progn forms))))

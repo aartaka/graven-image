@@ -348,7 +348,11 @@
 When FORCE, return the lambda even if it's not suitable for `compile'
 or is otherwise not representing the FUNCTION truthfully. Might be
 useful to fetch the arglist (`function-lambda-list*' might work
-better) or body, though. Use at your own risk!"
+better) or body, though. Use at your own risk!
+
+Influenced by:
+- MOP implementation.
+- Implementation support for name/closure/arglist/type inspection."
   (let* ((function (ensure-function function))
          (definition (function-source-expression function force)))
     (multiple-value-bind (expression closure-p name)

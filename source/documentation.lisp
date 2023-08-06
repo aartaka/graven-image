@@ -66,15 +66,18 @@
 (define-generic documentation* (object &optional (doc-type t))
   "Get the documentation string of OBJECT.
 Like `documentation', but DOC-TYPE is optional and defaults to T.
-Setf-able."
+
+Influenced by:
+- The current state of the image (defined functions, classes etc.)
+- `documentation' methods."
   (documentation object doc-type))
 
 (define-generic (setf documentation*) (value object &optional (doc-type t))
-  "Set the documentation string of OBJECT (of type DOC-TYPE) to VALUE."
+  "Set the `documentation' string of OBJECT (of type DOC-TYPE) to VALUE."
   (setf (documentation object doc-type)
         value))
 
 (defalias doc* documentation*)
 (define-generic (setf doc*) (value object &optional (doc-type t))
-  "Set the documentation string of OBJECT (of type DOC-TYPE) to VALUE."
+  "Set the `documentation' string of OBJECT (of type DOC-TYPE) to VALUE."
   (setf (documentation* object doc-type) value))

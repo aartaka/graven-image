@@ -55,7 +55,12 @@ The file resulting from DRIBBLE* has:
 - Values and outputs prefixed by semicolons.
 
 With such a format, dribble file can be loaded into the running Lisp
-image to reproduce the recorded session."
+image to reproduce the recorded session.
+
+Influenced by:
+- `*standard-output*'.
+- `*standard-input*'.
+- Trivial Gray Streams implementation."
   (declare (ignorable pathname pathname-p if-exists if-does-not-exist))
   #+abcl
   (warn "Dribble* is not implemented for ABCL. Doing nothing. Help in implementing it!")

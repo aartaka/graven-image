@@ -17,7 +17,14 @@ STREAM could be:
 
 DESCRIBE-OBJECT methods are honored and used, unless IGNORE-METHODS is
 true. If IGNORE-METHODS, a regular summary+properties structure is
-used for OBJECT info."
+used for OBJECT info.
+
+Influenced by:
+- `*standard-output*'.
+- `print-object' method for OBJECT.
+- Printer variables for the display of the field values.
+- `fields*' and `description*' methods on OBJECT.
+- `describe-object' methods (unless IGNORE-METHODS.)"
   (let* ((stream (etypecase stream
                    (null (make-string-output-stream))
                    ((eql t) *standard-output*)

@@ -72,7 +72,7 @@ Improvements are:
 - Both functions mean the same now, because it makes no sense in
   differentiating them.
 - No beeps (just define a =yes-or-no-p* :before= method to add beeps
-  if you like 'em).
+  if you like 'em; see the "Customization" section below).
 
 ** =apropos-list*=, =apropos*= (generic functions)
 
@@ -356,6 +356,68 @@ Signature:
 Improved version of =documentation=. Two main improvements are: =doc-type= is now optional, and =doc*= alias is available for convenience.
 
 documentation.lisp also defines a method for =(symbol (eql t))=, which should simplify documentation fetching and setting.
+
+* Customization
+
+Graven Image is made to be extensible. That's why most of the improved functions are generic: one can define special methods for their data and patch the behavior with =:before=, =:after=, and =:around= methods. Most of Graven Image functions mention the variables/things influencing them in the docstring. Here's a set of useful customizations:
+
+** Beeping before =yes-or-no-p*=
+
+Restoring the standard-ish (beeping with bell (ASCII 7) character) behavior:
+#+begin_src lisp
+  (defmethod gimage:yes-or-no-p* :before (&optional control &rest arguments)
+    (write-char (code-char 7) *query-io*)
+    (finish-output *query-io*))
+#+end_src
+
+** Changing the accepted yes/no options for =yes-or-no-p*=/=y-or-n-p*=
+#+begin_src lisp
+  ;; Make it strict yes/no as per standard.
+  (defmethod gimage:yes-or-no-p* :around (&optional control &rest arguments)
+    (let ((gimage:*yes-or-no-options*
+            '(("yes" . t)
+              ("no" . nil))))
+      (call-next-method)))
+
+  ;; Add more yes/no options (Russian, for example).
+  (defmethod gimage:y-or-n-p* :around (&optional control &rest arguments)
+    (let ((gimage:*yes-or-no-options*
+            (append
+             gimage:*yes-or-no-options*
+             '(("да" . t)
+               ("ага" . t)
+               ("нет" . nil)
+               ("не" . nil)
+               ("неа" . nil)))))
+      (call-next-method)))
+#+end_src
+
+** Sorting =apropos-list*= lists
+
+Implementations are not good at sorting things, and their results are
+not often useful. Sorting things the way one needs is a useful
+extension. Here's a simple yet effective =:around= method that sorts
+things by =string= occurence:
+#+begin_src lisp
+  (defmethod gimage:apropos-list* :around (string &optional packages external-only docs-too)
+    "Sort symbols by the relation of subSTRING count to the length of symbol."
+    (declare (ignorable packages external-only docs-too))
+    (let ((result (call-next-method)))
+      (sort
+       (remove-duplicates result)
+       #'> :key (lambda (sym)
+                  (let ((match-count 0))
+                    (uiop:frob-substrings
+                     (string sym) (list (string string))
+                     (lambda (sub frob)
+                       (incf match-count)
+                       (funcall frob sub)))
+                    (/ match-count (length (string sym))))))))
+#+end_src
+
+** Changing printer settings for Graven Image output
+
+TODO!
 
 * Roadmap
 - [ ] Add:
