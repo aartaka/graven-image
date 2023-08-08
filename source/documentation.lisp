@@ -78,6 +78,4 @@ Influenced by:
         value))
 
 (defalias doc* documentation*)
-(define-generic (setf doc*) (value object &optional (doc-type t))
-  "Set the `documentation' string of OBJECT (of type DOC-TYPE) to VALUE."
-  (setf (documentation* object doc-type) value))
+(defalias (setf doc*) (setf documentation*))
