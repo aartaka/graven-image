@@ -41,12 +41,19 @@ unsafer."
     (apply maybe-fn args)))
 
 (defmacro define-generic (name (&rest method-args) &body (documentation . body))
-  `(defgeneric ,name (,@(mapcar #'first (mapcar #'uiop:ensure-list method-args)))
-     (:method (,@method-args)
-       ,@body)
-     (:documentation ,documentation)))
+  `(let ((generic (defgeneric ,name (,@(mapcar #'first (mapcar #'uiop:ensure-list method-args)))
+                    (:method (,@method-args)
+                      ,@body)
+                    (:documentation ,documentation))))
+     (setf (documentation (fdefinition ',name) t) ,documentation)
+     (ignore-errors
+      (setf (documentation ',name 'function) ,documentation))
+     generic))
 
 (defmacro defalias (new-name old-name)
-  `(setf (fdefinition ',new-name) (fdefinition ',old-name)
-         (documentation (fdefinition ',new-name) t) (documentation (fdefinition ',old-name) t)
-         (documentation ',new-name 'function) (documentation ',old-name 'function)))
+  `(ignore-errors
+    (setf (fdefinition ',new-name) (fdefinition ',old-name)
+          (documentation (fdefinition ',new-name) t) (documentation (fdefinition ',old-name) t))
+    ;; For (setf function) fdefinitions.
+    (ignore-errors
+     (setf (documentation ',new-name 'function) (documentation ',old-name 'function)))))
