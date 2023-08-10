@@ -341,7 +341,8 @@
   - If there's any lambda, it is most likely to have an arglist which
     one can rely on as the arglist of the FUNCTION.
 - Whether the FUNCTION is closed over some values and what these
-  values are (when possible).
+  values are (when possible). Returns an alist of closed-over
+  variables on most supported implementations.
 - The name of the function, whenever applicable.
 - The type of the function, whenever found.
 
