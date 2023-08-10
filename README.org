@@ -441,7 +441,37 @@ things by =string= occurence:
 
 ** Changing printer settings for Graven Image output
 
-TODO!
+Graven Image =inspect*= function uses =*print-lines*= for the number of properties to list. If your screen is more than 20 lines high, you might want to add more lines:
+
+#+begin_src lisp
+  (defmethod gimage:inspect* :around (t)
+    (let ((*print-lines* 45))
+      (call-next-method)))
+#+end_src
+
+Most of Graven Image functions also rely on
+implementation/REPL-specific printer variables, which might be
+un-intuitive, overly verbose, or too short. Binding printer variables
+around Graven Image functions helps that too:
+
+#+begin_src lisp
+  (defmethod gimage:apropos* :around (string &optional package external-only docs-too)
+    (declare (ignore string  package external-only docs-too))
+    (let ((*print-case* :downcase)
+          (*print-level* 2)
+          (*print-lines* 2)
+          (*print-length* 10))
+      (call-next-method)))
+#+end_src
+
+A noisy apropos function listing like
+#+begin_src lisp
+  X86::*X86-OPERAND-TYPE-NAMES* [VARIABLE = ((:REG8 . 1) (:REG16 . 2) (:REG32 . 4) (:REG64 . 8) (:IMM8 . 16) (:IMM8S . 32) (:IMM16 . 64) (:IMM32 . 128) (:IMM32S . 256) (:IMM64 . 512) (:IMM1 . 1024) (:BASEINDEX . 2048) (:DISP8 . 4096) (:DISP16 . 8192) (:DISP32 . 16384) (:DISP32S . 32768) (:DISP64 . 65536) (:INOUTPORTREG . 131072) (:SHIFTCOUNT . 262144) (:CONTROL . 524288) (:DEBUG . 1048576) (:TEST . 2097152) (:FLOATREG . 4194304) (:FLOATACC . 8388608) (:SREG2 . 16777216) (:SREG3 . 33554432) (:ACC . 67108864) (:JUMPABSOLUTE . 134217728) (:REGMMX . 268435456) (:REGXMM . 536870912) (:ESSEG . 1073741824) (:INVMEM . 2147483648) (:REG . 15) (:WORDREG . 14) (:IMPLICITREGISTER . 75890688) (:IMM . 1008) (:ENCIMM . 464) (:DISP . 126976) (:ANYMEM . 2147547136) (:LLONGMEM . 2147547136) (:LONGMEM . 2147547136) (:SHORTMEM . 2147547136) (:WORDMEM . 2147547136) (:BYTEMEM . 2147547136) (:LABEL . 4294967296) (:SELF . 8589934592))]
+#+end_src
+turns into a much more readable
+#+begin_src lisp
+x86::*x86-operand-type-names* [variable = ((:reg8 . 1) (:reg16 . 2) (:reg32 . 4) (:reg64 . 8) (:imm8 . 16) (:imm8s . 32) (:imm16 . 64) (:imm32 . 128) (:imm32s . 256) (:imm64 . 512) ...)]
+#+end_src
 
 * Roadmap
 - [ ] Add:
