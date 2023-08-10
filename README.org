@@ -457,6 +457,7 @@ TODO!
     - [ ] Support ABCL somehow.
   - [ ] =step=,
   - [ ] =trace= and =untrace=
+    - Low priority due to complexity of implementation tracing.
   - [X] =documentation=?
   - [ ] =disassemble=?
   - [ ] =room=?

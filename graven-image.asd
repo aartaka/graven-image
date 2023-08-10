@@ -23,7 +23,4 @@
                (:file "describe")
                (:file "inspect")
                (:file "dribble")
-               (:file "documentation")
-               ;; TODO:
-               ;; (:file "trace")
-               ))
+               (:file "documentation")))
