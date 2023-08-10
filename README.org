@@ -387,6 +387,7 @@ Graven Image is made to be extensible. That's why most of the improved functions
 Restoring the standard-ish (beeping with bell (ASCII 7) character) behavior:
 #+begin_src lisp
   (defmethod gimage:yes-or-no-p* :before (&optional control &rest arguments)
+    (declare (ignore control arguments))
     (write-char (code-char 7) *query-io*)
     (finish-output *query-io*))
 #+end_src
@@ -395,6 +396,7 @@ Restoring the standard-ish (beeping with bell (ASCII 7) character) behavior:
 #+begin_src lisp
   ;; Make it strict yes/no as per standard.
   (defmethod gimage:yes-or-no-p* :around (&optional control &rest arguments)
+    (declare (ignore control arguments))
     (let ((gimage:*yes-or-no-options*
             '(("yes" . t)
               ("no" . nil))))
@@ -402,6 +404,7 @@ Restoring the standard-ish (beeping with bell (ASCII 7) character) behavior:
 
   ;; Add more yes/no options (Russian, for example).
   (defmethod gimage:y-or-n-p* :around (&optional control &rest arguments)
+    (declare (ignore control arguments))
     (let ((gimage:*yes-or-no-options*
             (append
              gimage:*yes-or-no-options*
@@ -444,7 +447,8 @@ things by =string= occurence:
 Graven Image =inspect*= function uses =*print-lines*= for the number of properties to list. If your screen is more than 20 lines high, you might want to add more lines:
 
 #+begin_src lisp
-  (defmethod gimage:inspect* :around (t)
+  (defmethod gimage:inspect* :around (object)
+    (declare (ignore object))
     (let ((*print-lines* 45))
       (call-next-method)))
 #+end_src
