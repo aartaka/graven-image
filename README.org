@@ -181,7 +181,7 @@ Things that =function-lambda-expression*= now returns are:
 - Function name. Mostly falls back to the standard
   =function-lambda-expression=, but also inspects
   implementation-specific function objects if necessary.
-- Function type, whenever accessible.
+- Function type, whenever accessible (SBCL and ECL).
 
 *** Helpers
 

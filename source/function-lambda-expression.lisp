@@ -380,7 +380,24 @@ Influenced by:
        (sb-introspect:function-type function)
        #+(or cmucl scl)
        (kernel:%function-type function)
-       #-(or cmucl scl sbcl)
+       #+ecl
+       (let ((fname (function-name-symbol function)))
+         (multiple-value-bind (arg-types arg-types-p)
+             (c::get-arg-types fname)
+           (multiple-value-bind (return-type return-type-p)
+               (c::get-return-type fname)
+             `(function (,@(if arg-types-p
+                               arg-types
+                               (mapcar (lambda (arg)
+                                         (if (and (symbolp arg)
+                                                  (member arg lambda-list-keywords))
+                                             arg
+                                             t))
+                                       (function-arglist function fname))))
+                        ,(if return-type-p
+                             return-type
+                             t)))))
+       #-(or cmucl scl sbcl ecl)
        nil))))
 
 ;;; Helpers
