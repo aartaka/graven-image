@@ -41,11 +41,17 @@
         (environment environment)
         (t nil)))
     #+allegro
-    (let ((ht (sys::ha$h-table-ht
-               (slot-value
-                (sys::augmentable-environment-base
-                 (nth-value 1 (funcall old-function-lambda-expression function)))
-                'system::variable-hashtable))))
+    (let* ((closure (nth-value 1 (funcall old-function-lambda-expression function)))
+           (ht (if (typep closure 'sys::augmentable-environment)
+                   (sys::ha$h-table-ht
+                    (slot-value (sys::augmentable-environment-base closure)
+                                'system::variable-hashtable))
+                   ;; TODO: Closure inspection of
+                   ;; REGEXP::REGULAR-EXPRESSION-RETURN-TYPE returns
+                   ;; #<Closure DEFSTRUCT-ACCESSOR @ #x10000237d42>
+                   (prog1
+                       t
+                     (warn "Unknown closure ~s, cannot inspect" closure)))))
       (typecase ht
         (cons
          (cons (car ht) (caadr (cadadr ht))))
@@ -54,7 +60,9 @@
                  using (hash-value val)
                collect (cons key (caar (cdadar val)))))))
     #-(or ccl cmucl scl sbcl abcl allegro)
-    (warn "closure inspection is not implemented for this CL, help in implementing it!")))
+    (prog1
+        t
+      (warn "closure inspection is not implemented for this CL, help in implementing it!"))))
 
 ;; FIXME: Phew, that's a long one... Maybe use Slynk after all? Graven
 ;;  Image won't be dependency-free and will have dangerous recursive
