@@ -15,7 +15,7 @@ allowing for &REST, &KEY etc. in them.
 TIME-KEYWORDS is a &KEY destructuring list, but one may omit &KEY and
 &ALLOW-OTHER-KEYS in it.
 
-TIME-KEYWORDS are a keyword-indexed property list of:
+TIME-KEYWORDS are destructuring a keyword-indexed property list with:
 - :REAL --- for real time (in seconds).
 - :USER --- for user run time (in seconds).
 - :SYSTEM --- for system run time (in seconds).
