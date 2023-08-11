@@ -179,7 +179,9 @@ always the case that some are missing."
                           #+(and ecl boehm-gc)
                           (push (cons :gc-count (- (nth-value 1 (si::gc-stats t)) old-gc-count))
                                 ,props))))))
-       (destructuring-bind (,@time-keywords)
+       (destructuring-bind (,@time-keywords
+                            ,@(unless (eq (car (last time-keywords)) '&allow-other-keys)
+                                (list '&allow-other-keys)))
            (reduce #'append (mapcar (lambda (p) (list (car p) (cdr p))) ,props))
          (destructuring-bind (,@multiple-value-args)
              ,values
