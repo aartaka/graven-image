@@ -50,11 +50,12 @@ Clone the Git repository:
   git clone --recursive https://github.com/aartaka/graven-image ~/common-lisp/
 #+end_src
 
-And then load ~:graven-image~ in the REPL:
+Install dependencies:
+- [[https://github.com/pcostanza/closer-mop][Closer Mop]].
+- [[https://github.com/trivial-gray-streams/trivial-gray-streams][Trivial Gray Streams]].
+
+And then load =:graven-image= in the REPL:
 #+begin_src lisp
-  ;; Implies you have ASDF/Quicklisp and have Closer Mop and Trivial
-  ;; Gray Streams accessible in ~/common-lisp/, Quicklisp local
-  ;; projects, or ASDF registries.
   (asdf:load-system :graven-image)
   ;; or, if you use Quicklisp
   (ql:quickload :graven-image)
