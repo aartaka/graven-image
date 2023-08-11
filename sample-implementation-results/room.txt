@@ -230,3 +230,163 @@ aclmalloc arena:
        36832             0         36832         36832
        69600             0         69600         69600
  total bytes:       369728        281376        651104
+
+
+
+CLISP:
+Class                                                                                           # Instances  Size (bytes)  Average size
+-----                                                                                           -----------  ------------  ------------
+CONS                                                                                              409012       6544192         16.000
+SIMPLE-VECTOR                                                                                      21694       4449200        205.089
+FUNCTION                                                                                           17640       2005448        113.688
+SIMPLE-STRING                                                                                      29905       1648896         55.138
+SYMBOL                                                                                             18552       1187328         64.000
+SIMPLE-8BIT-VECTOR                                                                                 12162        617984         50.813
+STANDARD-EFFECTIVE-SLOT-DEFINITION                                                                  1577        176624        112.000
+HASH-TABLE                                                                                          1402        168240        120.000
+STANDARD-METHOD                                                                                      992        111104        112.000
+STANDARD-GENERIC-FUNCTION                                                                            748        107712        144.000
+STANDARD-CLASS                                                                                       341         81840        240.000
+SYSTEM::MACRO                                                                                       2102         67264         32.000
+SYSTEM-FUNCTION                                                                                     1119         62664         56.000
+FUNCTION-MACRO                                                                                      1756         56192         32.000
+SYSTEM::INTERNAL-WEAK-HASHED-ALIST                                                                    49         55968       1142.204
+STANDARD-DIRECT-SLOT-DEFINITION                                                                      462         40656         88.000
+PATHNAME                                                                                             800         38400         48.000
+STANDARD-READER-METHOD                                                                               303         36360        120.000
+CLOS::STRUCTURE-EFFECTIVE-SLOT-DEFINITION                                                            248         29760        120.000
+SYSTEM::INTERNAL-WEAK-LIST                                                                           544         29032         53.368
+CLOS::STRUCTURE-DIRECT-SLOT-DEFINITION                                                               248         21824         88.000
+STANDARD-WRITER-METHOD                                                                               145         17400        120.000
+FFI:FOREIGN-FUNCTION                                                                                 220         15840         72.000
+ASDF/LISP-ACTION:CL-SOURCE-FILE                                                                       91         14560        160.000
+RESTART                                                                                              174         13920         80.000
+WEAK-LIST                                                                                            539         12936         24.000
+ASDF/PLAN:PLANNED-ACTION-STATUS                                                                      198         11088         56.000
+ENCODING                                                                                             104         10816        104.000
+PACKAGE                                                                                               93          8184         88.000
+STRUCTURE-CLASS                                                                                       29          6728        232.000
+BABEL-ENCODINGS:CHARACTER-ENCODING                                                                    41          5248        128.000
+FFI:FOREIGN-ADDRESS                                                                                  157          5024         32.000
+BUILT-IN-CLASS                                                                                        33          5016        152.000
+ASDF/ACTION:ACTION-STATUS                                                                            121          4840         40.000
+SYSTEM::ANODE                                                                                         98          4704         48.000
+BABEL-ENCODINGS::CONCRETE-MAPPING                                                                     82          4592         56.000
+FOREIGN-POINTER                                                                                      161          3864         24.000
+EQL-SPECIALIZER                                                                                       69          3312         48.000
+ASDF/SYSTEM:SYSTEM                                                                                    10          3040        304.000
+FFI:FOREIGN-VARIABLE                                                                                  47          2632         56.000
+STREAM                                                                                                16          2512        157.000
+BABEL-ENCODINGS::ABSTRACT-MAPPING                                                                     41          2296         56.000
+BYTE                                                                                                  67          2144         32.000
+SYSTEM::CONST                                                                                         35          1960         56.000
+SYSTEM::FNODE                                                                                          7          1960        280.000
+SYSTEM::VAR                                                                                           14          1904        136.000
+SPECIAL-OPERATOR                                                                                      40          1600         40.000
+SYMBOL-MACRO                                                                                          66          1584         24.000
+GLOBAL-SYMBOL-MACRO                                                                                   66          1584         24.000
+STRING-STREAM                                                                                         11          1520        138.182
+FILE-STREAM                                                                                            5          1440        288.000
+SYSTEM::CONTROL-STRING-DIRECTIVE                                                                      16          1408         88.000
+ASDF/COMPONENT:MODULE                                                                                  7          1288        184.000
+METHOD-COMBINATION                                                                                    10          1280        128.000
+STRING                                                                                                29          1160         40.000
+SIMPLE-32BIT-VECTOR                                                                                    1          1040       1040.000
+CFFI::FOREIGN-TYPEDEF                                                                                 20           800         40.000
+FUNCALLABLE-STANDARD-CLASS                                                                             3           720        240.000
+VECTOR                                                                                                15           600         40.000
+LONG-FLOAT                                                                                            14           584         41.714
+CONCATENATED-STREAM                                                                                    4           576        144.000
+SYNONYM-STREAM                                                                                         4           544        136.000
+BROADCAST-STREAM                                                                                       4           544        136.000
+ASDF/COMPONENT:STATIC-FILE                                                                             3           480        160.000
+RATIO                                                                                                 13           416         32.000
+CFFI::FOREIGN-BUILT-IN-TYPE                                                                           13           416         32.000
+DOUBLE-FLOAT                                                                                          15           360         24.000
+SINGLE-FLOAT                                                                                          12           288         24.000
+LOGICAL-PATHNAME                                                                                       5           280         56.000
+READTABLE                                                                                              4           160         40.000
+TWO-WAY-STREAM                                                                                         1           144        144.000
+ECHO-STREAM                                                                                            1           144        144.000
+BIGNUM                                                                                                 4           112         28.000
+ASDF/PLAN:SEQUENTIAL-PLAN                                                                              1           104        104.000
+QL-GUNZIPPER::DECODE-TREE                                                                              2            80         40.000
+NULL                                                                                                   1            64         64.000
+QL-HTTP:URL                                                                                            1            56         56.000
+SIMPLE-BIT-VECTOR                                                                                      2            40         20.000
+8BIT-VECTOR                                                                                            1            40         40.000
+SIMPLE-ARRAY                                                                                           1            40         40.000
+CFFI::ENHANCED-TYPEDEF                                                                                 1            40         40.000
+CFFI::FOREIGN-BOOLEAN-TYPE                                                                             1            40         40.000
+CFFI::FOREIGN-POINTER-TYPE                                                                             1            40         40.000
+QL-CDB::RECORD-POINTER                                                                                 1            40         40.000
+COMPLEX                                                                                                1            32         32.000
+RANDOM-STATE                                                                                           1            24         24.000
+QL-IMPL:CLISP                                                                                          1            24         24.000
+ASDF/LISP-ACTION:PREPARE-OP                                                                            1            24         24.000
+ASDF/LISP-ACTION:COMPILE-OP                                                                            1            24         24.000
+ASDF/LISP-ACTION:LOAD-OP                                                                               1            24         24.000
+-----                                                                                           -----------  ------------  ------------
+Total                                                                                             524653      17725016         33.784
+
+Number of garbage collections:              189
+Bytes freed by GC:                  347,149,104
+Time spent in GC:                      1.162201 sec
+Bytes permanently allocated:            179,912
+Bytes currently in use:              17,545,104
+Bytes available until next GC:          461,996
+17545104 ;
+461996 ;
+179912 ;
+189 ;
+347149104 ;
+1162201
+
+
+
+GCL:
+
+     519/519         82.7%         CONS FIXNUM SHORT-FLOAT LONG-FLOAT STRUCTURE SPICE
+     113/113         90.2%         VECTOR CHARACTER HASH-TABLE ARRAY STRING CCLOSURE CLOSURE
+      31/31          93.8%         BIT-VECTOR BIGNUM RATIO COMPLEX PATHNAME
+     154/154         87.4%         STREAM SYMBOL
+       1/1           34.8%         RANDOM-STATE
+       9/9           90.0%         CFUN CFDATA
+      55/55          98.6%         SFUN PACKAGE READTABLE GFUN VFUN AFUN
+
+     768/768                       contiguous (921 blocks)
+         1383575                   hole
+       1/1            9.8%         relocatable
+
+       882 pages for cells
+
+      1651 total pages in core
+      1651 current core maximum pages
+         1 pages reserved for gc
+   4150723 pages available for adding to core
+     41926 pages reserved for core exhaustion
+
+   4194301 maximum pages
+
+
+Key:
+
+WS: words per struct
+UP: allocated pages
+MP: maximum pages
+FI: fraction of cells in use on allocated pages
+GC: number of gc triggers allocating this type
+
+word size:            64 bits
+page size:            4096 bytes
+heap start:           0x810000
+heap max :            0x40101D000
+shared library start: 0x0
+cstack start:         0x0
+cstack mark offset:   78 bytes
+cstack direction:     downward
+cstack alignment:     16 bytes
+cstack max:           16079 bytes
+immfix start:         0x8000000000000000
+immfix size:          4611686018427387904 fixnums
+physical memory:      4063824 pages
