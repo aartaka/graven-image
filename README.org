@@ -226,7 +226,6 @@ Signature:
 with-time* (&rest time-keywords) (&rest multiple-value-args) form &body body
 #+end_src
 
-
 As the implementation detail of =time*=, =with-time*= allows to get
 the timing data for interactive querying. =time-keywords= allow
 =&key=-matching the timing data (like =:gc= time or bytes
@@ -235,6 +234,22 @@ allow matching against the return values of the =form=. So we get best
 of the both worlds: timing data and return values. This flexibility
 enables =time*=, with its requirements of printing the data and
 returning the original values at the same time.
+
+For example, here's how one would track the allocated bytes and
+garbage collection times when running a cons-heavy code:
+#+begin_src lisp
+  (gimage:with-time* (&key aborted gc-count gc allocated)
+      (lists lists-p)
+      (loop for i below 1000
+            collect (make-list i :initial-element :hello)
+              into lists
+            finally (return (values lists t)))
+    (unless aborted
+      (format t "Bytes allocated: ~a, GC run ~d times for ~a seconds"
+              allocated gc-count gc)))
+  ;; Bytes allocated: 7997952, GC run NIL times for 0 seconds
+#+end_src
+
 
 ** =describe*= (generic function)
 
