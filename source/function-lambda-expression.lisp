@@ -390,21 +390,22 @@ Influenced by:
        (kernel:%function-type function)
        #+ecl
        (let ((fname (function-name-symbol function)))
-         (multiple-value-bind (arg-types arg-types-p)
-             (c::get-arg-types fname)
-           (multiple-value-bind (return-type return-type-p)
-               (c::get-return-type fname)
-             `(function (,@(if arg-types-p
-                               arg-types
-                               (mapcar (lambda (arg)
-                                         (if (and (symbolp arg)
-                                                  (member arg lambda-list-keywords))
-                                             arg
-                                             t))
-                                       (function-arglist function fname))))
-                        ,(if return-type-p
-                             return-type
-                             t)))))
+         (when fname
+           (multiple-value-bind (arg-types arg-types-p)
+               (c::get-arg-types fname)
+             (multiple-value-bind (return-type return-type-p)
+                 (c::get-return-type fname)
+               `(function (,@(if arg-types-p
+                                 arg-types
+                                 (mapcar (lambda (arg)
+                                           (if (and (symbolp arg)
+                                                    (member arg lambda-list-keywords))
+                                               arg
+                                               t))
+                                         (function-arglist function fname))))
+                          ,(if return-type-p
+                               return-type
+                               t))))))
        #-(or cmucl scl sbcl ecl)
        nil))))
 
