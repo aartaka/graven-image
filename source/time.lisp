@@ -19,7 +19,6 @@ TIME-KEYWORDS are destructuring a keyword-indexed property list with:
 - :REAL --- for real time (in seconds).
 - :USER --- for user run time (in seconds).
 - :SYSTEM --- for system run time (in seconds).
-- :CORES --- for CPU cores utilized.
 - :CYCLES --- for CPU cycles spent.
 - :LOAD --- for CPU load (percentage).
 - :GC-COUNT --- for the times GC was invoked.
@@ -72,7 +71,6 @@ always the case that some are missing."
                                 (push (cons :system (/ system-time internal-time-units-per-second)) ,props)
                                 (push (cons :user (/ user-time internal-time-units-per-second)) ,props)
                                 (push (cons :gc (/ gc-time internal-time-units-per-second)) ,props)
-                                (push (cons :cores (ccl::cpu-count)) ,props)
                                 (values-list results))))
                         (ccl::report-time
                          ',form
@@ -213,14 +211,13 @@ Influenced by:
 ~@[~&Run time (user): ~f seconds.~]~
 ~@[~&CPU cycles: ~d.~]~
 ~@[~&CPU load: ~d.~]~
-~@[~&CPU cores: ~d.~]~
 ~@[~&GC: ~d times.~]~
 ~@[~&GC time: ~f seconds.~]~
 ~@[~&Bytes allocated: ~a.~]~
 ~@[~&Page faults: ~a.~]"
                aborted ',form
                real system user
-               cycles load cores
+               cycles load
                gc-count gc
                allocated
                faults)
