@@ -511,7 +511,7 @@ x86::*x86-operand-type-names* [variable = ((:reg8 . 1) (:reg16 . 2) (:reg32 . 4)
   - [ ] =disassemble=?
   - [ ] =room=?
 - [X] Somehow hook into and improve over =*debugger-hook*=?
-  - Use Ndebug for that.
+  - Use [[https://github.com/atlas-engineer/ndebug/][Ndebug]] for that.
 - [ ] Test on more implementations.
 - [ ] Maybe add an interactive file manager?
   - Yes, this is beyond the goal of nice portable standard debugging
