@@ -1,0 +1,232 @@
+All tested with (room t)
+
+
+
+SBCL:
+Dynamic space usage is:   117,938,688 bytes.
+Immobile space usage is:   15,693,136 bytes (42,048 bytes overhead).
+Read-only space usage is:   6,770,960 bytes.
+Static space usage is:          3,376 bytes.
+Control stack usage is:         2,080 bytes.
+Binding stack usage is:           640 bytes.
+Control and binding stack usage is for the current thread only.
+Garbage collection is currently enabled.
+
+Summary of spaces: dynamic immobile static 
+
+INSTANCE:
+    47,163,616 bytes, 581,471 objects, 0% static, 0% immobile, 100% dynamic.
+
+CONS:
+    28,160,944 bytes, 1,760,059 objects, 100% dynamic.
+
+SIMPLE-VECTOR:
+    21,787,904 bytes, 93,021 objects, 0% static, 0% immobile, 100% dynamic.
+
+CODE:
+    13,800,688 bytes, 22,167 objects, 98% immobile, 2% dynamic.
+
+CLOSURE:
+    4,861,344 bytes, 106,206 objects, 100% dynamic.
+
+SIMPLE-ARRAY-UNSIGNED-BYTE-32:
+    3,616,272 bytes, 12,819 objects, 100% dynamic.
+
+SIMPLE-BIT-VECTOR:
+    2,995,264 bytes, 93,602 objects, 100% dynamic.
+
+SYMBOL:
+    2,080,336 bytes, 43,340 objects, 0% static, 65% immobile, 35% dynamic.
+
+SIMPLE-ARRAY-UNSIGNED-BYTE-8:
+    1,960,800 bytes, 21,103 objects, 100% dynamic.
+
+VALUE-CELL:
+    1,553,472 bytes, 97,092 objects, 100% dynamic.
+
+SIMPLE-CHARACTER-STRING:
+    1,503,600 bytes, 8,806 objects, 100% dynamic.
+
+SIMPLE-BASE-STRING:
+    807,568 bytes, 16,058 objects, 100% dynamic.
+
+FDEFN:
+    639,648 bytes, 19,989 objects, 100% immobile.
+
+BIGNUM:
+    446,672 bytes, 9,604 objects, 100% dynamic.
+
+SIMPLE-ARRAY-UNSIGNED-BYTE-16:
+    229,696 bytes, 1,241 objects, 100% dynamic.
+
+SIMPLE-ARRAY-SIGNED-BYTE-8:
+    207,648 bytes, 5,907 objects, 100% dynamic.
+
+FUNCALLABLE-INSTANCE:
+    175,936 bytes, 3,492 objects, 100% dynamic.
+
+RATIO:
+    137,728 bytes, 4,304 objects, 100% dynamic.
+
+ARRAY-HEADER:
+    67,232 bytes, 1,049 objects, 100% dynamic.
+
+SAP:
+    43,696 bytes, 2,731 objects, 100% dynamic.
+
+SIMPLE-ARRAY-UNSIGNED-BYTE-64:
+    13,680 bytes, 140 objects, 17% static, 83% dynamic.
+
+SIMPLE-ARRAY-FIXNUM:
+    5,024 bytes, 8 objects, 40% immobile, 60% dynamic.
+
+SIMPLE-ARRAY-SIGNED-BYTE-16:
+    2,800 bytes, 87 objects, 100% dynamic.
+
+WEAK-POINTER:
+    2,320 bytes, 145 objects, 100% dynamic.
+
+SIMPLE-ARRAY-SIGNED-BYTE-32:
+    1,328 bytes, 37 objects, 100% dynamic.
+
+DOUBLE-FLOAT:
+    144 bytes, 9 objects, 100% dynamic.
+
+SIMPLE-ARRAY-UNSIGNED-FIXNUM:
+    64 bytes, 2 objects, 100% dynamic.
+
+SIMPLE-ARRAY-UNSIGNED-BYTE-2:
+    48 bytes, 1 object, 100% dynamic.
+
+SIMD-PACK:
+    32 bytes, 1 object, 100% dynamic.
+
+Summary total:
+    132,265,504 bytes, 2,904,491 objects.
+
+Top 10 dynamic instance types:
+  SB-C::LVAR                          4,422,800 bytes,  55,285 objects.
+  SB-C::REF                           4,052,608 bytes,  36,184 objects.
+  SB-C::CTRAN                         3,679,200 bytes,  76,650 objects.
+  SB-C::CBLOCK                        3,264,320 bytes,  20,402 objects.
+  SB-C::LAMBDA-VAR                    2,854,016 bytes,  16,216 objects.
+  SB-KERNEL:LEXENV                    2,751,744 bytes,  21,498 objects.
+  SB-C::CLAMBDA                       2,537,792 bytes,   8,348 objects.
+  SB-C::COMBINATION                   2,045,600 bytes,  12,785 objects.
+  SB-C::COMPILED-DEBUG-FUN            2,040,480 bytes,  25,506 objects.
+  SB-C::COMPILED-DEBUG-FUN-EXTERNAL   1,952,960 bytes,  24,412 objects.
+
+  Other types                        17,618,848 bytes, 286,622 objects.
+  Dynamic instance total             47,220,368 bytes, 583,908 objects.
+
+Top 10 immobile instance types:
+  SB-KERNEL:LAYOUT         126,000 bytes, 1,125 objects.
+
+  Immobile instance total  126,000 bytes, 1,125 objects.
+
+Top 10 static instance types:
+  SB-LOCKLESS::LIST-NODE  16 bytes, 1 object.
+
+  Static instance total   16 bytes, 1 object.
+
+
+
+CCL:
+Approximately 20,971,520 bytes of memory can be allocated 
+before the next full GC is triggered. 
+
+                   Total Size             Free                 Used
+Lisp Heap:       38404096 (37504K)   20971520 (20480K)   17432576 (17024K)
+Stacks:          11211264 (10948K)   11190528 (10928K)      20736 (20K)
+Static:          21506688 (21003K)          0 (0K)       21506688 (21003K)
+376763.370 MB reserved for heap expansion.
+
+Initial(0)
+  cstack:      2503168 (2444K)      2503168 (2444K)            0 (0K)
+  vstack:      2408448 (2352K)      2408096 (2352K)          352 (0K)
+  tstack:       401408 (392K)        399280 (390K)          2128 (2K)
+listener(1)
+  cstack:      2506752 (2448K)      2506752 (2448K)            0 (0K)
+  vstack:      2203648 (2152K)      2194920 (2143K)         8728 (9K)
+  tstack:      1187840 (1160K)      1178224 (1151K)         9616 (9K)
+
+
+
+
+ECL:
+Unfortunately, when linked against the Boehm-Weiser garbage collector,
+ECL has no means to find out the amount of memory used. Please use
+some other routine (such as top in Unix or the Ctrl+Alt+Del combination
+in Windows) to learn this.
+
+
+
+ABCL:
+Total memory 764936192 bytes
+310999048 bytes used
+453937144 bytes free
+310999048
+764936192
+3700424704
+
+
+
+Allegro:
+area area  address(bytes)        cons         other bytes
+  #  type                   16 bytes each
+                             (free:used)      (free:used)
+     Top #x10007a8e000
+     New #x10007948000(1335296)   -----            -----
+     New #x10007802000(1335296)  300:6234      468384:691520
+   1 CVO #x10003c02000(62914560)    0:0       59671328:3181600
+   0 Old #x10000001c00(62915584)  353:170506  46804160:13289088
+     Tot (Old Areas)           353:170506  106475488:16470688
+Root pages: 150
+Lisp heap limit: 277872640
+  Lisp heap:    #x10000000000  pos: #x10007a8e000 resrve: #x10010900000
+Aclmalloc heap: #x80000000000  pos: #x800000a0000 resrve: #x800000fa000
+ Pure space:    #x7fc02102c000  end: #x7fc021b493a0
+
+code   type                                 items     bytes 
+112: (SIMPLE-VECTOR T)                       20483   4837056 24.3%
+  1: CONS                                   177041   2832656 14.2%
+119: (SIMPLE-VECTOR CODE)                     8773   2642048 13.3%
+ 11: SYMBOL                                  32706   2093184 10.5%
+136: FUNCTION                                15296   1882224  9.5%
+134: GC-INFO                                 13857   1596576  8.0%
+117: (SIMPLE-VECTOR CHARACTER)               14091   1576896  7.9%
+133: SV-VECTOR                               33062   1109248  5.6%
+125: (SIMPLE-VECTOR (UNSIGNED-BYTE 8))          85    645616  3.2%
+143: STRUCTURE                                2320    230032  1.2%
+140: STANDARD-INSTANCE                        6637    212384  1.1%
+137: CLOSURE                                  4732    164480  0.8%
+138: HASH-TABLE                                296     28416  0.1%
+120: (SIMPLE-VECTOR FIXNUM)                      8     16976  0.1%
+111: (SHORT-SIMPLE-VECTOR FOREIGN)             222     14176  0.1%
+127: (SIMPLE-VECTOR (UNSIGNED-BYTE 32))          5      8608  0.0%
+135: OTHER-LOCATIVE                            147      4704  0.0%
+ 18: BIGNUM                                    144      3872  0.0%
+118: (SIMPLE-VECTOR BIT)                        79      2560  0.0%
+ 16: SINGLE-FLOAT                              153      2448  0.0%
+ 17: DOUBLE-FLOAT                              121      1936  0.0%
+130: MV-VECTOR                                   5       880  0.0%
+240: (SIMPLE-VECTOR (UNSIGNED-BYTE 64))          3       496  0.0%
+193: (SHORT-ARRAY (SIGNED-BYTE 64))              8       384  0.0%
+ 80: (ARRAY T)                                   8       384  0.0%
+ 96: (SHORT-SIMPLE-VECTOR T)                    11       352  0.0%
+ 20: COMPLEX                                    11       352  0.0%
+139: READTABLE                                   8       256  0.0%
+241: (SIMPLE-VECTOR (SIGNED-BYTE 64))            1       176  0.0%
+
+ total bytes = 19909376
+aclmalloc arena:
+    max size    free bytes    used bytes         total
+          96          2112           960          3072
+         224          3360           224          3584
+         992          3968             0          3968
+        2016          4032             0          4032
+        5088        335808         10176        345984
+       20448         20448        163584        184032
+       36832             0         36832         36832
+       69600             0         69600         69600
+ total bytes:       369728        281376        651104
