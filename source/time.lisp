@@ -12,6 +12,9 @@ The values of FORM are bound to MULTIPLE-VALUE-ARGS.
 Both TIME-KEYWORDS and MULTIPLE-VALUE-ARGS are destructuring lists,
 allowing for &REST, &KEY etc. in them.
 
+TIME-KEYWORDS is a &KEY destructuring list, but one may omit &KEY and
+&ALLOW-OTHER-KEYS in it.
+
 TIME-KEYWORDS are a keyword-indexed property list of:
 - :REAL --- for real time (in seconds).
 - :USER --- for user run time (in seconds).
@@ -179,7 +182,9 @@ always the case that some are missing."
                           #+(and ecl boehm-gc)
                           (push (cons :gc-count (- (nth-value 1 (si::gc-stats t)) old-gc-count))
                                 ,props))))))
-       (destructuring-bind (,@time-keywords
+       (destructuring-bind (,@(unless (eq (car time-keywords) '&key)
+                                (list '&key))
+                            ,@time-keywords
                             ,@(unless (eq (car (last time-keywords)) '&allow-other-keys)
                                 (list '&allow-other-keys)))
            (reduce #'append (mapcar (lambda (p) (list (car p) (cdr p))) ,props))
