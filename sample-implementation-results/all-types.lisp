@@ -21,7 +21,7 @@
 
   #+abcl
   (java:java-exception mop::slot-definition java:java-object)
-  #+ccl
+  #+clozure
   (ccl:uvector-inspector)
   #+clasp
   (sys:cxx-object sys:vaslist)

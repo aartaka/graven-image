@@ -16,13 +16,13 @@
 (-> id (t) integer)
 (defun id (object)
   #+sbcl (sb-kernel:get-lisp-obj-address object)
-  #+ccl (ccl:%address-of object)
+  #+clozure (ccl:%address-of object)
   #+ecl (si:pointer object)
   #+abcl (system::identity-hash-code object)
   #+clisp (system::address-of object)
   #+gcl (system:address object)
   #+allegro (excl:lispval-to-address object)
-  #-(or sbcl ccl ecl abcl clisp gcl allegro) (sxhash object))
+  #-(or sbcl clozure ecl abcl clisp gcl allegro) (sxhash object))
 
 #+sbcl
 (defun remove-sbcl-props-from (object &rest names-to-remove)
@@ -38,7 +38,7 @@
                     (string x)))
            :test #'equal)))
 
-#+ccl
+#+clozure
 (defun get-ccl-props (object &rest props)
   (mapcar
    (lambda (prop)
@@ -85,7 +85,7 @@
                     ,@(when slot-defs
                         (list (list :slot-definitions slot-defs)))
                     (:type ,(type-of object))
-                    #+ccl
+                    #+clozure
                     (:wrapper ,(ccl::%class-own-wrapper (class-of object))))
                   values
                   (when slot-defs
@@ -271,9 +271,9 @@ When STRIP-NULL, fields with null VALUE and SETTER are filtered out."))
                    #+ecl (ext:lock-package object)
                    #+sbcl (sb-ext:unlock-package object)
                    #+ecl (ext:unlock-package object))))
-    #+(or sb-ext ccl ext ext ext hcl excl)
+    #+(or sb-ext clozure ext ext ext hcl excl)
     (:local-nicknames ,(package-local-nicknames object))
-    #+ccl
+    #+clozure
     ,@(get-ccl-props
        object 'ccl::pkg.itab 'ccl::pkg.etab 'ccl::pkg.shadowed 'ccl::pkg.lock 'ccl::pkg.intern-hook)
     #+sbcl
@@ -297,7 +297,7 @@ When STRIP-NULL, fields with null VALUE and SETTER are filtered out."))
     (:symbol-preference ,(sb-impl::%readtable-symbol-preference object))
     #+sbcl
     (:string-preference ,(sb-impl::%readtable-string-preference object))
-    #+ccl
+    #+clozure
     ,@(get-ccl-props object 'ccl::rdtab.ttab 'ccl::rdtab.macros)
     #+sbcl
     ,@(remove-sbcl-props-from
@@ -305,7 +305,7 @@ When STRIP-NULL, fields with null VALUE and SETTER are filtered out."))
        'sb-impl::%readtable-normalization 'sb-impl::%readtable-case)))
 
 (deffields (object random-state)
-  `(#+ccl
+  `(#+clozure
     ,@(get-ccl-props object 'ccl::random.mrg31k3p-state)
     #+sbcl
     ,@(remove-sbcl-props-from object)))
@@ -391,11 +391,11 @@ When STRIP-NULL, fields with null VALUE and SETTER are filtered out."))
     (:count ,(hash-table-count object))
     (:rehash-size ,(hash-table-rehash-size object))
     (:rehash-threshold ,(hash-table-rehash-threshold object))
-    #+(or sbcl ecl ccl abcl)
+    #+(or sbcl ecl clozure abcl)
     (:weakness
      #+ecl ,(si:hash-table-weakness object)
      #+sbcl ,(sb-impl::hash-table-weakness object)
-     #+ccl ,(ccl:hash-table-weak-p object)
+     #+clozure ,(ccl:hash-table-weak-p object)
      #+abcl ,(system:hash-table-weakness object))
     ,@(loop for key being the hash-key in object
               using (hash-value val)
@@ -411,7 +411,7 @@ When STRIP-NULL, fields with null VALUE and SETTER are filtered out."))
               and collect val into complex-props
             finally (return (append inline-props
                                     (list (list 'other-pairs complex-props)))))
-    #+ccl
+    #+clozure
     ,@(get-ccl-props
        object
        'ccl::nhash.keytransF 'ccl::nhash.compareF 'ccl::nhash.rehash-bits 'ccl::nhash.vector
@@ -457,7 +457,7 @@ When STRIP-NULL, fields with null VALUE and SETTER are filtered out."))
                     (open file
                           :direction :probe
                           :if-does-not-exist :create))))))
-    #+ccl
+    #+clozure
     ,@(get-ccl-props object 'ccl::basic-file-stream.actual-filename)))
 
 (deffields (object stream)
@@ -503,7 +503,7 @@ When STRIP-NULL, fields with null VALUE and SETTER are filtered out."))
                      (declare (ignorable _))
                      (setf (slot-value object name) new-value))))
            (object-slots object))
-   #+ccl
+   #+clozure
    (get-ccl-props
     object
     'ccl::instance.hash 'ccl::instance.slots)
@@ -538,40 +538,40 @@ When STRIP-NULL, fields with null VALUE and SETTER are filtered out."))
 (deffields (object generic-function)
   `((:methods ,(closer-mop:generic-function-methods object))
     (:method-combination ,(closer-mop:generic-function-method-combination object))
-    #+ccl
+    #+clozure
     ,@(get-ccl-props
        object
        'ccl::gf.code-vector 'ccl::gf.slots 'ccl::gf.dispatch-table 'ccl::gf.dcode 'ccl::gf.hash 'ccl::gf.bits)
-    #+ccl
+    #+clozure
     ,@(when (typep object 'standard-generic-function)
         (get-ccl-props object 'ccl::sgf.method-class 'ccl::sgf.decls 'ccl::sgf.dependents))))
 
 (-> restart-interactive (restart))
 (defun restart-interactive (restart)
   (declare (ignorable restart))
-  #+ccl (ccl::%restart-interactive restart)
+  #+clozure (ccl::%restart-interactive restart)
   #+sbcl (sb-kernel::restart-interactive-function restart)
   #+ecl (si::restart-interactive-function restart)
-  #-(or ccl sbcl ecl) nil)
+  #-(or clozure sbcl ecl) nil)
 
 (deffields (object restart)
   `((:name ,(restart-name object))
     (:interactive ,(restart-interactive object))
     (:test
-     #+ccl ,(ccl::%restart-test object)
+     #+clozure ,(ccl::%restart-test object)
      #+sbcl ,(sb-kernel::restart-test-function object)
      #+ecl ,(si::restart-test-function object)
-     #-(or ccl sbcl ecl) nil)
+     #-(or clozure sbcl ecl) nil)
     (:action
-     #+ccl ,(ccl::%restart-action object)
+     #+clozure ,(ccl::%restart-action object)
      #+sbcl ,(sb-kernel::restart-function object)
      #+ecl ,(si::restart-function object)
-     #-(or ccl sbcl ecl) nil)
+     #-(or clozure sbcl ecl) nil)
     (:report
-     #+ccl ,(ccl::%restart-report object)
+     #+clozure ,(ccl::%restart-report object)
      #+sbcl ,(sb-kernel::restart-report-function object)
      #+ecl ,(si::restart-report-function object)
-     #-(or ccl sbcl ecl) nil)))
+     #-(or clozure sbcl ecl) nil)))
 
 (deffields (object condition)
   `((:restarts ,(compute-restarts object))

@@ -16,7 +16,7 @@
   (let ((function (if (typep function 'standard-method)
                       (closer-mop:method-generic-function function)
                       function)))
-    #+ccl
+    #+clozure
     (and (typep function 'ccl:compiled-lexical-closure)
          ;; Convert to alist.
          (loop for (name value) in (ccl::closure-closed-over-values function)
@@ -59,7 +59,7 @@
          (loop for key being the hash-key in ht
                  using (hash-value val)
                collect (cons key (caar (cdadar val)))))))
-    #-(or ccl cmucl scl sbcl abcl allegro)
+    #-(or clozure cmucl scl sbcl abcl allegro)
     (prog1
         t
       (warn "closure inspection is not implemented for this CL, help in implementing it!"))))
@@ -75,7 +75,7 @@
                       function)))
     #+allegro
     (cross-reference::object-to-function-name function)
-    #+ccl
+    #+clozure
     (ccl:function-name function)
     #+clasp
     (if (typep function 'generic-function)
@@ -103,7 +103,7 @@
     (si:compiled-function-name function)
     #+sbcl
     (sb-impl::%fun-name function)
-    #-(or abcl allegro ccl clasp cmucl cormanlisp ecl lispworks mkcl sbcl scl)
+    #-(or abcl allegro clozure clasp cmucl cormanlisp ecl lispworks mkcl sbcl scl)
     (warn "function name fetching is not implemented for this CL, help in implementing it!")))
 
 (-> function-name-symbol (function-designator))
@@ -169,7 +169,7 @@
                                            sys::arglist
                                            #+allegro
                                            excl:arglist
-                                           #+ccl
+                                           #+clozure
                                            ccl:arglist
                                            #+clisp
                                            ext:arglist
@@ -181,7 +181,7 @@
          (try-arglist function name)
          #+allegro
          (try-arglist function name)
-         #+ccl
+         #+clozure
          ;; Why `*break-on-signals*' NIL in Slynk?
          (let ((*break-on-signals* nil))
            (try-arglist function name))
@@ -226,7 +226,7 @@
          (try-arglist function name)
          #+scl
          (ext:function-arglist name)))
-      #-(or abcl allegro ccl clasp clisp cmucl cormanlisp ecl ecl lispworks sbcl scl)
+      #-(or abcl allegro clozure clasp clisp cmucl cormanlisp ecl ecl lispworks sbcl scl)
       (warn "arglist fetching is not implemented for this CL, help in implementing it!")))
 
 (-> function-source-expression-fallback (function-designator) list)
@@ -264,7 +264,7 @@
                          (loop repeat position
                                do (read-char f nil nil))
                          (maybe-unsafe-read f))))))
-           #+ccl
+           #+clozure
            (let* ((note (or (ccl:function-source-note function)
                             (find-if #'ccl:source-note-p (first (ccl:find-definition-sources function)))))
                   (text (when note
@@ -328,7 +328,7 @@
                    source-triplet
                  (declare (ignore _))
                  (read-from-position (translate-logical-pathname file) position))))
-           #-(or ccl ecl sbcl abcl)
+           #-(or clozure ecl sbcl abcl)
            (warn "source fetching is not implemented for this CL implementation, help in implementing it!")))
      (error () nil))
    (when force

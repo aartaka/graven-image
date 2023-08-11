@@ -20,7 +20,7 @@
    )
   (:import-from
    #+sbcl      #:sb-ext
-   #+ccl       #:ccl
+   #+clozure       #:ccl
    #+ecl       #:ext
    #+abcl      #:ext
    #+clasp     #:ext

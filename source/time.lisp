@@ -54,7 +54,7 @@ always the case that some are missing."
                          (when (and page-faults (plusp page-faults))
                            (push (cons :faults page-faults) ,props)))
                        (lambda () ,form))
-                      #+ccl
+                      #+clozure
                       (let ((ccl::*report-time-function*
                               (lambda (&key form results elapsed-time user-time
                                          system-time gc-time bytes-allocated
@@ -138,7 +138,7 @@ always the case that some are missing."
                            (error ()
                              (push (cons :aborted t) ,props)
                              (values)))))
-                      #-(or sbcl ccl clisp allegro)
+                      #-(or sbcl clozure clisp allegro)
                       (let ((old-real-time (get-internal-real-time))
                             (old-run-time (get-internal-run-time))
                             #+ecl

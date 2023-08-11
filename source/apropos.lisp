@@ -81,12 +81,12 @@ Influenced by:
       ;; not specified, so this might bring some inconsistencies. All
       ;; the implementations I've tested list things in the
       ;; case-insensitive fashion, though.
-      #+(or ccl ecl gcl abcl clisp)
+      #+(or clozure ecl gcl abcl clisp)
       ((and (not external-only) (not docs-too))
        (reduce-old-apropos string packages))
-      #+(or sbcl ccl ecl gcl abcl clisp allegro)
+      #+(or sbcl clozure ecl gcl abcl clisp allegro)
       (t (%apropos-list string packages external-only docs-too))
-      #-(or sbcl ccl ecl gcl abcl clisp allegro)
+      #-(or sbcl clozure ecl gcl abcl clisp allegro)
       (t
        (warn "apropos-list* is not implemented for this CL, help in implementing it!")
        (reduce-old-apropos string packages)))))
