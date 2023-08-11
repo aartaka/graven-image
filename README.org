@@ -20,8 +20,9 @@ The library is purposefully limited in scope:
   ones.
   - [[https://github.com/m-n/repl-utilities][repl-utilities]] as a contrasting approach: it defines lots of
     "DWIM" functions, significantly altering the REPL interaction.
-  - There are helpers like =function-lambda-list*=, but these are
-    merely aliases/one-liners over standard/improved functions.
+  - There are helpers like =function-lambda-list*= in Graven Image,
+    but these are merely aliases/one-liners over standard/improved
+    functions.
 - The interaction paradigm of the improved functions should stay
   standard (i.e. use =*query-io*= where standard requires
   =*query-io*=.)
