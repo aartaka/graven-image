@@ -91,13 +91,19 @@ Influenced by:
        (warn "apropos-list* is not implemented for this CL, help in implementing it!")
        (reduce-old-apropos string packages)))))
 
+;; Allegro has a different arglist, which Graven Image conflicts
+;; with. But let's say that's the fault of proprietary implementations
+;; ;) Some day, `apropos*' might have a fifth argument for
+;; CASE-INSENSITIVE search.
+;;
+;; (STRING &OPTIONAL PACKAGE EXTERNAL-ONLY CASE-INSENSITIVE)
 (define-generic apropos* (string &optional package external-only docs-too)
   "Print a list of PACKAGE symbols with names (+docs when DOCS-TOO) containing STRING.
 
 In case the symbol is naming several things (variable, macro,
 function, class), these interpretations will be listed
-separately. Lists documentation for documented things and values for
-bound variables.
+separately. Lists documentation for documented things, values for
+bound variables, and arglists for functions/macros.
 
 When EXTERNAL-ONLY, only search the external symbols of
 PACKAGE (ported from SBCL).
