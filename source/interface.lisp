@@ -175,13 +175,18 @@ Search is different for different KEY types:
   names.
 - Anything else: search literal object."
   (typecase key
-    (integer (values (elt fields (position key (field-indices fields))) nil))
+    (integer (values (if (<= 0 key (length fields))
+                         (elt fields (position key (field-indices fields)))
+                         (warn "No field with key ~s" key))
+                     nil))
     (symbol
      (loop for match in (append commands fields)
            for (match-key) = match
            when (and (symbolp match-key)
                      (uiop:string-prefix-p (symbol-name key) (symbol-name match-key)))
-             do (return (values match (member match commands)))))
+             do (return (values match (member match commands)))
+           else
+             do (warn "No field/command with key ~s" key)))
     (t (find key fields :key #'first :test #'equal))))
 
 (defun $ (&rest keys)
