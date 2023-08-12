@@ -131,6 +131,7 @@ For inspector, that's a recursive inspection.")
 ~:{~&~:[~s~*~;(~s~{ ~a~})~]~30t~@[~a~]~}
 
 Possible inputs are:
+- Blank line: scroll the listing down.
 - Mere symbols: run one of the commands above, matching the symbol.
   - If there's no matching command, then match against fields.
     - If nothing matches, evaluate the symbol.
@@ -192,6 +193,22 @@ interacting with."
               (second (find-command-or-prop key nil fields)))
             keys)))
 
+(defun read-maybe-spaced (stream)
+  (let ((first (read-line stream nil "")))
+    (if (equal "" first)
+        `(:next)
+        (loop with string = first
+              for (forms error)
+                = (multiple-value-list
+                   (ignore-errors
+                    (with-input-from-string (str-stream string)
+                      (uiop:slurp-stream-forms str-stream))))
+              while error
+              do (setf string (uiop:strcat string #\Newline (read-line stream)))
+              finally (return
+                        (with-input-from-string (str-stream string)
+                          (uiop:slurp-stream-forms str-stream)))))))
+
 (defmacro definterface (name stream (object)
                         ((var val) &rest vars+vals)
                         documentation
@@ -232,21 +249,27 @@ inspector."
              (loop
                (format *stream* "~&~a> " (quote ,name))
                (finish-output *stream*)
-               (let ((input (read *stream*)))
+               (let ((forms (read-maybe-spaced *stream*)))
                  (multiple-value-bind (result command-p)
-                     (find-command-or-prop (first (uiop:ensure-list input))
-                                           *commands* (when (not (listp input))
+                     (find-command-or-prop (first (uiop:ensure-list (first forms)))
+                                           *commands* (when (not (listp (first forms)))
                                                         fields))
-                   (cond
-                     ((and result command-p)
-                      (apply (second result)
-                             (mapcar #'eval (rest (uiop:ensure-list input)))))
-                     ((and result (not command-p))
-                      (funcall *action-fn* (second result))
-                      (summarize)
-                      (print-fields))
-                     (t (dolist (val (multiple-value-list (eval input)))
-                          (print val *query-io*))))))))))
+                   (format t "~&Results of find-command-or-prop are ~s and ~s" result (not (not command-p)))
+                   (restart-case
+                       (cond
+                         ((and result command-p)
+                          (apply (second result)
+                                 (mapcar #'eval (rest forms))))
+                         ((and result (not command-p))
+                          (funcall *action-fn* (second result))
+                          (summarize)
+                          (print-fields))
+                         (t (dolist (val (multiple-value-list (eval (first forms))))
+                              (print val *query-io*))))
+                     (back-to-interface ()
+                       :report (lambda (s)
+                                 (format s "~&Get back to ~s interface" (quote ,name)))
+                       nil))))))))
        (define-generic ,name (,object)
          ,documentation
          (catch 'toplevel
