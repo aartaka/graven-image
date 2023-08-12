@@ -43,7 +43,7 @@ For inspector, that's a recursive inspection.")
   "Print the current page of fields."
   (loop with fields = (funcall *fields-fn* *object*)
         with real-page-len = (min *length* (+ *offset* *print-lines*))
-        for index from *offset* below real-page-Len
+        for index from *offset* below real-page-len
         for (key value . args) in (subseq fields *offset*)
         do (apply *print-field-fn* *stream* index key value args)
         finally (unless (= real-page-len *length*)
@@ -243,7 +243,8 @@ inspector."
                   ,@(loop for (name initvalue) in vars-vals
                           collect `(,name ,initvalue))
                   (fields (funcall *fields-fn* *object*))
-                  (*length* (length fields)))
+                  (*length* (length fields))
+                  (*offset* 0))
              (summarize)
              (print-fields)
              (loop
