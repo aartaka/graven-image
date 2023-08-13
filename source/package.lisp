@@ -12,7 +12,7 @@
    #:$ #:definterface
    #:describe* #:inspect*
    #:function-lambda-expression* #:function-lambda-list* #:function-name* #:function-type*
-   #:lambda-expression* #:function-arlist* #:lambda-list* #:arlist*
+   #:lambda-expression* #:function-arglist* #:lambda-list* #:arglist*
    #:time* #:with-time*
    #:dribble*
    #:documentation* #:doc*
