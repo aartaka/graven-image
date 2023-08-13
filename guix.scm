@@ -45,20 +45,24 @@
     ;;     "SPECIFY-HASH")))
     )
    (build-system asdf-build-system/sbcl)
-   ;; We use `cl-*' inputs and not `sbcl-*' ones so that CCL users can also use
-   ;; this Guix manifests.
-   ;;
-   ;; Another reason is to not fail when an input dependency is found in
-   ;; ~/common-lisp, which would trigger a rebuild of the SBCL input in the
-   ;; store, which is read-only and would thus fail.
-   ;;
-   ;; The official Guix package should use `sbcl-*' inputs though.
    (native-inputs
-    (list cl-lisp-unit2 sbcl))
-   (inputs SPECIFY-INPUTS)
+    (list sbcl-lisp-unit2 sbcl))
+   (inputs
+    (list sbcl-closer-mop sbcl-trivial-gray-streams))
    (synopsis "Common Lisp standard debugging utilities made more extensible and useful.")
    (home-page "https://github.com/atlas-engineer/graven-image")
-   (description "Common Lisp standard debugging utilities made more extensible and useful.")
+   (description "Graven Image is a library enhancing CL built-in debugging.
+The functions that Graven image adds:
+@itemize
+@item @code{yes-or-no-p*/y-or-n-p*} for user querying.
+@item @code{apropos*} and @code{apropos-list*} for symbol search.
+@item @code{function-lambda-expression*} for function inspection.
+@item Helpers around @code{function-lambda-expression*}.
+@item @code{documentation*} for faster object documentation.
+@item @code{inspect*} and @code{describe*} for object inspection.
+@item @code{dribble*} for interactive REPL recording.
+@item @code{time*} and @code{with-time*} for code timing stats.
+@end itemize")
    (license license:bsd-3)))
 
 (define-public cl-graven-image
