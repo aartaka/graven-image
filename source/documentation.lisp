@@ -25,6 +25,16 @@
           (doc setf)
           (doc method-combination)))))
 
+(defmethod documentation ((x standard-object) doc-type)
+  (documentation (class-of x) t))
+(defmethod (setf documentation) (value (x standard-object) doc-type)
+  (setf (documentation (class-of x) t) value))
+
+(defmethod documentation ((x structure-object) doc-type)
+  (documentation (class-of x) t))
+(defmethod (setf documentation) (value (x structure-object) doc-type)
+  (setf (documentation (class-of x) t) value))
+
 (defmacro safe-doc (val &optional (type t))
   `(ignore-errors (documentation ,val ,type)))
 
