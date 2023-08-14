@@ -521,3 +521,5 @@ x86::*x86-operand-type-names* [variable = ((:reg8 . 1) (:reg16 . 2) (:reg32 . 4)
     and most implementations have some form of directory switching and
     other file operations.
     - And there's a reasonably big portable file API in ANSI CL.
+- [ ] Re-use the implementation-specific command processing instead of
+  =definterface=.
