@@ -497,10 +497,22 @@ turns into a much more readable
 x86::*x86-operand-type-names* [variable = ((:reg8 . 1) (:reg16 . 2) (:reg32 . 4) (:reg64 . 8) (:imm8 . 16) (:imm8s . 32) (:imm16 . 64) (:imm32 . 128) (:imm32s . 256) (:imm64 . 512) ...)]
 #+end_src
 
+** Suppressing documentation errors in =documentation*=
+
+Several implementations throw errors when trying to get documentation
+for non-existent method combinations, classes, etc. It's convenient to
+suppress these:
+
+#+begin_src lisp
+  (defmethod gimage:documentation* :around (object &optional doc-type)
+    (ignore-errors (call-next-method)))
+#+end_src
+
 * Roadmap
 - [ ] Add:
   - [X] =apropos*=, =apropos-list*=
     - [X] Add a way to sort symbols by relevance/name match.
+      - Covered in the [[Customization]] section.
   - [X] =inspect*=,
   - [X] =describe*=,
   - [X] =time*=,
