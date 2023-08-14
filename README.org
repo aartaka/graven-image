@@ -478,6 +478,9 @@ around Graven Image functions helps that too:
 #+begin_src lisp
   (defmethod gimage:apropos* :around (string &optional package external-only docs-too)
     (declare (ignore string  package external-only docs-too))
+    ;; Note that you can also use
+    ;; `sb-ext:*compiler-print-variable-alist*' and
+    ;; `sb-ext:*debug-print-variable-alist*' on SBCL.
     (let ((*print-case* :downcase)
           (*print-level* 2)
           (*print-lines* 2)
@@ -523,3 +526,9 @@ x86::*x86-operand-type-names* [variable = ((:reg8 . 1) (:reg16 . 2) (:reg32 . 4)
     - And there's a reasonably big portable file API in ANSI CL.
 - [ ] Re-use the implementation-specific command processing instead of
   =definterface=.
+  - [ ] CCL has =ccl:define-toplevel-command=.
+  - [ ] SBCL only has debug/step commands via =!def-debug-command=,
+    =!def-debug-command-alias=, =!def-step-command=.
+  - [ ] ABCL has =*top-level:command-table*=
+  - [ ] CLISP with =*user-commands*=.
+  - [ ] ECL's =*tpl-commands*=.
