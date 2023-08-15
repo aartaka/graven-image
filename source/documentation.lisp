@@ -3,6 +3,10 @@
 
 (in-package :graven-image)
 
+(defmethod documentation ((x null) (doc-type (eql t)))
+  (declare (ignore x doc-type))
+  nil)
+
 (defmethod documentation ((x symbol) (doc-type (eql t)))
   (macrolet ((doc (type)
                `(ignore-errors (documentation x (quote ,type)))))
@@ -37,6 +41,10 @@
 
 (defmacro safe-doc (val &optional (type t))
   `(ignore-errors (documentation ,val ,type)))
+
+(defmethod (setf documentation) (value (x null) (doc-type (eql t)))
+  (declare (ignore value x doc-type))
+  nil)
 
 (defmethod (setf documentation) (value (x symbol) (doc-type (eql t)))
   (macrolet ((doc (type)
