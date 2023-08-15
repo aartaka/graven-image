@@ -200,7 +200,7 @@ Influenced by:
   (let ((form (if (= 1 (length forms))
                   (first forms)
                   (cons 'progn forms))))
-    `(with-time* (&key aborted real system user cycles load cores gc-count gc allocated faults)
+    `(with-time* (&key aborted real system user cycles load gc-count gc allocated faults)
          (&rest values)
          ,form
        (format *trace-output*
