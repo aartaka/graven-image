@@ -127,57 +127,65 @@ Note that you can influence the printout by let-bindings:
   ;; This is because function-* APIs often throw warnings for
   ;; non-implemented methods.
   (handler-bind ((warning #'muffle-warning))
-    (dolist (symbol (apropos-list* string package external-only docs-too))
-      (flet ((crop-docs (docs)
-               (let ((line (when docs
-                             (first (uiop:split-string docs :separator '(#\newline))))))
-                 (cond
-                   ((equal line docs)
-                    line)
-                   ;; If it's a finished sentence, then return.
-                   ((uiop:string-suffix-p line ".")
-                    line)
-                   ;; If unfinished, add ellipsis.
-                   (t
-                    (uiop:strcat line "..."))))))
-        (fresh-line)
-        (format t "~s" symbol)
-        (when (boundp symbol)
-          (cond
-            ((or (eq t symbol)
-                 (null symbol)
-                 (keywordp symbol))
-             (format t " [~a]" 'self-evaluating))
-            ((constantp symbol)
-             (format t " [~a = ~s~@[ : ~a~]]"
-                     'constant (symbol-value symbol) (crop-docs (documentation symbol 'variable))))
-            (t (format t " [~a = ~s~@[ : ~a~]]"
-                       'variable (symbol-value symbol) (crop-docs (documentation symbol 'variable))))))
-        (when (fboundp symbol)
-          (format t " [~a~@[ ~s~]~@[ : ~a~]]"
-                  (cond
-                    ((special-operator-p symbol)
-                     'special-operator)
-                    ((macro-function symbol)
-                     'macro)
-                    ((typep (symbol-function symbol) 'generic-function)
-                     'generic-function)
-                    (t 'function))
-                  (unless (special-operator-p symbol)
-                    (function-lambda-list* (or (macro-function symbol)
-                                               (symbol-function symbol))))
-                  (unless (special-operator-p symbol)
-                    (crop-docs (or (documentation symbol 'function)
-                                   (ignore-errors (documentation (macro-function symbol) t))
-                                   (ignore-errors (documentation (symbol-function symbol) t)))))))
-        (when (ignore-errors (find-class symbol nil))
-          (format t " [~a~@[ ~s~]~@[ : ~a~]]"
-                  'class
-                  (mapcar #'class-name
-                          (closer-mop:class-direct-superclasses (find-class symbol nil)))
-                  (crop-docs
-                   (or (documentation symbol 'type)
-                       (documentation symbol 'structure))))))))
+    (let* ((syms (apropos-list* string package external-only docs-too))
+           (max (reduce #'max syms
+                        :key #'(lambda (sym)
+                                 (length (prin1-to-string sym))))))
+      (dolist (symbol syms)
+        (flet ((crop-docs (docs)
+                 (let ((line (when docs
+                               (first (uiop:split-string docs :separator '(#\newline))))))
+                   (cond
+                     ((equal line docs)
+                      line)
+                     ;; If it's a finished sentence, then return.
+                     ((uiop:string-suffix-p line ".")
+                      line)
+                     ;; If unfinished, add ellipsis.
+                     (t
+                      (uiop:strcat line "..."))))))
+          (fresh-line)
+          (format t "~s~vt" symbol max)
+          (when (boundp symbol)
+            (cond
+              ((or (eq t symbol)
+                   (null symbol)
+                   (keywordp symbol))
+               (format t " [~a]" 'self-evaluating))
+              ((constantp symbol)
+               (format t " [~a = ~s~@[ : ~a~]]"
+                       'constant (symbol-value symbol) (crop-docs (documentation symbol 'variable))))
+              (t (format t " [~a = ~s~@[ : ~a~]]"
+                         'variable (symbol-value symbol) (crop-docs (documentation symbol 'variable))))))
+          (when (fboundp symbol)
+            ;; For prettier arglists.
+            (let ((*package* (symbol-package symbol)))
+              (format t " [~a~@[ ~s~]~@[ : ~a~]]"
+                      (cond
+                        ((special-operator-p symbol)
+                         'special-operator)
+                        ((macro-function symbol)
+                         'macro)
+                        ((typep (symbol-function symbol) 'generic-function)
+                         'generic-function)
+                        (t 'function))
+                      (unless (special-operator-p symbol)
+                        (function-lambda-list* (or (macro-function symbol)
+                                                   (symbol-function symbol))))
+                      (unless (special-operator-p symbol)
+                        (crop-docs (or (documentation symbol 'function)
+                                       (ignore-errors (when (macro-function symbol)
+                                                        (documentation (macro-function symbol) t)))
+                                       (ignore-errors (when (symbol-function symbol)
+                                                        (documentation (symbol-function symbol) t)))))))))
+          (when (ignore-errors (find-class symbol nil))
+            (format t " [~a~@[ ~s~]~@[ : ~a~]]"
+                    'class
+                    (mapcar #'class-name
+                            (closer-mop:class-direct-superclasses (find-class symbol nil)))
+                    (crop-docs
+                     (or (documentation symbol 'type)
+                         (documentation symbol 'structure)))))))))
   (values))
 
 ;;; Helpers
