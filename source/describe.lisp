@@ -38,10 +38,13 @@ Influenced by:
           (fresh-line stream)
           (description* object stream)
           (fresh-line stream)
-          (loop for (name value) in (fields* object)
+          (loop with fields = (fields* object)
+                with max-tab = (1+ (reduce #'max fields
+                                           :key #'(lambda (f) (length (princ-to-string (first f))))))
+                for (name value) in fields
                 do (if (symbolp name)
-                       (format stream "~&~a = ~s~%" name value)
-                       (format stream "~&~s = ~s~%" name value)))))
+                       (format stream "~&~a~vt = ~s~%" name max-tab value)
+                       (format stream "~&~s~vt = ~s~%" name max-tab value)))))
     (if (typep stream 'string-stream)
         (get-output-stream-string stream)
         (values))))
