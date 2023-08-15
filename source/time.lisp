@@ -206,15 +206,15 @@ Influenced by:
        (format *trace-output*
                "~&Time spent ~@[un~*~]successfully evaluating:~
 ~&~s~
-~@[~&Real time: ~f seconds.~]~
-~@[~&Run time (system): ~f seconds.~]~
-~@[~&Run time (user): ~f seconds.~]~
-~@[~&CPU cycles: ~d.~]~
-~@[~&CPU load: ~d.~]~
-~@[~&GC: ~d times.~]~
-~@[~&GC time: ~f seconds.~]~
-~@[~&Bytes allocated: ~a.~]~
-~@[~&Page faults: ~a.~]"
+~@[~&Real time:         ~f seconds~]~
+~@[~&Run time (system): ~f seconds~]~
+~@[~&Run time (user):   ~f seconds~]~
+~@[~&CPU cycles:        ~:d~]~
+~@[~&CPU load:          ~d~]~
+~@[~&GC:                ~d times~]~
+~@[~&GC time:           ~f seconds~]~
+~@[~&Bytes allocated:   ~:d~]~
+~@[~&Page faults:       ~:d~]"
                aborted ',form
                real system user
                cycles load
