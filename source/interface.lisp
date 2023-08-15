@@ -203,11 +203,10 @@ interacting with."
     (if (equal "" first)
         `(:next)
         (loop with string = first
-              for (forms error)
-                = (multiple-value-list
-                   (ignore-errors
-                    (with-input-from-string (str-stream string)
-                      (uiop:slurp-stream-forms str-stream))))
+              for error
+                = (nth-value 1 (ignore-errors
+                                (with-input-from-string (str-stream string)
+                                  (uiop:slurp-stream-forms str-stream))))
               while error
               do (setf string (uiop:strcat string #\Newline (read-line stream)))
               finally (return
