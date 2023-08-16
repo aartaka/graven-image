@@ -247,7 +247,9 @@
   (or
    (handler-case
        (let ((*package* (symbol-package (function-name function))))
-         (labels ((maybe-unsafe-read (stream)
+         (labels (;; Only used on supported implementations
+                  #+(or clozure ecl sbcl abcl)
+                  (maybe-unsafe-read (stream)
                     (when stream
                       (handler-case
                           (let ((*read-eval* nil))
@@ -256,7 +258,8 @@
                           (when force
                             (ignore-errors
                              (read-nolocks stream)))))))
-                  #-sbcl              ; unused on SBCL
+                  ;; Not used on SBCL and unsupported implementations.
+                  #+(or clozure ecl abcl)
                   (read-from-position (file position)
                     (when (and position file)
                       (ignore-errors
