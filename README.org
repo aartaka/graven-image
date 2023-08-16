@@ -174,7 +174,7 @@ Things that =function-lambda-expression*= now returns are:
   - For lambda functions, their source.
   - For regular functions, their =defun= turned into a =lambda=.
   - For anything else, a constructed empty =(lambda (arglist...) documentation nil)= (only when =force= is T).
-  - Or, in some exceptional cases, NIL.
+  - Or, in case all the rest fails, NIL.
 - Whether the thing is a closure
   - If it is, might return an alist of the actual closed-over values,
     whenever accessible (not for all implementations).
@@ -197,12 +197,12 @@ some Graven Image-specific helpers:
 - =function-type*= :: Get its ftype.
 
 #+begin_src lisp
-  function-lambda-list* function => lambda-list
-  function-arglist* function => lambda-list
-  lambda-list* function => lambda-list
-  arglist* function => lambda-list
-  function-name* function => name
-  function-type* function => ftype
+  function-lambda-list* function => list
+  function-arglist* function => list
+  lambda-list* function => list
+  arglist* function => list
+  function-name* function => symbol
+  function-type* function => list
 #+end_src
 
 
@@ -210,7 +210,7 @@ some Graven Image-specific helpers:
 
 Signature:
 #+begin_src lisp
-time* &rest forms => values &rest return-values
+time* &rest forms => return-values
 #+end_src
 
 The improved =time*= from Graven Image reuses as much
@@ -219,7 +219,7 @@ format.
 
 And it also allows providing several forms, yay!
 
-Most of this macro power relies on the power of:
+Most of this macro power relies on:
 
 *** =with-time*= (macro)
 
@@ -297,6 +297,7 @@ description* object &optional stream
 Concise and informative description of =object= to the
 =stream=. Useful information from most of the implementations
 tested—united into one description header.
+
 ** =inspect*= (generic function)
 
 Signature:
@@ -309,7 +310,7 @@ New'n'shiny =inspect*= has:
 - Abbreviations like =H -> HELP= (inspired by SBCL).
 - Ability to set object field values with =(:set key value)= command
   (inspired by CCL).
-- Baked-in pagination with ways to scroll it (=:next-page=,
+- Built-in pagination with ways to scroll it (=:next-page=,
   =:previous-page=, =:home=) and change it (=:length=).
 - Property indexing by both integer indices and property names (with
   abbreviations for them too!).
