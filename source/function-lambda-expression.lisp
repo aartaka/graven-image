@@ -384,30 +384,31 @@ Influenced by:
        (or name
            (function-name function)
            (transform-definition-to-name definition))
-       #+sbcl
-       (sb-introspect:function-type function)
-       #+(or cmucl scl)
-       (kernel:%function-type function)
-       #+ecl
-       (let ((fname (function-name-symbol function)))
-         (when fname
-           (multiple-value-bind (arg-types arg-types-p)
-               (c::get-arg-types fname)
-             (multiple-value-bind (return-type return-type-p)
-                 (c::get-return-type fname)
-               `(function (,@(if arg-types-p
-                                 arg-types
-                                 (mapcar (lambda (arg)
-                                           (if (and (symbolp arg)
-                                                    (member arg lambda-list-keywords))
-                                               arg
-                                               t))
-                                         (function-arglist function fname))))
-                          ,(if return-type-p
-                               return-type
-                               t))))))
-       #-(or cmucl scl sbcl ecl)
-       nil))))
+       (or
+        #+sbcl
+        (sb-introspect:function-type function)
+        #+(or cmucl scl)
+        (kernel:%function-type function)
+        #+(or ecl gcl)
+        (let ((fname (function-name-symbol function)))
+          (when fname
+            (multiple-value-bind (arg-types arg-types-p)
+                (compiler::get-arg-types fname)
+              (multiple-value-bind (return-type return-type-p)
+                  (compiler::get-return-type fname)
+                `(function (,@(if arg-types-p
+                                  arg-types
+                                  (mapcar (lambda (arg)
+                                            (if (and (symbolp arg)
+                                                     (member arg lambda-list-keywords))
+                                                arg
+                                                t))
+                                          (function-arglist function fname))))
+                           ,(if return-type-p
+                                return-type
+                                t))))))
+        #-(or cmucl scl sbcl ecl gcl)
+        nil)))))
 
 ;;; Helpers
 
