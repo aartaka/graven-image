@@ -6,8 +6,8 @@
 (defmacro safe-doc (val &optional (type t))
   `(ignore-errors (documentation ,val ,type)))
 
-;; Muffle redefinitions (implementations are permitted to define their
-;; own methods, and some do define more methods.)
+;; Muffle redefinitions. Implementations are permitted to define their
+;; own methods, and some do define more methods.
 (handler-bind ((warning #'muffle-warning))
   (defmethod documentation ((x null) (doc-type (eql t)))
     "A recursion-terminating method for non-existent X.
