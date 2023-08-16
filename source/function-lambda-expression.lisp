@@ -10,12 +10,12 @@
 
 (-> function-closure-p (function-designator) (or boolean list))
 (defun function-closure-p (function)
-  (declare (ignorable function))
   ;; TODO: ECL returns closures somehow, but the implementation is
   ;; terribly obscure...
   (let ((function (if (typep function 'standard-method)
                       (closer-mop:method-generic-function function)
                       function)))
+    (declare (ignorable function))
     #+clozure
     (and (typep function 'ccl:compiled-lexical-closure)
          ;; Convert to alist.
@@ -69,10 +69,10 @@
 ;;  references to `function-lambda-expression' on some implementations, though.
 (-> function-name (function-designator) t)
 (defun function-name (function)
-  (declare (ignorable function))
   (let ((function (if (typep function 'standard-method)
                       (closer-mop:method-generic-function function)
                       function)))
+    (declare (ignorable function))
     #+allegro
     (cross-reference::object-to-function-name function)
     #+clozure
