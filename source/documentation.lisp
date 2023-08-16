@@ -46,6 +46,13 @@
     (declare (ignore doc-type))
     (setf (documentation (class-of x) t) value)))
 
+(defmethod documentation (x (doc-type (eql 'package)))
+  "A convenience method with PACKAGE doc-type.
+If something can be found via `find-package', then why not resolve
+it?"
+  (declare (ignore doc-type))
+  (documentation (find-package x) t))
+
 (defmacro safe-doc (val &optional (type t))
   `(ignore-errors (documentation ,val ,type)))
 
@@ -87,6 +94,11 @@
       ((doc compiler-macro) (set-doc compiler-macro))
       ((doc setf) (set-doc setf))
       ((doc method-combination) (set-doc method-combination)))))
+
+(defmethod (setf documentation) (value x (doc-type (eql 'package)))
+  (declare (ignore doc-type))
+  (setf (documentation (find-package x) t)
+        value))
 
 (define-generic documentation* (object &optional (doc-type t))
   "Get the documentation string of OBJECT.
