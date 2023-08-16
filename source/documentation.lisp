@@ -4,10 +4,13 @@
 (in-package :graven-image)
 
 (defmethod documentation ((x null) (doc-type (eql t)))
+  "A recursion-terminating method for non-existent X.
+Useful in the symbol-resolving method below."
   (declare (ignore x doc-type))
   nil)
 
 (defmethod documentation ((x symbol) (doc-type (eql t)))
+  "A DWIM method on X resolving it against different entities."
   (macrolet ((doc (type)
                `(ignore-errors (documentation x (quote ,type)))))
     (when x
