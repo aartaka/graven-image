@@ -184,9 +184,7 @@ Search is different for different KEY types:
            for (match-key) = match
            when (and (symbolp match-key)
                      (uiop:string-prefix-p (symbol-name key) (symbol-name match-key)))
-             do (return (values match (member match commands)))
-           else
-             do (warn "No field/command with key ~s" key)))
+             do (return (values match (member match commands)))))
     (t (find key fields :key #'first :test #'equal))))
 
 (defun $ (&rest keys)
@@ -259,7 +257,6 @@ inspector."
                      (find-command-or-prop (first (uiop:ensure-list (first forms)))
                                            *commands* (when (not (listp (first forms)))
                                                         fields))
-                   (format t "~&Results of find-command-or-prop are ~s and ~s" result (not (not command-p)))
                    (restart-case
                        (cond
                          ((and result command-p)
