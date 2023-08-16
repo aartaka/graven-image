@@ -552,3 +552,4 @@ all implementations.
   - [ ] ABCL has =*top-level:command-table*=
   - [ ] CLISP with =*user-commands*=.
   - [ ] ECL's =*tpl-commands*=.
+  - [ ] Allegro =TPL::ADD-NEW-COMMAND=
