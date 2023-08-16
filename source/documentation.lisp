@@ -37,7 +37,7 @@ Useful in the symbol-resolving method below."
             (doc compiler-macro)
             (doc setf)
             (doc method-combination)))))
-  
+
   (defmethod documentation ((x standard-object) doc-type)
     (declare (ignore doc-type))
     (documentation (class-of x) t))
