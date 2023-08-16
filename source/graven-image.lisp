@@ -5,15 +5,19 @@
 
 ;; Stolen and improved from Nyxt.
 (defmacro without-package-locks (&body body)
-  #+(and sbcl sb-package-locks)
-  `(sb-ext:without-package-locks
-     ,@body)
-  #+(and ecl package-locks)
-  `(ext:without-package-locks
-     ,@body)
-  #-(or (and sbcl sb-package-locks)
-        (and ecl package-locks))
-  `(progn ,@body))
+  "Ignore package locks, where necessary.
+Also muffle redefinition warnings."
+  `(handler-bind ((warning #'muffle-warning))
+     #+(and sbcl sb-package-locks)
+     (sb-ext:without-package-locks
+       ,@body)
+     ;; WHAT, CLISP HAS PACKAGE LOCKS!!!!
+     #+(or clisp (and ecl package-locks))
+     (ext:without-package-locks
+       ,@body)
+     #-(or (and sbcl sb-package-locks)
+           (and ecl package-locks))
+     (progn ,@body)))
 
 (defun read-nolocks (stream)
   "Same as read, but without package lock."

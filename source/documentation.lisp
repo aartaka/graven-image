@@ -8,7 +8,7 @@
 
 ;; Muffle redefinitions. Implementations are permitted to define their
 ;; own methods, and some do define more methods.
-(handler-bind ((warning #'muffle-warning))
+(without-package-locks
   (defmethod documentation ((x null) (doc-type (eql t)))
     "A recursion-terminating method for non-existent X.
 Useful in the symbol-resolving method below."
