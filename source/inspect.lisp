@@ -23,9 +23,15 @@
   ((*print-lines* (or *print-lines* 20))
    (*summary-fn* #'description*)
    (*fields-fn* #'fields*)
+   (*max-field-length*
+    (reduce #'max (fields* *object*)
+            :key (lambda (f) (length (princ-to-string (first f))))))
+   (*max-field-index* (length (fields* *object*)))
    (*print-field-fn* #'(lambda (stream index key value &rest other-args)
-                            (format stream "~&[~d]~:[ ~:[~s~;~a~]~;~2*~] =~@[~*setfable=~] ~s"
-                                    index (integerp key) (symbolp key) key (first other-args) value)))
+                         (format stream "~&[~d]~:[ ~:[~s~;~a~]~;~2*~]~vt =~:[=~;!~]= ~s"
+                                 index (integerp key) (symbolp key) key
+                                 (+ 4 (floor (log *max-field-index* 10)) *max-field-length*)
+                                 (first other-args) value)))
    (*action-fn* #'%inspect*))
   "Interactively query the OBJECT.
 
