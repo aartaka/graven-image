@@ -11,12 +11,16 @@ Also muffle redefinition warnings."
      #+(and sbcl sb-package-locks)
      (sb-ext:without-package-locks
        ,@body)
-     ;; WHAT, CLISP HAS PACKAGE LOCKS!!!!
-     #+(or clisp (and ecl package-locks))
+     #+(and ecl package-locks)
      (ext:without-package-locks
        ,@body)
+     #+clisp
+     ;; WHAT, CLISP HAS PACKAGE LOCKS!!!!
+     (ext:without-package-lock ("COMMON-LISP")
+       ,@body)
      #-(or (and sbcl sb-package-locks)
-           (and ecl package-locks))
+           (and ecl package-locks)
+           clisp)
      (progn ,@body)))
 
 (defun read-nolocks (stream)
