@@ -57,3 +57,10 @@ unsafer."
     ;; For (setf function) fdefinitions.
     (ignore-errors
      (setf (documentation ',new-name 'function) (documentation ',old-name 'function)))))
+
+(defmacro load-time-warn (&rest args)
+  "A macro to warn about ARGS only once: while loading Graven Image.
+Otherwise every call to an unimplemented function spams warnings all
+over the REPL."
+  (apply #'warn args)
+  nil)

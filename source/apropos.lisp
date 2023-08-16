@@ -88,7 +88,7 @@ Influenced by:
       (t (%apropos-list string packages external-only docs-too))
       #-(or sbcl clozure ecl gcl abcl clisp allegro)
       (t
-       (warn "apropos-list* is not implemented for this CL, help in implementing it!")
+       (comile-time-warn "apropos-list* is not implemented for this CL, help in implementing it!")
        (reduce-old-apropos string packages)))))
 
 ;; Allegro has a different arglist, which Graven Image conflicts

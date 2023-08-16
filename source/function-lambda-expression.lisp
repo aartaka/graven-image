@@ -62,7 +62,7 @@
     #-(or clozure cmucl scl sbcl abcl allegro)
     (prog1
         t
-      (warn "closure inspection is not implemented for this CL, help in implementing it!"))))
+      (compile-time-warn "closure inspection is not implemented for this CL, help in implementing it!"))))
 
 ;; FIXME: Phew, that's a long one... Maybe use Slynk after all? Graven
 ;;  Image won't be dependency-free and will have dangerous recursive
@@ -104,7 +104,7 @@
     #+sbcl
     (sb-impl::%fun-name function)
     #-(or abcl allegro clozure clasp cmucl cormanlisp ecl lispworks mkcl sbcl scl)
-    (warn "function name fetching is not implemented for this CL, help in implementing it!")))
+    (compile-time-warn "function name fetching is not implemented for this CL, help in implementing it!")))
 
 (-> function-name-symbol (function-designator))
 (defun function-name-symbol (function)
@@ -227,7 +227,7 @@
          #+scl
          (ext:function-arglist name)))
       #-(or abcl allegro clozure clasp clisp cmucl cormanlisp ecl ecl lispworks sbcl scl)
-      (warn "arglist fetching is not implemented for this CL, help in implementing it!")))
+      (compile-time-warn "arglist fetching is not implemented for this CL, help in implementing it!")))
 
 (-> function-source-expression-fallback (function-designator) list)
 (defun function-source-expression-fallback (function)
@@ -329,7 +329,7 @@
                  (declare (ignore _))
                  (read-from-position (translate-logical-pathname file) position))))
            #-(or clozure ecl sbcl abcl)
-           (warn "source fetching is not implemented for this CL implementation, help in implementing it!")))
+           (compile-time-warn "source fetching is not implemented for this CL implementation, help in implementing it!")))
      (error () nil))
    (when force
      (function-source-expression-fallback function))))

@@ -63,7 +63,7 @@ Influenced by:
 - Trivial Gray Streams implementation."
   (declare (ignorable pathname pathname-p if-exists if-does-not-exist))
   #+abcl
-  (warn "Dribble* is not implemented for ABCL. Doing nothing. Help in implementing it!")
+  (compile-time-warn "Dribble* is not implemented for ABCL. Doing nothing. Help in implementing it!")
   #-abcl
   (labels ((print-dribble (action)
              (multiple-value-bind (second minute hour date month year)
