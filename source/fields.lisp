@@ -650,11 +650,13 @@ not suitable for the `fields*' key-value format."))
 
 ;; TODO: float/double etc. binary layout
 (defmethod description* ((object float) &optional stream)
-  (format stream "~s (~e)" object object))
+  (let ((general (format nil "~s" object))
+        (exponential (format nil "~e" object)))
+    (format stream "~s ~:[(~e)~;~]" object (equal general exponential) object)))
 
 (defmethod description* ((object ratio) &optional stream)
   (format stream "~s (~e)~:[~*~; ~f%~]"
-          object object (< object 100) (coerce object 'float)))
+          object object (<= object 1) (* 100 (coerce object 'float))))
 
 (defmethod description* ((object complex) &optional stream)
   (format stream "~s (~a+~ai)" object (realpart object) (imagpart object)))
