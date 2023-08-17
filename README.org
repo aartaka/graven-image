@@ -397,11 +397,7 @@ Signature:
 
 Improved version of =documentation=. Two main improvements are: =doc-type= is now optional, and =doc*= alias is available for convenience.
 
-documentation.lisp also defines more =documentation= methods (and respective =setf= method) to simplify documentation fetching and setting:
-- =(symbol (eql t))=
-- =(standard-object t)=
-- =(structure-object t)=
-- =(t (eql 'package))= (a new one for package documentation convenience)
+documentation.lisp also defines more =documentation= methods (and respective =setf= method) to simplify documentation fetching and setting. In particular, method on =(symbol (eql t))= to simplify symbol documentation search; and =(t (eql 'package))= with a new doc-type for package documentation convenience.
 
 * Customization
 

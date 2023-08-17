@@ -38,20 +38,6 @@ Useful in the symbol-resolving method below."
             (doc setf)
             (doc method-combination)))))
 
-  (defmethod documentation ((x standard-object) doc-type)
-    (declare (ignore doc-type))
-    (documentation (class-of x) t))
-  (defmethod (setf documentation) (value (x standard-object) doc-type)
-    (declare (ignore doc-type))
-    (setf (documentation (class-of x) t) value))
-
-  (defmethod documentation ((x structure-object) doc-type)
-    (declare (ignore doc-type))
-    (documentation (class-of x) t))
-  (defmethod (setf documentation) (value (x structure-object) doc-type)
-    (declare (ignore doc-type))
-    (setf (documentation (class-of x) t) value))
-
   (defmethod documentation (x (doc-type (eql 'package)))
     "A convenience method with PACKAGE doc-type.
 If something can be found via `find-package', then why not resolve
