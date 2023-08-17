@@ -72,10 +72,15 @@ without package prefix, then add this to your implementation config file:
 
 * Enhanced functions (mostly from ANSI CL [[https://cl-community-spec.github.io/pages/Debugging-Utilities.html][Debugging Utilities]] chapter)
 
-The functions that Graven Image exposes come in two flavors:
-- Safely =:use=-able star-appended functions (i.e. =describe*= instead of
-  =describe=)—in =graven-image= system.
-- Functions shadowing CL symbols in =graven-image/cl= system.
+The functions that Graven Image exposes are safely =:use=-able star-appended functions/macros (i.e. =describe*= instead of
+  =describe=). Currently improved ones are:
+  - =y-or-n-p*=/=yes-or-no-p*=
+  - =apropos*=/=apropos-list*=
+  - =function-lambda-expression*=
+  - =time*=
+  - =describe*=/=inspect*=
+  - =dribble*=
+  - =documentation*=
 
 All of the functions exposed by Graven Image are generics, so one can
 easily define =:around= and other qualified methods for them.
@@ -205,7 +210,6 @@ some Graven Image-specific helpers:
   function-type* function => list
 #+end_src
 
-
 ** =time*= (macro)
 
 Signature:
@@ -251,7 +255,6 @@ garbage collection times when running a cons-heavy code:
               allocated gc-count gc)))
   ;; Bytes allocated: 7997952, GC run NIL times for 0 seconds
 #+end_src
-
 
 ** =describe*= (generic function)
 
@@ -517,15 +520,13 @@ Actually, one can try to write an =:around= method for regular
 all implementations.
 
 * Roadmap
-- [ ] Add:
-  - [X] =apropos*=, =apropos-list*=
+- [ ] Improve:
+  - [X] =apropos=, =apropos-list=
     - [X] Add a way to sort symbols by relevance/name match.
       - Covered in the [[Customization]] section.
-  - [X] =inspect*=,
-  - [X] =describe*=,
-  - [X] =time*=,
-  - [ ] =ed*=.
-- [ ] Improve
+  - [X] =inspect=,
+  - [X] =describe=,
+  - [X] =time=,
   - [X] =dribble=,
     - [ ] Make dribble file prettier, strip off the REPL prompt.
     - [ ] Support ABCL somehow.
@@ -533,6 +534,7 @@ all implementations.
   - [ ] =trace= and =untrace=
     - Low priority due to complexity of implementation tracing.
   - [X] =documentation=?
+  - [ ] =ed=.
   - [ ] =disassemble=?
   - [ ] =room=?
 - [X] Somehow hook into and improve over =*debugger-hook*=?
