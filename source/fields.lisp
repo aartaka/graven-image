@@ -533,11 +533,7 @@ When STRIP-NULL, fields with null VALUE and SETTER are filtered out."))
                              new-value)))
     ,@(when (typep object 'generic-function)
         `((:methods ,(closer-mop:generic-function-methods object))))
-    (:lambda-list-keywords ,lambda-list-keywords)
-    #+sbcl
-    ,@(remove-sbcl-props-from
-       object
-       'sb-pcl::name 'sb-pcl::methods 'sb-pcl::%method-combination "Lambda-list" "Ftype")))
+    (:lambda-list-keywords ,lambda-list-keywords)))
 
 (deffields (object generic-function)
   `((:methods ,(closer-mop:generic-function-methods object))
