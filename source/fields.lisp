@@ -531,6 +531,8 @@ When STRIP-NULL, fields with null VALUE and SETTER are filtered out."))
                     (declare (ignorable _))
                     (compile (function-name* object)
                              new-value)))
+    ,@(when (typep object 'generic-function)
+        `((:methods ,(closer-mop:generic-function-methods object))))
     (:lambda-list-keywords ,lambda-list-keywords)
     #+sbcl
     ,@(remove-sbcl-props-from
