@@ -524,12 +524,14 @@ When STRIP-NULL, fields with null VALUE and SETTER are filtered out."))
            ,(lambda (new-name old-name)
               (compile new-name (fdefinition old-name))))
     (:arguments ,(function-lambda-list* object))
-    (:ftype ,(function-type* object))
+    ,@(when (function-type* object)
+        `((:ftype ,(function-type* object))))
     (:expression ,(function-lambda-expression* object)
                  ,(lambda (new-value _)
                     (declare (ignorable _))
                     (compile (function-name* object)
                              new-value)))
+    (:lambda-list-keywords ,lambda-list-keywords)
     #+sbcl
     ,@(remove-sbcl-props-from
        object
