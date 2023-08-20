@@ -19,6 +19,10 @@
   (uiop:symbol-call :graven-image :%inspect*
                     (second (find-command-or-prop key nil (funcall *fields-fn* *object*)))))
 
+;; Dummy vars.
+(defvar *max-field-length*)
+(defvar *max-field-index*)
+
 (definterface inspect* *query-io* (object)
   ((*print-lines* (or *print-lines* 20))
    (*summary-fn* #'description*)
