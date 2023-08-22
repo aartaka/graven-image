@@ -380,6 +380,8 @@ When STRIP-NULL, fields with null VALUE and SETTER are filtered out."))
       ,@(when (uiop:directory-pathname-p object)
           `((:files ,(uiop:directory-files object))
             (:subdirectories ,(uiop:subdirectories object))))
+      (:home ,(user-homedir-pathname))
+      (:cwd ,(uiop:getcwd))
       #+sbcl
       ,@(remove-sbcl-props-from
          object
