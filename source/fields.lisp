@@ -145,12 +145,20 @@ When STRIP-NULL, fields with null VALUE and SETTER are filtered out."))
                         ((eql :uninterned)
                          (uiop:unintern* object (symbol-package object) nil))))))
     ,@(when (fboundp object)
-        `((:function-binding
-           ,(symbol-function object)
-           ,(lambda (new-value _)
-              (declare (ignorable _))
-              ;; `fdefinition'? `compile'?
-              (setf (symbol-function object) new-value)))))
+        (cond
+          ((special-operator-p object)
+           `((:special-operator t)))
+          ((macro-function object)
+           `((:macro-binding ,(macro-function object))))
+          ((fboundp object)
+           `((:function-binding
+              ,(symbol-function object)
+              ,(lambda (new-value _)
+                 (declare (ignorable _))
+                 ;; `fdefinition'? `compile'?
+                 (setf (symbol-function object) new-value)))
+             ,@(when (compiler-macro-function object)
+                 `((:compiler-macro-binding ,(compiler-macro-function object))))))))
     ,@(when (boundp object)
         `((:value-binding
            ,(symbol-value object)
