@@ -20,8 +20,6 @@ Non-trivial, because some of the FIELDS have integer keys."
                                             i
                                           (setf index i))))))
 
-(defvar *object* nil
-  "The object currently inspected.")
 (defvar *stream* nil
   "The bidirectional stream to read/write to.")
 (defvar *summary-fn* nil
@@ -29,7 +27,7 @@ Non-trivial, because some of the FIELDS have integer keys."
 (defvar *fields-fn* nil
   "The function to return OBJECT fields printable into interface.")
 (defvar *print-field-fn*
-  "The (STREAM INDEX KEY VALUE &REST ARGS) function to print a singular field of the `*object*'.")
+  "The (STREAM INDEX KEY VALUE &REST ARGS) function for singular field of the interface.")
 ;; TODO: Allow action to be marking or cursor movement.
 (defvar *action-fn*
   "The (VALUE) function that does whatever action is suitable for the property value in the current context.
@@ -41,7 +39,7 @@ For inspector, that's a recursive inspection.")
 
 (defun print-fields ()
   "Print the current page of fields."
-  (loop with fields = (funcall *fields-fn* *object*)
+  (loop with fields = (funcall *fields-fn* *)
         with real-page-len = (min *length* (+ *offset* *print-lines*))
         for index from *offset* below real-page-len
         for (key value . args) in (subseq fields *offset*)
@@ -51,7 +49,7 @@ For inspector, that's a recursive inspection.")
                           *offset* (1- real-page-len) (1- *length*)))))
 
 (defun summarize ()
-  (funcall *summary-fn* *object* *stream*))
+  (funcall *summary-fn* * *stream*))
 
 (defun exit ()
   "Exit the interface."
@@ -145,15 +143,15 @@ Possible inputs are:
     s-expression.
   - Inside this s-expression, you can use the `$' function to fetch
     the list of values under provided keys.~%"
-          *object* (mapcar (lambda (command)
-                             (destructuring-bind (name function)
-                                 command
-                               (list (function-lambda-list* function)
-                                     name (function-lambda-list* function)
-                                     (or (documentation function t)
-                                         (ignore-errors
-                                          (documentation (function-name function) 'function))))))
-                           *commands*)))
+          * (mapcar (lambda (command)
+                      (destructuring-bind (name function)
+                          command
+                        (list (function-lambda-list* function)
+                              name (function-lambda-list* function)
+                              (or (documentation function t)
+                                  (ignore-errors
+                                   (documentation (function-name function) 'function))))))
+                    *commands*)))
 
 (unless (find :help *commands* :key #'first)
   (setf *commands*
@@ -191,7 +189,7 @@ Search is different for different KEY types:
   "Return a list of values for fields under KEYS.
 Useful inside an interface to query the values of the object one's
 interacting with."
-  (let ((fields (funcall *fields-fn* *object*)))
+  (let ((fields (funcall *fields-fn* *)))
     (mapcar (lambda (key)
               (second (find-command-or-prop key nil fields)))
             keys)))
@@ -216,7 +214,8 @@ interacting with."
                         documentation
                         &body key+commands)
   "Create an interactive interface for NAME function.
-The interface is centered around the OBJECT-named argument.
+The interface is centered around the OBJECT-named argument (available
+as * while in the interface.)
 
 Generates the internal function named %NAME, which does most of the
 book-keeping, like reading from STREAM and dispatching `*commands*'.
@@ -233,7 +232,7 @@ inspector."
        (define-generic ,internal-name (,object)
          ,(format nil "Internal function for ~a." name)
          (catch 'internal
-           (let* ((*object* ,object)
+           (let* ((* ,object)
                   (*stream* ,stream)
                   (*commands*
                     (append
@@ -244,7 +243,7 @@ inspector."
                                    collect `(list ,key ,command)))))
                   ,@(loop for (name initvalue) in vars-vals
                           collect `(,name ,initvalue))
-                  (fields (funcall *fields-fn* *object*))
+                  (fields (funcall *fields-fn* *))
                   (*length* (length fields))
                   (*offset* 0))
              (summarize)

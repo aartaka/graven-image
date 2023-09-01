@@ -5,7 +5,7 @@
 
 (defun set-field (key value)
   "Set the KEY-ed field to VALUE."
-  (let ((prop (find-command-or-prop key nil (funcall *fields-fn* *object*))))
+  (let ((prop (find-command-or-prop key nil (funcall *fields-fn* *))))
     (cond
       ((and prop (third prop))
        (print (funcall (third prop) value (second prop))))
@@ -17,7 +17,7 @@
 (defun istep (key)
   "Inspect the object under KEY."
   (uiop:symbol-call :graven-image :%inspect*
-                    (second (find-command-or-prop key nil (funcall *fields-fn* *object*)))))
+                    (second (find-command-or-prop key nil (funcall *fields-fn* *)))))
 
 ;; Dummy vars.
 (defvar *max-field-length*)
@@ -28,9 +28,9 @@
    (*summary-fn* #'description*)
    (*fields-fn* #'fields*)
    (*max-field-length*
-    (reduce #'max (fields* *object*)
+    (reduce #'max (fields* *)
             :key (lambda (f) (length (princ-to-string (first f))))))
-   (*max-field-index* (length (fields* *object*)))
+   (*max-field-index* (length (fields* *)))
    (*print-field-fn* #'(lambda (stream index key value &rest other-args)
                          (format stream "~&[~d]~:[ ~:[~s~;~a~]~;~2*~]~vt =~:[=~;!~]= ~s"
                                  index (integerp key) (symbolp key) key
@@ -58,8 +58,8 @@ Influenced by:
 
 (defun standard-print ()
   "Print the inspected object readably."
-  (format *stream* "~&~s" *object*))
+  (format *stream* "~&~s" *))
 
 (defun aesthetic-print ()
   "Print the inspected object aesthetically."
-  (format *stream* "~&~a" *object*))
+  (format *stream* "~&~a" *))
