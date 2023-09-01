@@ -51,7 +51,8 @@
     (list sbcl-closer-mop sbcl-trivial-gray-streams))
    (synopsis "Common Lisp standard debugging utilities made more extensible and useful.")
    (home-page "https://github.com/atlas-engineer/graven-image")
-   (description "Graven Image is a library enhancing CL built-in debugging.
+   (description
+    "Graven Image is a library enhancing Common Lisp standard debugging tools.
 The functions that Graven image adds:
 @itemize
 @item @code{yes-or-no-p*/y-or-n-p*} for user querying.
