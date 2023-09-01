@@ -32,4 +32,6 @@
   #+cormanlisp
   (pathnames::pathname-internal)
   #+sbcl
-  (sb-kernel:code-component sb-ext:weak-pointer sb-kernel:fdefn))
+  (sb-kernel:code-component sb-ext:weak-pointer sb-kernel:fdefn)
+  #-(abcl clozure clasp cmucl scl cormanlisp sbcl)
+  nil)
