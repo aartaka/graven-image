@@ -19,6 +19,7 @@
                (:file "apropos")
                (:file "time")
                (:file "fields")
+               (:file "description")
                (:file "interface")
                (:file "describe")
                (:file "inspect")
