@@ -526,7 +526,7 @@ Actually, one can try to write an =:around= method for regular
 =documentation=, but this modification is not guaranteed to work on
 all implementations.
 
-* Roadmap
+* Roadmap (contributions welcome!)
 - [ ] Improve:
   - [X] =apropos=, =apropos-list=
     - [X] Add a way to sort symbols by relevance/name match.
