@@ -36,11 +36,13 @@ For inspector, that's a recursive inspection.")
   "Total length of the object fields.")
 (defvar *offset* 0
   "The current offset into the object fields.")
+(defvar *interface-lines* 20
+  "Number of fields displayed in one screen.")
 
 (defun print-fields ()
   "Print the current page of fields."
   (loop with fields = (funcall *fields-fn* *)
-        with real-page-len = (min *length* (+ *offset* *print-lines*))
+        with real-page-len = (min *length* (+ *offset* *interface-lines*))
         for index from *offset* below real-page-len
         for (key value . args) in (subseq fields *offset*)
         do (apply *print-field-fn* *stream* index key value args)
@@ -61,16 +63,16 @@ For inspector, that's a recursive inspection.")
 
 (defun next-page ()
   "Show the next page of fields (if any)."
-  (if (>= (+ *offset* *print-lines*) *length*)
+  (if (>= (+ *offset* *interface-lines*) *length*)
       (format *stream* "~&Nowhere to scroll, already at the last page.")
-      (setf *offset* (+ *offset* *print-lines*)))
+      (setf *offset* (+ *offset* *interface-lines*)))
   (print-fields))
 
 (defun previous-page ()
   "Show the previous page of fields (if any)."
   (if (zerop *offset*)
       (format *stream* "~&Nowhere to scroll, already at the first page.")
-      (setf *offset* (max 0 (- *offset* *print-lines*))))
+      (setf *offset* (max 0 (- *offset* *interface-lines*))))
   (print-fields))
 
 (defun home ()
@@ -83,7 +85,7 @@ For inspector, that's a recursive inspection.")
 
 (defun width (new)
   "Change the page size."
-  (setf *print-lines* new)
+  (setf *interface-lines* new)
   (print-fields))
 
 (defun self ()
@@ -245,7 +247,8 @@ inspector."
                           collect `(,name ,initvalue))
                   (fields (funcall *fields-fn* *))
                   (*length* (length fields))
-                  (*offset* 0))
+                  (*offset* 0)
+                  (*interface-lines* (or *interface-lines* 20)))
              (summarize)
              (print-fields)
              (loop

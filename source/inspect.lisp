@@ -24,8 +24,7 @@
 (defvar *max-field-index*)
 
 (definterface inspect* *query-io* (object)
-  ((*print-lines* (or *print-lines* 20))
-   (*summary-fn* #'description*)
+  ((*summary-fn* #'description*)
    (*fields-fn* #'fields*)
    (*max-field-length*
     (reduce #'max (fields* *)
@@ -47,7 +46,7 @@ Fields are paginated, with commands available to scroll.
 
 Influenced by:
 - `*query-io*'.
-- `*print-lines*' for page size.
+- `*interface-lines*' for page size.
 - Other printer variables for the display of the field values."
   (:set #'set-field)
   (:modify #'set-field)

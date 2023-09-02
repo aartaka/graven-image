@@ -476,12 +476,12 @@ things by =string= occurence:
 
 ** Changing printer settings for Graven Image output
 
-Graven Image =inspect*= function uses =*print-lines*= for the number of properties to list. If your screen is more than 20 lines high, you might want to add more lines:
+Graven Image =inspect*= function uses =*interface-lines*= for the number of properties to list. If your screen is more than 20 lines high, you might want to add more lines:
 
 #+begin_src lisp
   (defmethod gimage:inspect* :around (object)
     (declare (ignore object))
-    (let ((*print-lines* 45))
+    (let ((gimage:*interface-lines* 45))
       (call-next-method)))
 #+end_src
 

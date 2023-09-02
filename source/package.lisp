@@ -9,7 +9,7 @@
    #:apropos-list* #:apropos* #:apropod*
    ;; #:ed*
    #:fields* #:description*
-   #:$ #:definterface
+   #:$ #:definterface :*interface-lines*
    #:describe* #:inspect*
    #:function-lambda-expression* #:function-lambda-list* #:function-name* #:function-type*
    #:lambda-expression* #:function-arglist* #:lambda-list* #:arglist*
