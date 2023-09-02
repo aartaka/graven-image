@@ -25,7 +25,7 @@
   #-(or sbcl clozure ecl abcl clisp gcl allegro) (sxhash object))
 
 #+sbcl
-(defvar sbcl-props-to-remove
+(defvar sbcl-props-to-ignore
   (list
    ;; Package
    'sb-impl::%name 'sb-impl::%used-by 'sb-impl::internal-symbols
@@ -41,12 +41,12 @@
    'sb-impl::file 'sb-impl::element-type 'sb-impl::dual-channel-p 'sb-impl::pathname))
 
 #+sbcl
-(defun remove-sbcl-props-from (object)
+(defun except-sbcl-props (object)
   (mapcar #'(lambda (cons)
               (list (car cons) (cdr cons)))
           (set-difference
            (nth-value 2 (sb-impl::inspected-parts object))
-           sbcl-props-to-remove
+           sbcl-props-to-ignore
            :key (lambda (x)
                   (typecase x
                     (cons (car x))
@@ -263,7 +263,7 @@ modify the property. For slots, this setter will likely be setting the
     ,@(get-ccl-props
        object 'ccl::pkg.itab 'ccl::pkg.etab 'ccl::pkg.shadowed 'ccl::pkg.lock 'ccl::pkg.intern-hook)
     #+sbcl
-    ,@(remove-sbcl-props-from object)))
+    ,@(except-sbcl-props object)))
 
 (deffields (object readtable)
   `((:case ,(readtable-case object)
@@ -282,13 +282,13 @@ modify the property. For slots, this setter will likely be setting the
     #+clozure
     ,@(get-ccl-props object 'ccl::rdtab.ttab 'ccl::rdtab.macros)
     #+sbcl
-    ,@(remove-sbcl-props-from object)))
+    ,@(except-sbcl-props object)))
 
 (deffields (object random-state)
   `(#+clozure
     ,@(get-ccl-props object 'ccl::random.mrg31k3p-state)
     #+sbcl
-    ,@(remove-sbcl-props-from object)))
+    ,@(except-sbcl-props object)))
 
 (deffields (object character)
   `((:code ,(char-code object))
@@ -362,7 +362,7 @@ modify the property. For slots, this setter will likely be setting the
       (:home ,(user-homedir-pathname))
       (:cwd ,(uiop:getcwd))
       #+sbcl
-      ,@(remove-sbcl-props-from object))))
+      ,@(except-sbcl-props object))))
 
 (deffields (object hash-table)
   `((:test ,(hash-table-test object))
@@ -398,7 +398,7 @@ modify the property. For slots, this setter will likely be setting the
        'ccl::nhash.exclusion-lock 'ccl::nhash.find 'ccl::nhash.find-new 'ccl::nhash.read-only
        'ccl::nhash.min-size)
     #+sbcl
-    ,@(remove-sbcl-props-from object)))
+    ,@(except-sbcl-props object)))
 
 (deffields (object two-way-stream)
   `((:input ,(two-way-stream-input-stream object))
@@ -460,7 +460,7 @@ modify the property. For slots, this setter will likely be setting the
     (:element-type ,(stream-element-type object))
     (:format ,(stream-external-format object))
     #+sbcl
-    ,@(remove-sbcl-props-from object)))
+    ,@(except-sbcl-props object)))
 
 (-> object-slots ((or standard-object structure-object)) list)
 (defun object-slots (object)
@@ -479,7 +479,7 @@ modify the property. For slots, this setter will likely be setting the
                      (setf (slot-value object name) new-value))))
            #+sbcl
            (set-difference (object-slots object)
-                           #+sbcl sbcl-props-to-remove
+                           #+sbcl sbcl-props-to-ignore
                            #-sbcl nil))
    #+clozure
    (get-ccl-props
