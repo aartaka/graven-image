@@ -546,7 +546,9 @@ all implementations.
   - [ ] =room=?
 - [X] Somehow hook into and improve over =*debugger-hook*=?
   - Use [[https://github.com/atlas-engineer/ndebug/][Ndebug]] for that.
-- [ ] Test on more implementations.
+- [ ] Test on more implementations. I'm currently testing it on SBCL,
+  CCL, ECL, ABCL, CLISP, and GCL. Will be glad to accept patches/bug
+  reports for other implementations.
 - [ ] Maybe add an interactive file manager?
   - Yes, this is beyond the goal of nice portable standard debugging
     facilities that Graven Image pursues. But it kinda is intuitive,
