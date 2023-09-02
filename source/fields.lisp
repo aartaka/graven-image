@@ -477,7 +477,6 @@ modify the property. For slots, this setter will likely be setting the
                    (lambda (new-value _)
                      (declare (ignorable _))
                      (setf (slot-value object name) new-value))))
-           #+sbcl
            (set-difference (object-slots object)
                            #+sbcl sbcl-props-to-ignore
                            #-sbcl nil))
