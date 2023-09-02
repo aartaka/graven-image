@@ -16,13 +16,13 @@ TIME-KEYWORDS is a &KEY destructuring list, but one may omit &KEY and
 &ALLOW-OTHER-KEYS in it.
 
 TIME-KEYWORDS are destructuring a keyword-indexed property list with:
-- :REAL --- for real time (in seconds).
-- :USER --- for user run time (in seconds).
-- :SYSTEM --- for system run time (in seconds).
+- :REAL --- for real time (in seconds, float).
+- :USER --- for user run time (in seconds, float).
+- :SYSTEM --- for system run time (in seconds, float).
 - :CYCLES --- for CPU cycles spent.
 - :LOAD --- for CPU load (percentage).
 - :GC-COUNT --- for the times GC was invoked.
-- :GC --- for time spend on GC (in seconds).
+- :GC --- for time spend on GC (in seconds, float).
 - :ALLOCATED --- for the amount of bytes consed.
 - :ABORTED --- for whether the evaluation errored out.
 - :FAULTS --- for the number of page faults (both major and minor).
