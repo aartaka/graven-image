@@ -126,7 +126,7 @@ For inspector, that's a recursive inspection.")
   (format *stream*
           "~&This is an interactive interface for ~a~%~
 ~&Available commands are:
-~:{~&~:[~s~*~;(~s~{ ~a~})~]~30t~@[~a~]~}
+~:{~&~:[~s~*~;~s~{ ~a~}~]~30t~@[~a~]~}
 
 Possible inputs are:
 - Blank line: scroll the listing down.
@@ -253,9 +253,7 @@ inspector."
                (finish-output *stream*)
                (let ((forms (read-maybe-spaced *stream*)))
                  (multiple-value-bind (result command-p)
-                     (find-command-or-prop (first (uiop:ensure-list (first forms)))
-                                           *commands* (when (not (listp (first forms)))
-                                                        fields))
+                     (find-command-or-prop (first forms) *commands* fields)
                    (restart-case
                        (cond
                          ((and result command-p)
