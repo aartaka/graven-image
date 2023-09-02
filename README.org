@@ -543,7 +543,8 @@ all implementations.
   - [X] =documentation=?
   - [ ] =ed=.
   - [ ] =disassemble=?
-  - [ ] =room=?
+  - [X] =room=
+    - [ ] Complete the implementation, dispatch the verbosity.
 - [X] Somehow hook into and improve over =*debugger-hook*=?
   - Use [[https://github.com/atlas-engineer/ndebug/][Ndebug]] for that.
 - [ ] Test on more implementations. I'm currently testing it on SBCL,

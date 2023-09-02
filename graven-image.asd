@@ -18,6 +18,7 @@
                (:file "yes-or-no")
                (:file "apropos")
                (:file "time")
+               (:file "room")
                (:file "fields")
                (:file "description")
                (:file "interface")
