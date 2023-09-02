@@ -128,9 +128,10 @@ Note that you can influence the printout by let-bindings:
   ;; non-implemented methods.
   (handler-bind ((warning #'muffle-warning))
     (let* ((syms (apropos-list* string package external-only docs-too))
-           (max (reduce #'max syms
-                        :key #'(lambda (sym)
-                                 (length (prin1-to-string sym))))))
+           (max (when syms
+                  (reduce #'max syms
+                          :key #'(lambda (sym)
+                                   (length (prin1-to-string sym)))))))
       (dolist (symbol syms)
         (flet ((crop-docs (docs)
                  (let ((line (when docs
