@@ -70,6 +70,17 @@ without package prefix, then add this to your implementation config file:
   (use-package :graven-image)
 #+end_src
 
+If you want to replace the standard utilities with Graven Image ones,
+you can safely do so with the familiar:
+#+begin_src lisp
+  ;; For functions
+  (fmakunbound 'apropos)
+  (setf (fdefinition 'apropos) (fdefinition 'gimage:apropos*))
+  ;; For macros
+  (setf (macro-function 'time) (macro-function 'gimage:time*))
+#+end_src
+
+
 * Enhanced functions (mostly from ANSI CL [[https://cl-community-spec.github.io/pages/Debugging-Utilities.html][Debugging Utilities]] chapter)
 
 The functions that Graven Image exposes are safely =:use=-able star-appended functions/macros (i.e. =describe*= instead of
