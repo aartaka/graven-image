@@ -361,10 +361,9 @@ When STRIP-NULL, fields with null VALUE and SETTER are filtered out."))
   :translation translate-logical-pathname)
 
 (deffields (object pathname)
-  (let ((wild-p (wild-pathname-p object))
-        (logical-p (uiop:logical-pathname-p object))
+  (let ((logical-p (uiop:logical-pathname-p object))
         (link-p (not (equal (truename object) object))))
-    `((:wild-p ,wild-p)
+    `((:wild-p ,(wild-pathname-p object))
       (:namestring ,(namestring object))
       ,@(unless (or logical-p
                     (string= (namestring object)
