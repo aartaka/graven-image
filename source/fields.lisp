@@ -25,12 +25,28 @@
   #-(or sbcl clozure ecl abcl clisp gcl allegro) (sxhash object))
 
 #+sbcl
-(defun remove-sbcl-props-from (object &rest names-to-remove)
+(defvar sbcl-props-to-remove
+  (list
+   ;; Package
+   'sb-impl::%name 'sb-impl::%used-by 'sb-impl::internal-symbols
+   'sb-impl::external-symbols 'sb-impl::doc-string 'sb-impl::%local-nicknames
+   ;; Readtable
+   'sb-impl::%readtable-normalization 'sb-impl::%readtable-case
+   'sb-impl::%readtable-string-preference 'sb-impl::%readtable-symbol-preference
+   ;; Pathname
+   'sb-impl::host 'sb-impl::device 'sb-impl::name 'sb-impl::version 'type 'namestring
+   ;; Hash-table
+   'sb-impl::test 'sb-impl::rehash-size 'sb-impl::rehash-threshold 'sb-impl::%count
+   ;; Stream
+   'sb-impl::file 'sb-impl::element-type 'sb-impl::dual-channel-p 'sb-impl::pathname))
+
+#+sbcl
+(defun remove-sbcl-props-from (object)
   (mapcar #'(lambda (cons)
               (list (car cons) (cdr cons)))
           (set-difference
            (nth-value 2 (sb-impl::inspected-parts object))
-           names-to-remove
+           sbcl-props-to-remove
            :key (lambda (x)
                   (typecase x
                     (cons (car x))
@@ -247,11 +263,7 @@ modify the property. For slots, this setter will likely be setting the
     ,@(get-ccl-props
        object 'ccl::pkg.itab 'ccl::pkg.etab 'ccl::pkg.shadowed 'ccl::pkg.lock 'ccl::pkg.intern-hook)
     #+sbcl
-    ,@(remove-sbcl-props-from
-       object
-       'sb-impl::%name 'sb-impl::%used-by
-       'sb-impl::internal-symbols 'sb-impl::external-symbols
-       'sb-impl::doc-string 'sb-impl::%local-nicknames)))
+    ,@(remove-sbcl-props-from object)))
 
 (deffields (object readtable)
   `((:case ,(readtable-case object)
@@ -270,9 +282,7 @@ modify the property. For slots, this setter will likely be setting the
     #+clozure
     ,@(get-ccl-props object 'ccl::rdtab.ttab 'ccl::rdtab.macros)
     #+sbcl
-    ,@(remove-sbcl-props-from
-       object
-       'sb-impl::%readtable-normalization 'sb-impl::%readtable-case)))
+    ,@(remove-sbcl-props-from object)))
 
 (deffields (object random-state)
   `(#+clozure
@@ -352,9 +362,7 @@ modify the property. For slots, this setter will likely be setting the
       (:home ,(user-homedir-pathname))
       (:cwd ,(uiop:getcwd))
       #+sbcl
-      ,@(remove-sbcl-props-from
-         object
-         'sb-impl::host 'sb-impl::device 'sb-impl::name 'sb-impl::version 'type 'namestring))))
+      ,@(remove-sbcl-props-from object))))
 
 (deffields (object hash-table)
   `((:test ,(hash-table-test object))
@@ -390,9 +398,7 @@ modify the property. For slots, this setter will likely be setting the
        'ccl::nhash.exclusion-lock 'ccl::nhash.find 'ccl::nhash.find-new 'ccl::nhash.read-only
        'ccl::nhash.min-size)
     #+sbcl
-    ,@(remove-sbcl-props-from
-       object
-       'sb-impl::test 'sb-impl::rehash-size 'sb-impl::rehash-threshold 'sb-impl::%count)))
+    ,@(remove-sbcl-props-from object)))
 
 (deffields (object two-way-stream)
   `((:input ,(two-way-stream-input-stream object))
@@ -454,9 +460,7 @@ modify the property. For slots, this setter will likely be setting the
     (:element-type ,(stream-element-type object))
     (:format ,(stream-external-format object))
     #+sbcl
-    ,@(remove-sbcl-props-from
-       object
-       'sb-impl::file 'sb-impl::element-type 'sb-impl::dual-channel-p 'sb-impl::pathname)))
+    ,@(remove-sbcl-props-from object)))
 
 (-> object-slots ((or standard-object structure-object)) list)
 (defun object-slots (object)
@@ -473,14 +477,14 @@ modify the property. For slots, this setter will likely be setting the
                    (lambda (new-value _)
                      (declare (ignorable _))
                      (setf (slot-value object name) new-value))))
-           (object-slots object))
+           #+sbcl
+           (set-difference (object-slots object)
+                           #+sbcl sbcl-props-to-remove
+                           #-sbcl nil))
    #+clozure
    (get-ccl-props
     object
     'ccl::instance.hash 'ccl::instance.slots)
-   #+sbcl
-   (apply #'remove-sbcl-props-from object
-          (object-slots object))
    #+abcl
    (abcl-props-except object "DOCUMENTATION" "DIRECT-SLOTS" "SLOTS")))
 
