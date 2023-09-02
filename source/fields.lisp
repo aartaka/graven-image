@@ -55,52 +55,16 @@
         unless (member name except :test #'string=)
           collect (list (intern name :keyword) value)))
 
-(defgeneric fields* (object &key strip-null &allow-other-keys)
-  (:method-combination append)
-  (:method :around (object &key (strip-null t) &allow-other-keys)
-    (delete
-     nil
-     (mapcar (lambda (prop)
-               (destructuring-bind (name value &optional setter)
-                   prop
-                 (cond
-                   ;; If the value is setf-able, then allow to set
-                   ;; it, even if it's NIL.
-                   (setter (list name value setter))
-                   (value (list name value))
-                   (strip-null nil)
-                   (t prop))))
-             (let ((slot-defs (ignore-errors (closer-mop:class-slots (class-of object)))))
-               (multiple-value-bind (values error)
-                   (ignore-errors (call-next-method))
-                 (when (typep error 'error)
-                   (warn "FIELDS* are not implemented for ~a" (type-of object)))
-                 (append
-                  `((:self ,object)     ; From CCL.
-                    (:id ,(id object))
-                    (:class ,(class-of object)
-                            ,(lambda (new-value _)
-                               (declare (ignorable _))
-                               (change-class object (find-class new-value))))
-                    ,@(when slot-defs
-                        (list (list :slot-definitions slot-defs)))
-                    (:type ,(type-of object))
-                    #+clozure
-                    (:wrapper ,(ccl::%class-own-wrapper (class-of object))))
-                  values
-                  (when slot-defs
-                    (loop for def in slot-defs
-                          for name = (closer-mop:slot-definition-name def)
-                          unless (assoc name values)
-                            collect (list name (if (slot-boundp object name)
-                                                   (slot-value object name)
-                                                   :unbound)
-                                          (lambda (new-value _)
-                                            (declare (ignorable _))
-                                            (setf (slot-value object name) new-value)))))
-                  #+sbcl (remove-sbcl-props-from object)
-                  #+abcl (abcl-props-except object)
-                  #-(or sbcl abcl) nil))))))
+(defun reverse-append (&rest lists)
+  (remove-duplicates (reduce #'append (nreverse lists))
+                     :key #'first
+                     :from-end t))
+
+(define-method-combination reverse-append
+  :identity-with-one-argument t)
+
+(defgeneric fields* (object &key &allow-other-keys)
+  (:method-combination reverse-append)
   (:documentation "Return a list of OBJECT fields to inspect.
 Every property is a list of (NAME VALUE &optional SETTER) lists, where
 
@@ -110,9 +74,7 @@ Every property is a list of (NAME VALUE &optional SETTER) lists, where
 
 - And SETTER is a function of two arguments (new-value old-value) to
 modify the property. For slots, this setter will likely be setting the
-`slot-value'.
-
-When STRIP-NULL, fields with null VALUE and SETTER are filtered out."))
+`slot-value'."))
 
 (-> symbol-visibility (symbol) (or null (member :inherited :external :internal :uninterned)))
 (defun symbol-visibility (symbol)
@@ -121,11 +83,11 @@ When STRIP-NULL, fields with null VALUE and SETTER are filtered out."))
       :uninterned))
 
 (defmacro deffields ((name specifier) &body fields)
-  `(defmethod fields* append ((,name ,specifier) &key &allow-other-keys)
+  `(defmethod fields* reverse-append ((,name ,specifier) &key &allow-other-keys)
      ,@fields))
 
 (defmacro defproperty (specifier name function)
-  `(defmethod fields* append ((object ,specifier) &key &allow-other-keys)
+  `(defmethod fields* reverse-append ((object ,specifier) &key &allow-other-keys)
      (list (list ,name (,function object)))))
 
 (deffields (object symbol)
@@ -605,3 +567,17 @@ When STRIP-NULL, fields with null VALUE and SETTER are filtered out."))
 
 (defproperty unbound-slot :instance unbound-slot-instance)
 (defproperty file-error :pathname file-error-pathname)
+
+(defmethod fields* reverse-append (object &key &allow-other-keys)
+  (let ((slot-defs (ignore-errors (closer-mop:class-slots (class-of object)))))
+    `((:self ,object) ;; Inspired by CCL.
+      (:id ,(id object))
+      (:class ,(class-of object)
+              ,(lambda (new-value _)
+                 (declare (ignorable _))
+                 (change-class object (find-class new-value))))
+      ,@(when slot-defs
+          (list (list :slot-definitions slot-defs)))
+      (:type ,(type-of object))
+      #+clozure
+      (:wrapper ,(ccl::%class-own-wrapper (class-of object))))))
