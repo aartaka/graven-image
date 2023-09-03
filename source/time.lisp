@@ -192,7 +192,7 @@ always the case that some are missing."
 
 (defmacro time* (&rest forms)
   "Execute FORMS and print timing information for them.
-The values of FORMS evaluation are returned unaltered.
+The values of last form in FORMS are returned unaltered.
 
 Influenced by:
 - `with-time*' implementation support.
