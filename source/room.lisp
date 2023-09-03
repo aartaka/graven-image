@@ -183,17 +183,13 @@ always the case that some are missing."
                                                       :instances total-instances)))))))))
             #+abcl
             ;; FIXME: Find more data!!!!!
-            (with-output-to-string
-                (*standard-output*
-                 ;; XXX: to return the last form
-                 ;; value instead of resulting
-                 ;; string.
-                 (make-array 0 :element-type 'character :fill-pointer 0 :adjustable t))
-              ;; FIXME: What's the third value?
-              (multiple-value-bind (heap-used heap)
-                  (funcall old-room)
-                (list :heap heap
-                      :heap-used heap-used)))
+            (let* ((runtime (java:jstatic "getRuntime"
+                                          (java:jclass "java.lang.Runtime")))
+                   ;; TODO: maxMemory? What does this method mean?
+                   (total-memory (java:jcall "totalMemory" runtime))
+                   (free-memory (java:jcall "freeMemory" runtime)))
+              (list :heap total-memory
+                    :heap-used free-memory))
             #-(or clozure sbcl ecl clisp abcl)
             (load-time-warn "Cannot fetch room statistics for this implementation. Help in fixing it!")))
      (destructuring-bind (,@(unless (member (car room-keywords) '(&key &rest))
