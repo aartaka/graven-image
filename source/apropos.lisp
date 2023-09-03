@@ -70,26 +70,27 @@ Influenced by:
 - Current list of packages and their contents."
   (declare (ignorable external-only docs-too))
   (let ((string (string string)))
-    (cond
-      ;; NOTE: Reusing built-in external-only functionality of SBCL/Allegro.
-      ;; FIXME: Is their listing reliable enough? Seems te be so.
-      #+(or sbcl allegro)
-      ((not docs-too)
-       (reduce-old-apropos string packages external-only))
-      ;; FIXME: Test on more impls (help needed with this one!)
-      ;; FIXME: The case-sensitivity of standard `apropos/-list' is
-      ;; not specified, so this might bring some inconsistencies. All
-      ;; the implementations I've tested list things in the
-      ;; case-insensitive fashion, though.
-      #+(or clozure ecl gcl abcl clisp)
-      ((and (not external-only) (not docs-too))
-       (reduce-old-apropos string packages))
-      #+(or sbcl clozure ecl gcl abcl clisp allegro)
-      (t (%apropos-list string packages external-only docs-too))
-      #-(or sbcl clozure ecl gcl abcl clisp allegro)
-      (t
-       (comile-time-warn "apropos-list* is not implemented for this CL, help in implementing it!")
-       (reduce-old-apropos string packages)))))
+    (remove-duplicates
+     (cond
+       ;; NOTE: Reusing built-in external-only functionality of SBCL/Allegro.
+       ;; FIXME: Is their listing reliable enough? Seems te be so.
+       #+(or sbcl allegro)
+       ((not docs-too)
+        (reduce-old-apropos string packages external-only))
+       ;; FIXME: Test on more impls (help needed with this one!)
+       ;; FIXME: The case-sensitivity of standard `apropos/-list' is
+       ;; not specified, so this might bring some inconsistencies. All
+       ;; the implementations I've tested list things in the
+       ;; case-insensitive fashion, though.
+       #+(or clozure ecl gcl abcl clisp)
+       ((and (not external-only) (not docs-too))
+        (reduce-old-apropos string packages))
+       #+(or sbcl clozure ecl gcl abcl clisp allegro)
+       (t (%apropos-list string packages external-only docs-too))
+       #-(or sbcl clozure ecl gcl abcl clisp allegro)
+       (t
+        (comile-time-warn "apropos-list* is not implemented for this CL, help in implementing it!")
+        (reduce-old-apropos string packages))))))
 
 ;; Allegro has a different arglist, which Graven Image conflicts
 ;; with. But let's say that's the fault of proprietary implementations
