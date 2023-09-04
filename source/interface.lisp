@@ -175,7 +175,7 @@ Search is different for different KEY types:
   names.
 - Anything else: search literal object."
   (typecase key
-    (integer (values (if (<= 0 key (length fields))
+    (integer (values (if (find key (field-indices fields))
                          (elt fields (position key (field-indices fields)))
                          (warn "No field with key ~s" key))
                      nil))
