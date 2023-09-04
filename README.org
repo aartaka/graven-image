@@ -564,4 +564,4 @@ all implementations.
   - [ ] ABCL has =*top-level:command-table*=
   - [ ] CLISP with =*user-commands*=.
   - [ ] ECL's =*tpl-commands*=.
-  - [ ] Allegro =TPL::ADD-NEW-COMMAND= and =TPL::*COMMAND-HASH-TABLE*=.
+  - [ ] Allegro =TPL::ADD-NEW-COMMAND= and =TPL::*COMMAND-HASH-TABLE*= and a whole [[https://franz.com/support/documentation/current/doc/top-level.htm#adding-new-commands-1][11.0 Adding New Commands]] section in the manual page on the Top Level.
