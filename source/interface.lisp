@@ -39,6 +39,10 @@ For inspector, that's a recursive inspection.")
 (defvar *interface-lines* 20
   "Number of fields displayed in one screen.")
 
+(defun nothing ()
+  "Command that does nothing."
+  nil)
+
 (defun print-fields ()
   "Print the current page of fields."
   (loop with fields = (funcall *fields-fn* *)
@@ -180,11 +184,25 @@ Search is different for different KEY types:
                          (warn "No field with key ~s" key))
                      nil))
     (symbol
-     (loop for match in (append commands fields)
-           for (match-key) = match
-           when (and (symbolp match-key)
-                     (uiop:string-prefix-p (symbol-name key) (symbol-name match-key)))
-             do (return (values match (member match commands)))))
+     (flet ((filter (pred list)
+              (remove-if (complement pred) list :key #'first)))
+       (let* ((command-matches (filter (lambda (c-key)
+                                         (uiop:string-prefix-p key c-key))
+                                       commands))
+              (symbol-fields (filter #'symbolp fields))
+              (field-matches (filter
+                              (lambda (f-key)
+                                (uiop:string-prefix-p key f-key))
+                              symbol-fields)))
+         (if (= 1 (+ (length command-matches) (length field-matches)))
+             (values (or (first command-matches)
+                         (first field-matches))
+                     (null field-matches))
+             (progn
+               ;; Inspired by SBCL.
+               (warn "Several matches found with prefix ~s:~@[~&Commands: ~{~A~^, ~}~]~@[~&Fields: ~{~A~^, ~}~]"
+                     key (mapcar #'first command-matches) (mapcar #'first field-matches))
+               (values `(:nothing ,#'nothing) t))))))
     (t (find key fields :key #'first :test #'equal))))
 
 (defun $ (&rest keys)
