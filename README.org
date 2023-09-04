@@ -545,7 +545,7 @@ all implementations.
   - [ ] =disassemble=?
   - [X] =room=
     - [ ] Complete the implementation, dispatch the verbosity.
-- [X] Somehow hook into and improve over =*debugger-hook*=?
+- [X] Somehow hook into and improve over =*debugger-hook*= and/or =invoke-debugger=?
   - Use [[https://github.com/atlas-engineer/ndebug/][Ndebug]] for that.
 - [ ] Test on more implementations. I'm currently testing it on SBCL,
   CCL, ECL, ABCL, CLISP, and GCL. Will be glad to accept patches/bug
