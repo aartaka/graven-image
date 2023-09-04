@@ -41,24 +41,22 @@
         (environment environment)
         (t nil)))
     #+allegro
-    (let* ((closure (nth-value 1 (funcall old-function-lambda-expression function)))
-           (ht (if (typep closure 'sys::augmentable-environment)
-                   (sys::ha$h-table-ht
+    (let* ((closure (nth-value 1 (funcall old-function-lambda-expression function))))
+      (cond
+        ((typep closure 'sys::augmentable-environment)
+         (let ((ht (sys::ha$h-table-ht
                     (slot-value (sys::augmentable-environment-base closure)
-                                'system::variable-hashtable))
-                   ;; TODO: Closure inspection of
-                   ;; REGEXP::REGULAR-EXPRESSION-RETURN-TYPE returns
-                   ;; #<Closure DEFSTRUCT-ACCESSOR @ #x10000237d42>
-                   (prog1
-                       t
-                     (warn "Unknown closure ~s, cannot inspect" closure)))))
-      (typecase ht
-        (cons
-         (cons (car ht) (caadr (cadadr ht))))
-        (hash-table
-         (loop for key being the hash-key in ht
-                 using (hash-value val)
-               collect (cons key (caar (cdadar val)))))))
+                                'system::variable-hashtable))))
+           (typecase ht
+             (cons
+              (cons (car ht) (caadr (cadadr ht))))
+             (hash-table
+              (loop for key being the hash-key in ht
+                      using (hash-value val)
+                    collect (cons key (caar (cdadar val))))))))
+        ;; FIXME: There should be a way to crack this one!
+        ((typep closure 'excl::closure)
+         t)))
     #-(or clozure cmucl scl sbcl abcl allegro)
     (prog1
         t
