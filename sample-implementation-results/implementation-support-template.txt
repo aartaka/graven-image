@@ -1,60 +1,12 @@
-- [ ] Y-OR-N-P*, YES-OR-NO-P*
-  - [ ] Ensure that I/O (FINISH-OUTPUT etc.) is not buggy.
-- [ ] APROPOS*, APROPOS-LIST*
-  - [ ] Make it fast enough.
-    - (time (prog1 t (graven-image:apropos-list* "A")))
-  - [ ] Make sure that Graven Image APROPOS-LIST* returns the same
-    data as the standard APROPOS-LIST when used with standard params.
-    - (set-difference (apropos-list "A") (graven-image:apropos-list* "A"))
-- [ ] FUNCTION-LAMBDA-EXPRESSION* etc.
-  - [ ] Name fetching.
-  - [ ] Arglist fetching.
-  - [ ] Closure fetching.
-  - [ ] Ftype fetching.
-  - [ ] Source search.
-  - [ ] Generic functions support.
-    - [ ] Methods support.
-- [ ] TIME*
-  - [ ] Real time.
-  - [ ] User run time.
-  - [ ] System run time.
-  - [ ] CPU cores utilized.
-  - [ ] CPU cycles spent.
-  - [ ] CPU load.
-  - [ ] GC count.
-  - [ ] GC time.
-  - [ ] Bytes consed.
-  - [ ] Whether the evaluation aborted.
-  - [ ] Page faults.
-- [ ] DESCRIBE*, INSPECT*
-  - [ ] Object IDs.
-  - [ ] Object/type system specifics.
-  - [ ] Implementation-specific properties.
-  - [ ] Implementation-specific types/objects:
-    - [ ]
-  - [ ] MOP object inspection.
-  - [ ] Proper function/funcallable hierarchy inspection.
-- [ ] DRIBBLE*
-  - [ ] Trivial Gray Streams support.
-  - [ ] Error output.
-  - [ ] REPL prompt cleanup.
-  - [ ] Empty line stripping.
-- [ ] ED*
-  - [ ] Function s-expr editing.
-    - [ ] Persisting the edited code into the function itself (compilation).
-  - [ ] File editing.
-    - [ ] Big files fetching.
-    - [ ] Binary files.
-    - [ ] Lisp files.
-    - [ ] Plaintext files.
-  - [ ] String editing.
-    - [ ] Modifying the string in memory.
-- [ ] INVOKE-DEBUGGER*
-  - [ ] Overriding the implementation-specific debugger.
-  - [ ] Running standard debugger hooks unobtrusively.
-  - [ ] Listing restarts.
-  - [ ] Backtrace inspection (dissect).
-    - [ ] Functions name.
-    - [ ] Arguments.
-    - [ ] Locals.
-    - [ ] Eval-in-frame.
+SBCL
+CCL
+ECL
+ABCL
+GCL
+Allegro
+CLASP
+CLISP
+Lispworks
+Corman
+CMUCL, SCL
+MKCL
