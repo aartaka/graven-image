@@ -556,12 +556,3 @@ all implementations.
     and most implementations have some form of directory switching and
     other file operations.
     - And there's a reasonably big portable file API in ANSI CL.
-- [ ] Re-use the implementation-specific command processing instead of
-  =definterface=.
-  - [ ] CCL has =ccl:define-toplevel-command=.
-  - [ ] SBCL only has debug/step commands via =!def-debug-command=,
-    =!def-debug-command-alias=, =!def-step-command=.
-  - [ ] ABCL has =*top-level:command-table*=
-  - [ ] CLISP with =*user-commands*=.
-  - [ ] ECL's =*tpl-commands*=.
-  - [ ] Allegro =TPL::ADD-NEW-COMMAND= and =TPL::*COMMAND-HASH-TABLE*= and a whole [[https://franz.com/support/documentation/current/doc/top-level.htm#adding-new-commands-1][11.0 Adding New Commands]] section in the manual page on the Top Level.
