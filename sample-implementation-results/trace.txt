@@ -87,3 +87,27 @@ Options:
 Variables:
 ???
 Output:
+
+Allegro:
+Objects:
+- Function names
+- (method name (specializers))
+- (method name qualifier (specializers))
+- (method (setf name) (specializers))
+- (labels outer inner)
+Options:
+- :condition
+- :break-before
+- :break-after
+- :break-all
+- :inside
+- :not-inside
+- :print-before
+- :print-after
+- :print-all
+- :show-stack
+Variables:
+- *trace-print-level*
+- *trace-print-length*
+- *trace-print-array*
+- *trace-print-circle*
