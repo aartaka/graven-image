@@ -86,7 +86,7 @@ always the case that some are missing."
                         (multiple-value-prog1
                             (handler-case
                                 ,form
-                              (error ()
+                              (serious-condition ()
                                 (push (cons :aborted t) ,props)
                                 nil))
                           (multiple-value-bind (new-real1 new-real2 new-run1 new-run2 new-gc1 new-gc2 new-space1 new-space2 new-gccount)
@@ -136,7 +136,7 @@ always the case that some are missing."
                        (lambda ()
                          (handler-case
                              ,form
-                           (error ()
+                           (serious-condition ()
                              (push (cons :aborted t) ,props)
                              (values)))))
                       #-(or sbcl clozure clisp allegro)
@@ -159,7 +159,7 @@ always the case that some are missing."
                         (multiple-value-prog1
                             (handler-case
                                 ,form
-                              (error ()
+                              (serious-condition ()
                                 (push (cons :aborted t) ,props)
                                 nil))
                           (push (cons :real (/ (- (get-internal-real-time)
