@@ -142,10 +142,10 @@ always the case that some are missing."
                              sum bytes into total-bytes
                              sum instances into total-instances
                              finally (return (append types
-                                                     (list
-                                                      t
-                                                      :bytes total-bytes
-                                                      :instances total-instances)))))))
+                                                     (list (list
+                                                            t
+                                                            :bytes total-bytes
+                                                            :instances total-instances))))))))
             #+sbcl
             ;; TODO: binding stack and thread-specific memory.
             (flet ((get-type-memory (type)
