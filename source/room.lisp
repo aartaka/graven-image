@@ -39,7 +39,7 @@ ROOM-KEYWORDS are destructuring a keyword-indexed property list with:
 - :THREADS --- per-thread memory consumption. Is a list of:
 (THREAD &KEY NAME CONTROL-STACK CONTROL-STACK-USED).
 - :TYPES -- per-type allocation. Is a list of
-(TYPE-SYMBOL &KEY BYTES INSTANCES GC-COUNT)
+(TYPE-NAME &KEY BYTES INSTANCES GC-COUNT)
 
 For :THREADS and :TYPES, the last element can be a
 (T &KEY ...) list which collects the total statistics for all
