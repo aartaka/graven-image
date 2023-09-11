@@ -7,13 +7,10 @@
 (declaim (type (cons (cons string boolean) *) *yes-or-no-options*))
 (defvar *yes-or-no-options*
   (copy-tree                       ; Don't modify a literal structure!
-   '(("y" . t)
-     ("ye" . t)
-     ("yes" . t)
+   '(("yes" . t)
      ("yep" . t)
      ("yeah" . t)
      ("ay" . t)
-     ("n" . nil)
      ("no" . nil)
      ("nah" . nil)
      ("nope" . nil)))
@@ -29,10 +26,15 @@ answers.")
            (finish-output *query-io*)))
     (print-prompt)
     (loop for answer = (read-line *query-io* nil nil)
-          for (answer-string . value) = (assoc answer *yes-or-no-options* :test #'string-equal)
-          until answer-string
+          for matches = (remove-if #'(lambda (option)
+                                       ;; Maybe case-sensitive?
+                                       (uiop:string-prefix-p (string-upcase answer)
+                                                             (string-upcase (car option))))
+                                   *yes-or-no-options*)
+          until (or (= 1 (length matches))
+                    (= 1 (remove-duplicates (mapcar #'cdr matches))))
           do (print-prompt)
-          finally (return value))))
+          finally (return (cdr (first matches))))))
 
 (define-generic y-or-n-p* (&optional control &rest arguments)
   "Return a boolean for whether the user input is affirmative/negative.
