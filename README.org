@@ -547,10 +547,11 @@ all implementations.
     - [ ] Complete the implementation, dispatch the verbosity.
 - [X] Somehow hook into and improve over =*debugger-hook*= and/or =invoke-debugger=?
   - Use [[https://github.com/atlas-engineer/ndebug/][Ndebug]] for that.
-- [ ] Test on more implementations. I'm currently testing it on SBCL,
-  CCL, ECL, ABCL, CLISP, Allegro, and sometimes GCL. Will be glad to
-  accept patches/bug reports for other implementations, like CLASP,
-  CMUCL, Corman, or LispWorks!
+- [ ] Test on more implementations.
+  - I'm currently testing Graven Image on SBCL, CCL, ECL, ABCL, CLISP,
+    Allegro, and sometimes GCL.
+  - I will be glad to accept patches/bug reports for other
+    implementations, like CLASP, CMUCL, Corman, or LispWorks!
 - [ ] Maybe add an interactive file manager?
   - Yes, this is beyond the goal of nice portable standard debugging
     facilities that Graven Image pursues. But it kinda is intuitive,
