@@ -32,7 +32,7 @@ answers.")
                                                              (string-upcase (car option))))
                                    *yes-or-no-options*)
           until (or (= 1 (length matches))
-                    (= 1 (remove-duplicates (mapcar #'cdr matches))))
+                    (= 1 (length (remove-duplicates (mapcar #'cdr matches)))))
           do (print-prompt)
           finally (return (cdr (first matches))))))
 
