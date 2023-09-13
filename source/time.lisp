@@ -20,7 +20,6 @@ TIME-KEYWORDS are destructuring a keyword-indexed property list with:
 - :USER --- for user run time (in seconds, float).
 - :SYSTEM --- for system run time (in seconds, float).
 - :CYCLES --- for CPU cycles spent.
-- :LOAD --- for CPU load (percentage).
 - :GC-COUNT --- for the times GC was invoked.
 - :GC --- for time spend on GC (in seconds, float).
 - :ALLOCATED --- for the amount of bytes consed.
@@ -201,7 +200,7 @@ Influenced by:
                   (first forms)
                   (cons 'progn forms)))
         (decimal-length (ceiling (log internal-time-units-per-second 10))))
-    `(with-time* (&key aborted real system user cycles load gc-count gc allocated faults)
+    `(with-time* (&key aborted real system user cycles gc-count gc allocated faults)
          (&rest values)
          ,form
        (format *trace-output*
@@ -211,7 +210,6 @@ Influenced by:
 ~:[~2*~;~&Run time (system): ~,vf seconds~]~
 ~:[~2*~;~&Run time (user):   ~,vf seconds~]~
 ~@[~&CPU cycles:        ~:d~]~
-~@[~&CPU load:          ~d~]~
 ~@[~&GC:                ~d times~]~
 ~:[~2*~;~&GC time:           ~,vf seconds~]~
 ~@[~&Bytes allocated:   ~:d~]~
