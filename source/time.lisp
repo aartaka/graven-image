@@ -123,16 +123,19 @@ always the case that some are missing."
                          ;; FIXME: Allegro seems to ignore sother and
                          ;; static?
                          (push (cons :allocated scons) ,props)
-                         (let ((faults (+ (or pfmajor 0)
-                                          (or pfminor 0)
-                                          (or gcpfmajor 0)
-                                          (or gcpfminor 0))))
-                           (unless (zerop faults)
-                             (push (cons :faults (+ (or pfmajor 0)
-                                                    (or pfminor 0)
-                                                    (or gcpfmajor 0)
-                                                    (or gcpfminor 0)))
-                                   ,props)))
+                         ;; pfmajor pfminor gcpfmajor gcpfminor are
+                         ;; often ~1000 each???
+                         ;;
+                         ;; (let ((faults (+ (or pfmajor 0)
+                         ;;                  (or pfminor 0)
+                         ;;                  (or gcpfmajor 0)
+                         ;;                  (or gcpfminor 0))))
+                         ;;   (unless (zerop faults)
+                         ;;     (push (cons :faults (+ (or pfmajor 0)
+                         ;;                            (or pfminor 0)
+                         ;;                            (or gcpfmajor 0)
+                         ;;                            (or gcpfminor 0)))
+                         ;;           ,props)))
                          (push (cons :gc (/ (+ tgcu tgcs) 1000000)) ,props))
                        *trace-output*
                        (lambda ()
