@@ -254,7 +254,7 @@ Unconditionally prints the T type clause in the end."
                ;; TODO: print percentage of how much total memory a
                ;; type occupies and the size of every type.
                (when types-to-print
-                 (format destination "~&~%Printing memory stats for ~:[all~;the first biggest ~d~] types"
+                 (format destination "~&~%Printing memory stats for ~:[all~;the ~d biggest~] types"
                          types-to-print (length types-to-print))
                  (dolist (type types-to-print)
                    (destructuring-bind (name &key (bytes 0) (instances 0))
