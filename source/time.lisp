@@ -110,16 +110,19 @@ always the case that some are missing."
                                   (push (cons :gc-count gc-count) ,props)))))))
                       #+allegro
                       (excl::time-a-funcall
-                       (lambda (s tgcu tgcs tu ts tr scons sother static
+                       (lambda (stream tgcu tgcs tu ts tr scons sother static
                                 &optional pfmajor pfminor gcpfmajor gcpfminor threadu threads)
-                         (declare (ignorable s threadu threads))
+                         (declare (ignorable s sother static threadu threads))
+                         ;; FIXME: printing the args gives:
+                         ;; #<TERMINAL-SIMPLE-STREAM...> 21022 3169
+                         ;; 25560 3957 29504 521699 212000 0 0 977 829
+                         ;; 829 0 0
                          (push (cons :system (/ ts 1000000)) ,props)
                          (push (cons :user (/ tu 1000000)) ,props)
                          (push (cons :real (/ tr 1000000)) ,props)
-                         ;; FIXME: How do they calculate it? Is it byte count?
-                         ;; For 500501 cons cells the number is 740496. 1.5 byte
-                         ;; per cons cell???
-                         (push (cons :allocated (+ scons sother static)) ,props)
+                         ;; FIXME: Allegro seems to ignore sother and
+                         ;; static?
+                         (push (cons :allocated scons) ,props)
                          (let ((faults (+ (or pfmajor 0)
                                           (or pfminor 0)
                                           (or gcpfmajor 0)
