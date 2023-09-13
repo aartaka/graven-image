@@ -199,26 +199,30 @@ Influenced by:
 - `*trace-output*' for printing."
   (let ((form (if (= 1 (length forms))
                   (first forms)
-                  (cons 'progn forms))))
+                  (cons 'progn forms)))
+        (decimal-length (ceiling (log internal-time-units-per-second 10))))
     `(with-time* (&key aborted real system user cycles load gc-count gc allocated faults)
          (&rest values)
          ,form
        (format *trace-output*
                "~&Time spent ~@[un~*~]successfully evaluating:~
 ~&~s~
-~@[~&Real time:         ~f seconds~]~
-~@[~&Run time (system): ~f seconds~]~
-~@[~&Run time (user):   ~f seconds~]~
+~:[~2*~;~&Real time:         ~,vf seconds~]~
+~:[~2*~;~&Run time (system): ~,vf seconds~]~
+~:[~2*~;~&Run time (user):   ~,vf seconds~]~
 ~@[~&CPU cycles:        ~:d~]~
 ~@[~&CPU load:          ~d~]~
 ~@[~&GC:                ~d times~]~
-~@[~&GC time:           ~f seconds~]~
+~:[~2*~;~&GC time:           ~,vf seconds~]~
 ~@[~&Bytes allocated:   ~:d~]~
 ~@[~&Page faults:       ~:d~]"
                aborted ',form
-               real system user
-               cycles load
-               gc-count gc
+               real ,decimal-length real
+               system ,decimal-length system
+               user ,decimal-length user
+               cycles
+               gc-count
+               gc ,decimal-length gc
                allocated
                faults)
        (values-list values))))
