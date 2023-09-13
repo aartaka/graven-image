@@ -227,8 +227,41 @@ Influenced by:
                      heap heap-used heap (when heap-used (* 100 (/ heap-used heap)))
                      stack stack-used stack (when stack-used (* 100  (/ stack-used stack)))
                      static
-                     read-only)))
+                     read-only))
+           (print-types (count)
+             "Print types and their memory consumption.
+COUNT can be:
+- Integer --- to print the first COUNT types.
+- NIL --- to print all the types.
+Unconditionally prints the T type clause in the end."
+             (let* ((t-type (find t types :key #'first))
+                    (types (remove t types :key #'first))
+                    (types (sort (copy-list types) #'>
+                                 :key (lambda (type)
+                                        (destructuring-bind (&key (bytes 0) &allow-other-keys)
+                                            (rest type)
+                                          bytes))))
+                    (types-to-print (cond
+                                      ((and types count)
+                                       (subseq
+                                        types 0 (min (1- (length types))
+                                                     count)))
+                                      (types types))))
+               (when (or t-type types-to-print)
+                 (format destination "~&~%Printing memory stats for ~:[all~;the first biggest ~:*~d~] types" count)
+                 (when types-to-print
+                   (dolist (type types-to-print)
+                     (destructuring-bind (name &key (bytes 0) (instances 0))
+                         type
+                       (format destination "~&~s: ~d bytes, ~d objects" name bytes instances))))
+                 (when t-type
+                   (destructuring-bind (&key (bytes 0) (instances 0))
+                       (rest t-type)
+                     (format destination "~&Total: ~d bytes, ~d objects" bytes instances)))))))
       (unless params
         (format destination "~&No memory stats available, falling back to implementation-specific ROOM.~%")
         (return-from room* (values-list (multiple-value-list (funcall old-room)))))
-      (minimal))))
+      (minimal)
+      (when verbose
+        (print-types (when (eq :default verbose)
+                       10))))))
