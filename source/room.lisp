@@ -241,23 +241,28 @@ Unconditionally prints the T type clause in the end."
                                         (destructuring-bind (&key (bytes 0) &allow-other-keys)
                                             (rest type)
                                           bytes))))
+                    (max-name-length
+                      (1+ (reduce #'max types
+                                  :key (lambda (type) (length (string (first type))))
+                                  :initial-value 0)))
                     (types-to-print (cond
                                       ((and types count)
                                        (subseq
                                         types 0 (min (1- (length types))
                                                      count)))
                                       (types types))))
-               (when (or t-type types-to-print)
-                 (format destination "~&~%Printing memory stats for ~:[all~;the first biggest ~:*~d~] types" count)
-                 (when types-to-print
-                   (dolist (type types-to-print)
-                     (destructuring-bind (name &key (bytes 0) (instances 0))
-                         type
-                       (format destination "~&~s: ~d bytes, ~d objects" name bytes instances))))
-                 (when t-type
-                   (destructuring-bind (&key (bytes 0) (instances 0))
-                       (rest t-type)
-                     (format destination "~&Total: ~d bytes, ~d objects" bytes instances)))))))
+               ;; TODO: print percentage of how much total memory a
+               ;; type occupies and the size of every type.
+               (when types-to-print
+                 (format destination "~&~%Printing memory stats for ~:[all~;the first biggest ~d~] types"
+                         types-to-print (length types-to-print))
+                 (dolist (type types-to-print)
+                   (destructuring-bind (name &key (bytes 0) (instances 0))
+                       type
+                     (format destination "~&~s ~vt~d bytes, ~d objects" name max-name-length bytes instances)))
+                 (destructuring-bind (&key (bytes 0) (instances 0))
+                     (rest t-type)
+                   (format destination "~&Total ~vt~d bytes, ~d objects" max-name-length bytes instances))))))
       (unless params
         (format destination "~&No memory stats available, falling back to implementation-specific ROOM.~%")
         (return-from room* (values-list (multiple-value-list (funcall old-room)))))
