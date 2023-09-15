@@ -98,6 +98,7 @@ always the case that some are missing."
               ;; l
               (declare (ignore ncbpage maxcbpage ncb holepage l))
               (append
+               (list :stack (ext:get-limit 'ext:lisp-stack))
                (list :heap (* 4096 maxpage))
                (list :heap-used (* 4096 (- maxpage leftpage)))
                (list :gc-count cbgbccount)
