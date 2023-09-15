@@ -79,7 +79,9 @@ always the case that some are missing."
                                                  :control-stack-used sp-used))))
                                      stack-used-by-thread))))))
             #+(and ecl boehm-gc)
-            nil
+            (list
+             :heap (ext:get-limit 'ext:heap-size)
+             :stack (ext:get-limit 'ext:lisp-stack))
             #+(and ecl (not boehm-gc))
             (multiple-value-bind
                   (maxpage leftpage ncbpage maxcbpage ncb cbgbccount holepage l)
