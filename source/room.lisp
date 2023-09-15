@@ -222,12 +222,12 @@ Influenced by:
                threads types)
     (declare (ignorable heap heap-used stack stack-used static gc gc-count threads types read-only))
     (flet ((minimal ()
-             (format destination "~&~:[~&~3*~;~&Heap: ~:d/~:d bytes (~f%)~]~
-~:[~&~3*~;~&Stack: ~:d/~:d bytes (~f%)~]~
+             (format destination "~&~:[~&~3*~;~&Heap: ~:[?~*~;~:d~]/~:d bytes~@[ (~f%)~]~]~
+~:[~&~3*~;~&Stack: ~:[?~*~;~:d~]/~:d bytes~@[ (~f%)~]~]~
 ~@[~&Static: ~:d bytes~]~
 ~@[~&Read-only: ~:d bytes~]"
-                     heap heap-used heap (when heap-used (* 100 (/ heap-used heap)))
-                     stack stack-used stack (when stack-used (* 100  (/ stack-used stack)))
+                     heap heap-used heap-used heap (when heap-used (* 100 (/ heap-used heap)))
+                     stack stack-used stack-used stack (when stack-used (* 100  (/ stack-used stack)))
                      static
                      read-only))
            (print-types (count)
