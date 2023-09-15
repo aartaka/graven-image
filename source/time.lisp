@@ -230,7 +230,7 @@ Influenced by:
 ~@[~&CPU cycles:        ~:d~]~
 ~@[~&GC:                ~d times~]~
 ~:[~2*~;~&GC time:           ~,vf seconds~]~
-~@[~&Bytes allocated:   ~:d~]~
+~@[~&Allocated:         ~:d bytes~]~
 ~@[~&Page faults:       ~:d~]"
                aborted ',form
                real ,decimal-length real
