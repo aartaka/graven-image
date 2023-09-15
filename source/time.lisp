@@ -145,19 +145,26 @@ always the case that some are missing."
                              (push (cons :aborted t) ,props)
                              (values)))))
                       #-(or sbcl clozure clisp allegro)
-                      (let ((old-real-time (get-internal-real-time))
-                            (old-run-time (get-internal-run-time))
-                            #+ecl
-                            (ecl-force-gc (si::gc t))
-                            (old-gc-time
-                              #+(and ecl (not boehm-gc))
-                              (si::gc-time))
-                            (old-bytes-allocated
-                              #+(and ecl boehm-gc)
-                              (si::gc-stats t))
-                            (old-gc-count
-                              #+(and ecl boehm-gc)
-                              (nth-value 1 (si::gc-stats t))))
+                      (let* ((old-real-time (get-internal-real-time))
+                             (old-run-time (get-internal-run-time))
+                             #+ecl
+                             (ecl-force-gc (si::gc t))
+                             (old-gc-time
+                               #+(and ecl (not boehm-gc))
+                               (si::gc-time))
+                             #+abcl
+                             (runtime
+                               (java:jstatic "getRuntime"
+                                             (java:jclass "java.lang.Runtime")))
+                             (old-bytes-allocated
+                               #+(and ecl boehm-gc)
+                               (si::gc-stats t)
+                               #+abcl
+                               (- (java:jcall "totalMemory" runtime)
+                                  (java:jcall "freeMemory" runtime)))
+                             (old-gc-count
+                               #+(and ecl boehm-gc)
+                               (nth-value 1 (si::gc-stats t))))
                         (declare (ignorable
                                   #+ecl ecl-force-gc
                                   old-gc-time old-gc-count old-bytes-allocated))
@@ -181,6 +188,11 @@ always the case that some are missing."
                                 ,props)
                           #+(and ecl boehm-gc)
                           (push (cons :allocated (- (si::gc-stats t) old-bytes-allocated))
+                                ,props)
+                          #+abcl
+                          (push (cons :allocated (max 0 (- (java:jcall "totalMemory" runtime)
+                                                           (java:jcall "freeMemory" runtime)
+                                                           old-bytes-allocated)))
                                 ,props)
                           #+(and ecl boehm-gc)
                           (push (cons :gc-count (- (nth-value 1 (si::gc-stats t)) old-gc-count))
