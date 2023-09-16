@@ -209,33 +209,70 @@ always the case that some are missing."
 
 (defun %benchmark (repeat thunk form)
   (check-type repeat (integer 1))
-  (with-time* (&rest stats &key real system user gc allocated &allow-other-keys)
-      (&rest values)
-      (loop repeat (1- repeat) do (funcall thunk)
-            finally (return (funcall thunk)))
-    (let* ((max-timing-length (+ 3 (reduce #'max (remove-if #'keywordp (remove nil stats))
-                                           :initial-value (length "Total")
-                                           :key (lambda (stat)
-                                                  (length (princ-to-string stat))))))
-           (names-length 25)
-           (names+timing-length (+ names-length max-timing-length)))
-      (format *trace-output*
-              "~&Benchmark for ~a runs of~
-~&~s~
-~&Stat  ~vtTotal ~vtPer call
-~:[~4*~;~&Real time: ~vt~f ~vt~f seconds~]~
-~:[~4*~;~&User run time: ~vt~f ~vt~f seconds~]~
-~:[~4*~;~&System run time: ~vt~f ~vt~f seconds~]~
-~:[~4*~;~&GC time: ~vt~f ~vt~f seconds~]~
-~:[~4*~;~&Allocated: ~vt~f ~vt~f bytes~]"
-              repeat form
-              names-length names+timing-length
-              real names-length real names+timing-length (when real (/ real repeat))
-              user names-length user names+timing-length (when user (/ user repeat))
-              system names-length system names+timing-length (when system (/ system repeat))
-              gc names-length gc names+timing-length (when gc (/ gc repeat))
-              allocated names-length allocated names+timing-length (when allocated (/ allocated repeat))))
-    (values-list values)))
+  (let (real-times
+        system-times user-times
+        gc-times allocated-bytes)
+    (flet ((count-push-return ()
+             (with-time* (real system user gc allocated)
+                 (&rest values)
+                 (funcall thunk)
+               (declare (ignorable values))
+               (push real real-times)
+               (push system system-times)
+               (push user user-times)
+               (push gc gc-times)
+               (push allocated allocated-bytes)
+               (values-list values)))
+           (avg (nums)
+             (if nums
+                 (/ (reduce #'+ nums)
+                    (length nums))
+                 0))
+           (non-nil (nums)
+             (remove nil nums)))
+      (let* ((values (multiple-value-list
+                      (loop repeat (1- repeat)
+                            do (count-push-return)
+                            finally (return (count-push-return)))))
+             (real-times (non-nil real-times))
+             (system-times (non-nil system-times))
+             (user-times (non-nil user-times))
+             (gc-times (non-nil gc-times))
+             (allocated-bytes (non-nil allocated-bytes))
+             (max-number-length
+               (reduce
+                #'max (append real-times system-times user-times gc-times allocated-bytes)
+                :initial-value 15
+                :key #'(lambda (num) (length (princ-to-string num))))))
+        (format *trace-output*
+                "~&Benchmark for ~a runs of~
+~&~s" repeat form)
+        (format *trace-output* "~&~a~vt~a~vt~a~vt~a~vt~a"
+                '-
+                20 'minimum
+                (+ 20 max-number-length) 'average
+                (+ 20 (* 2 max-number-length)) 'maximum
+                (+ 20 (* 3 max-number-length)) 'total)
+        (loop for (name list)
+                in `((real-time ,real-times)
+                     (user-run-time ,user-times)
+                     (system-run-time ,system-times)
+                     (gc-run-time ,gc-times)
+                     (bytes-allocated ,allocated-bytes))
+              when list
+                do (format *trace-output*
+                           "~&~a~vt~f~vt~f~vt~f~vt~f"
+                           name
+                           20 (cond
+                                ((uiop:emptyp list) 0)
+                                ((= 1 (length list)) (first list))
+                                (t (reduce #'min list :initial-value most-positive-fixnum)))
+                           (+ 20 max-number-length) (avg list)
+                           (+ 20 (* 2 max-number-length)) (if list
+                                                              (reduce #'max list :initial-value 0.0)
+                                                              0)
+                           (+ 20 (* 3 max-number-length)) (reduce #'+ list)))
+        (values-list values)))))
 
 (defmacro benchmark* ((&optional (repeat 1000)) &body forms)
   "REPEAT FORMS, recording the timing data.
