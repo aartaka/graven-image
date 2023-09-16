@@ -192,7 +192,7 @@ always the case that some are missing."
                    (total-memory (java:jcall "totalMemory" runtime))
                    (free-memory (java:jcall "freeMemory" runtime)))
               (list :heap total-memory
-                    :heap-used free-memory))
+                    :heap-used (- total-memory free-memory)))
             #-(or clozure sbcl ecl clisp abcl)
             (load-time-warn "Cannot fetch room statistics for this implementation. Help in fixing it!")))
      (destructuring-bind (,@(unless (member (car room-keywords) '(&key &rest))
