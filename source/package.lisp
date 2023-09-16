@@ -14,6 +14,7 @@
    #:function-lambda-expression* #:function-lambda-list* #:function-name* #:function-type*
    #:lambda-expression* #:function-arglist* #:lambda-list* #:arglist*
    #:time* #:with-time*
+   #:room* #:with-room*
    #:dribble*
    #:documentation* #:doc*
    ;; #:step* #:trace* #:untrace*
