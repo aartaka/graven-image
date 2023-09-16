@@ -197,7 +197,7 @@ always the case that some are missing."
                           #+(and ecl boehm-gc)
                           (push (cons :gc-count (- (nth-value 1 (si::gc-stats t)) old-gc-count))
                                 ,props))))))
-       (destructuring-bind (,@(unless (eq (car time-keywords) '&key)
+       (destructuring-bind (,@(unless (member (car time-keywords) '(&key &rest))
                                 (list '&key))
                             ,@time-keywords
                             ,@(unless (eq (car (last time-keywords)) '&allow-other-keys)
