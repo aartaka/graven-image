@@ -282,4 +282,7 @@ Influenced by:
 - `with-time*' implementation support.
 - `*trace-output*' for printing.
 - Printer variables for float format and form printing."
-  `(%time (lambda () ,@forms) (quote (progn ,@forms))))
+  (let ((form (if (= 1 (length forms))
+                  (first forms)
+                  (cons 'progn forms))))
+    `(%time (lambda () ,form) (quote ,form))))
