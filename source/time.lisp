@@ -247,23 +247,13 @@ Influenced by:
                  allocated names-length allocated names+timing-length (when allocated (/ allocated ,runs))))
        (values-list values))))
 
-(defmacro time* (&rest forms)
-  "Execute FORMS and print timing information for them.
-The values of last form in FORMS are returned unaltered.
-
-Influenced by:
-- `with-time*' implementation support.
-- `*trace-output*' for printing.
-- Printer variables for float format and form printing."
-  (let ((form (if (= 1 (length forms))
-                  (first forms)
-                  (cons 'progn forms)))
-        (decimal-length (ceiling (log internal-time-units-per-second 10))))
-    `(with-time* (&key aborted real system user cycles gc-count gc allocated faults)
-         (&rest values)
-         ,form
-       (format *trace-output*
-               "~&Time spent ~@[un~*~]successfully evaluating:~
+(defun %time (thunk form)
+  (let ((decimal-length (ceiling (log internal-time-units-per-second 10))))
+    (with-time* (&key aborted real system user cycles gc-count gc allocated faults)
+        (&rest values)
+        (funcall thunk)
+      (format *trace-output*
+              "~&Time spent ~@[un~*~]successfully evaluating:~
 ~&~s~
 ~:[~2*~;~&Real time:         ~,vf seconds~]~
 ~:[~2*~;~&Run time (system): ~,vf seconds~]~
@@ -273,13 +263,23 @@ Influenced by:
 ~:[~2*~;~&GC time:           ~,vf seconds~]~
 ~@[~&Allocated:         ~:d bytes~]~
 ~@[~&Page faults:       ~:d~]"
-               aborted ',form
-               real ,decimal-length real
-               system ,decimal-length system
-               user ,decimal-length user
-               cycles
-               gc-count
-               gc ,decimal-length gc
-               allocated
-               faults)
-       (values-list values))))
+              aborted form
+              real decimal-length real
+              system decimal-length system
+              user decimal-length user
+              cycles
+              gc-count
+              gc decimal-length gc
+              allocated
+              faults)
+      (values-list values))))
+
+(defmacro time* (&rest forms)
+  "Execute FORMS and print timing information for them.
+The values of last form in FORMS are returned unaltered.
+
+Influenced by:
+- `with-time*' implementation support.
+- `*trace-output*' for printing.
+- Printer variables for float format and form printing."
+  `(%time (lambda () ,@forms) (quote (progn ,@forms))))
