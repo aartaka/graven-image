@@ -249,29 +249,29 @@ always the case that some are missing."
 ~&~s" repeat form)
         (format *trace-output* "~&~a~vt~a~vt~a~vt~a~vt~a"
                 '-
-                20 'minimum
-                (+ 20 max-number-length) 'average
-                (+ 20 (* 2 max-number-length)) 'maximum
-                (+ 20 (* 3 max-number-length)) 'total)
-        (loop for (name list)
-                in `((real-time ,real-times)
-                     (user-run-time ,user-times)
-                     (system-run-time ,system-times)
-                     (gc-run-time ,gc-times)
-                     (bytes-allocated ,allocated-bytes))
+                30 'minimum
+                (+ 30 max-number-length) 'average
+                (+ 30 (* 2 max-number-length)) 'maximum
+                (+ 30 (* 3 max-number-length)) 'total)
+        (loop for (name unit list)
+                in `((real-time "seconds" ,real-times)
+                     (user-run-time "seconds" ,user-times)
+                     (system-run-time "seconds" ,system-times)
+                     (gc-run-time "seconds" ,gc-times)
+                     (allocated "bytes" ,allocated-bytes))
               when list
                 do (format *trace-output*
-                           "~&~a~vt~f~vt~f~vt~f~vt~f"
-                           name
-                           20 (cond
+                           "~&~a (~a)~vt~f~vt~f~vt~f~vt~f"
+                           name unit
+                           30 (cond
                                 ((uiop:emptyp list) 0)
                                 ((= 1 (length list)) (first list))
                                 (t (reduce #'min list :initial-value most-positive-fixnum)))
-                           (+ 20 max-number-length) (avg list)
-                           (+ 20 (* 2 max-number-length)) (if list
+                           (+ 30 max-number-length) (avg list)
+                           (+ 30 (* 2 max-number-length)) (if list
                                                               (reduce #'max list :initial-value 0.0)
                                                               0)
-                           (+ 20 (* 3 max-number-length)) (reduce #'+ list)))
+                           (+ 30 (* 3 max-number-length)) (reduce #'+ list)))
         (values-list values)))))
 
 (defmacro benchmark* ((&optional (repeat 1000)) &body forms)
