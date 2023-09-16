@@ -212,7 +212,8 @@ Output size/details depend on VERBOSE:
 
 Influenced by:
 - `with-room*' implementation support.
-- `*standard-output*' for printing (when DESTINATION is T)."
+- `*standard-output*' for printing (when DESTINATION is T).
+- Printer variables for float format and form printing."
   (declare (ignorable verbose))
   (with-room* (&rest params
                &key heap heap-used

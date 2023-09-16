@@ -213,7 +213,8 @@ The values of last form in FORMS are returned unaltered.
 
 Influenced by:
 - `with-time*' implementation support.
-- `*trace-output*' for printing."
+- `*trace-output*' for printing.
+- Printer variables for float format and form printing."
   (let ((form (if (= 1 (length forms))
                   (first forms)
                   (cons 'progn forms)))
