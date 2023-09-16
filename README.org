@@ -234,7 +234,16 @@ format.
 
 And it also allows providing several forms, yay!
 
-Most of this macro power relies on:
+*** =benchmark*= (macro)
+
+Signature:
+#+begin_src lisp
+benchmark* (&optional (runs 1000)) &body forms => return-values
+#+end_src
+
+A simple benchmarking macro that runs its body N times (defaulting
+to 1000) and prints aggregate statistics for total time/resources
+spent and statistics per call.
 
 *** =with-time*= (macro)
 
@@ -243,14 +252,14 @@ Signature:
 with-time* (&rest time-keywords) (&rest multiple-value-args) form &body body
 #+end_src
 
-As the implementation detail of =time*=, =with-time*= allows to get
-the timing data for interactive querying. =time-keywords= allow
-=&key=-matching the timing data (like =:gc= time or bytes
-=:allocated=) for processing in the body. While =multiple-value-args=
-allow matching against the return values of the =form=. So we get best
-of the both worlds: timing data and return values. This flexibility
-enables =time*=, with its requirements of printing the data and
-returning the original values at the same time.
+As the implementation detail of =time*= and =benchmark*=, =with-time*=
+allows to get the timing data for interactive
+querying. =time-keywords= allow =&key=-matching the timing data (like
+=:gc= time or bytes =:allocated=) for processing in the body. While
+=multiple-value-args= allow matching against the return values of the
+=form=. So we get best of the both worlds: timing data and return
+values. This flexibility enables =time*=, with its requirements of
+printing the data and returning the original values at the same time.
 
 For example, here's how one would track the allocated bytes and
 garbage collection times when running a cons-heavy code:

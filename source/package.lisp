@@ -13,7 +13,7 @@
    #:describe* #:inspect*
    #:function-lambda-expression* #:function-lambda-list* #:function-name* #:function-type*
    #:lambda-expression* #:function-arglist* #:lambda-list* #:arglist*
-   #:time* #:with-time*
+   #:time* #:benchmark* #:with-time*
    #:room* #:with-room*
    #:dribble*
    #:documentation* #:doc*
