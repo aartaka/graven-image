@@ -208,6 +208,7 @@ always the case that some are missing."
            ,@body)))))
 
 (defun %benchmark (repeat thunk form)
+  (check-type repeat (integer 1))
   (with-time* (&rest stats &key real system user gc allocated &allow-other-keys)
       (&rest values)
       (loop repeat (1- repeat) do (funcall thunk)
