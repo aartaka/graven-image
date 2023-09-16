@@ -85,11 +85,11 @@ you can safely do so with the familiar:
 
 The functions that Graven Image exposes are safely =:use=-able star-appended functions/macros (i.e. =describe*= instead of
   =describe=). Currently improved ones are:
-  - =y-or-n-p*=/=yes-or-no-p*=
-  - =apropos*=/=apropos-list*=
+  - =y-or-n-p*= / =yes-or-no-p*=
+  - =apropos*= / =apropos-list*=
   - =function-lambda-expression*=
   - =time*=
-  - =describe*=/=inspect*=
+  - =describe*= / =inspect*=
   - =dribble*=
   - =documentation*=
 
