@@ -57,7 +57,16 @@
         ;; FIXME: There should be a way to crack this one!
         ((typep closure 'excl::closure)
          t)))
-    #-(or clozure cmucl scl sbcl abcl allegro)
+    #+clisp
+    ;; TODO: venv fenv benv genv denv
+    (let ((closure (nth-value 1 (funcall old-function-lambda-expression function))))
+      (when (arrayp closure)
+        (loop for (name value)
+                on (coerce (elt closure 0) 'list)
+                  by #'cddr
+              while name
+              collect (cons name value))))
+    #-(or clozure cmucl scl sbcl abcl allegro clisp)
     (prog1
         t
       (load-time-warn "closure inspection is not implemented for this CL, help in implementing it!"))))
@@ -376,10 +385,10 @@ Influenced by:
          ((typep closure-p 'error) nil)
          ;; T is suspicious.
          ((eq closure-p t) (function-closure-p function))
-         ;; Allegro and ABCL return opaque env objects.
-         #+(or allegro abcl)
+         ;; Allegro, ABCL, and CLISP return opaque env objects.
+         #+(or allegro abcl clisp)
          (closure-p (function-closure-p function))
-         #-(or allegro abcl)
+         #-(or allegro abcl clisp)
          (closure-p closure-p)
          (t nil))
        (or name
