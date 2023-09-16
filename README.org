@@ -241,9 +241,27 @@ Signature:
 benchmark* (&optional (runs 1000)) &body forms => return-values
 #+end_src
 
-A simple benchmarking macro that runs its body N times (defaulting
-to 1000) and prints aggregate statistics for total time/resources
-spent and statistics per call.
+While =time*= is the standard benchmarking/profiling solution, it's
+almost always too simple for proper benchmarking. Most systems getting
+complex enough end up with some form of custom
+benchmarking. Shinmera's [[https://github.com/Shinmera/trivial-benchmark/][trivial-benchmark]] is one such example. Graven
+Image =benchmark*= is heavily inspired by =trivial-benchmark=, but has
+a more portable foundation in the form of =with-time*=.
+#+begin_src lisp
+  (gimage::benchmark* (20)
+    (loop for i below 1000 collect (make-list i) finally (return 1)))
+  ;; Benchmark for 20 runs of
+  ;; (LOOP FOR I BELOW 1000
+  ;;       COLLECT (MAKE-LIST I)
+  ;;       FINALLY (RETURN 1))
+  ;; -                   MINIMUM        AVERAGE        MAXIMUM        TOTAL
+  ;; REAL-TIME           0.0            0.00175        0.019          0.035
+  ;; USER-RUN-TIME       0.000668       0.0016634      0.016315       0.033268
+  ;; SYSTEM-RUN-TIME     0.0            0.00021195     0.003794       0.004239
+  ;; GC-RUN-TIME         0.0            0.00085        0.017          0.017
+  ;; BYTES-ALLOCATED     7997952.0      8008154.5      8030464.0      160163090.0
+#+end_src
+
 
 *** =with-time*= (macro)
 
