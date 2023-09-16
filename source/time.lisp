@@ -207,10 +207,39 @@ always the case that some are missing."
              ,values
            ,@body)))))
 
-(defmacro benchmark* ((&optional (runs 1000)) &body forms)
-  "Repeat FORMS RUNS times, recording the timing data.
+(defun %benchmark (repeat thunk form)
+  (with-time* (&rest stats &key real system user gc allocated &allow-other-keys)
+      (&rest values)
+      (loop repeat (1- repeat) do (funcall thunk)
+            finally (return (funcall thunk)))
+    (let* ((max-timing-length (1+ (reduce #'max (remove nil stats)
+                                          :initial-value (length "Total")
+                                          :key (lambda (stat)
+                                                 (length (princ-to-string stat))))))
+           (names-length 25)
+           (names+timing-length (+ names-length max-timing-length)))
+      (format *trace-output*
+              "~&Benchmark for ~a runs of~
+~&~s~
+~&Stat  ~vtTotal ~vtPer call
+~:[~4*~;~&Real time: ~vt~f ~vt~f seconds~]~
+~:[~4*~;~&User run time: ~vt~f ~vt~f seconds~]~
+~:[~4*~;~&System run time: ~vt~f ~vt~f seconds~]~
+~:[~4*~;~&GC time: ~vt~f ~vt~f seconds~]~
+~:[~4*~;~&Allocated: ~vt~f ~vt~f bytes~]"
+              repeat form
+              names-length names+timing-length
+              real names-length real names+timing-length (when real (/ real repeat))
+              user names-length user names+timing-length (when user (/ user repeat))
+              system names-length system names+timing-length (when system (/ system repeat))
+              gc names-length gc names+timing-length (when gc (/ gc repeat))
+              allocated names-length allocated names+timing-length (when allocated (/ allocated repeat))))
+    (values-list values)))
+
+(defmacro benchmark* ((&optional (repeat 1000)) &body forms)
+  "REPEAT FORMS, recording the timing data.
 Print the total and average statistics for BODY runs.
-RUNS defaults to 1000.
+REPEAT defaults to 1000.
 
 Influenced by:
 - `with-time*' implementation support.
@@ -219,33 +248,7 @@ Influenced by:
   (let ((form (if (= 1 (length forms))
                   (first forms)
                   (cons 'progn forms))))
-    `(with-time* (&rest stats &key real system user gc allocated &allow-other-keys)
-         (&rest values)
-         (loop repeat (1- ,runs) do ,form
-               finally (return ,form))
-       (let* ((max-timing-length (1+ (reduce #'max (remove nil stats)
-                                             :initial-value (length "Total")
-                                             :key (lambda (stat)
-                                                    (length (princ-to-string stat))))))
-              (names-length 25)
-              (names+timing-length (+ names-length max-timing-length)))
-         (format *trace-output*
-                 "~&Benchmark for ~a runs of~
-~&~s~
-~&Stat  ~vtTotal ~vtPer call
-~:[~4*~;~&Real time: ~vt~f ~vt~f seconds~]~
-~:[~4*~;~&User run time: ~vt~f ~vt~f seconds~]~
-~:[~4*~;~&System run time: ~vt~f ~vt~f seconds~]~
-~:[~4*~;~&GC time: ~vt~f ~vt~f seconds~]~
-~:[~4*~;~&Allocated: ~vt~f ~vt~f bytes~]"
-                 ,runs (quote ,form)
-                 names-length names+timing-length
-                 real names-length real names+timing-length (when real (/ real ,runs))
-                 user names-length user names+timing-length (when user (/ user ,runs))
-                 system names-length system names+timing-length (when system (/ system ,runs))
-                 gc names-length gc names+timing-length (when gc (/ gc ,runs))
-                 allocated names-length allocated names+timing-length (when allocated (/ allocated ,runs))))
-       (values-list values))))
+    `(%benchmark ,repeat (lambda () ,form) (quote ,form))))
 
 (defun %time (thunk form)
   (let ((decimal-length (ceiling (log internal-time-units-per-second 10))))
