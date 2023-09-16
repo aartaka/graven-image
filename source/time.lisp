@@ -221,7 +221,8 @@ Influenced by:
                   (cons 'progn forms))))
     `(with-time* (&rest stats &key real system user gc allocated &allow-other-keys)
          (&rest values)
-         (loop repeat ,runs do ,form)
+         (loop repeat (1- ,runs) do ,form
+               finally (return ,form))
        (let* ((max-timing-length (1+ (reduce #'max (remove nil stats)
                                              :initial-value (length "Total")
                                              :key (lambda (stat)
