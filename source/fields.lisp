@@ -102,7 +102,7 @@ modify the property. For slots, this setter will likely be setting the
   `(defmethod fields* reverse-append ((,name ,specifier) &key &allow-other-keys)
      ,@fields))
 
-(defmacro defproperty (specifier name function)
+(defmacro deffield (specifier name function)
   `(defmethod fields* reverse-append ((object ,specifier) &key &allow-other-keys)
      (list (list ,name (,function object)))))
 
@@ -329,7 +329,7 @@ modify the property. For slots, this setter will likely be setting the
                             (declare (ignorable _))
                             (setf (elt object i) new-value))))))
 
-(defproperty logical-pathname
+(deffield logical-pathname
   :translation translate-logical-pathname)
 
 (deffields (object pathname)
@@ -409,9 +409,9 @@ modify the property. For slots, this setter will likely be setting the
   `((:echo-input ,(echo-stream-input-stream object))
     (:echo-output ,(echo-stream-output-stream object))))
 
-(defproperty concatenated-stream :concatenates concatenated-stream-streams)
-(defproperty broadcast-stream :broadcasts broadcast-stream-streams)
-(defproperty synonym-stream :synonym synonym-stream-symbol)
+(deffield concatenated-stream :concatenates concatenated-stream-streams)
+(deffield broadcast-stream :broadcasts broadcast-stream-streams)
+(deffield synonym-stream :synonym synonym-stream-symbol)
 
 (deffields (object file-stream)
   `((:pathname ,(pathname object))
@@ -553,12 +553,12 @@ modify the property. For slots, this setter will likely be setting the
   `((:operation ,(arithmetic-error-operation object))
     (:operands ,(arithmetic-error-operands object))))
 
-(defproperty cell-error :name cell-error-name)
-(defproperty package-error :package package-error-package)
-(defproperty stream-error :stream stream-error-stream)
-(defproperty print-not-readable :object print-not-readable-object)
-(defproperty unbound-slot :instance unbound-slot-instance)
-(defproperty file-error :pathname file-error-pathname)
+(deffield cell-error :name cell-error-name)
+(deffield package-error :package package-error-package)
+(deffield stream-error :stream stream-error-stream)
+(deffield print-not-readable :object print-not-readable-object)
+(deffield unbound-slot :instance unbound-slot-instance)
+(deffield file-error :pathname file-error-pathname)
 
 (deffields (object type-error)
   `((:datum ,(type-error-datum object))
