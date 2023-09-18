@@ -498,6 +498,7 @@ modify the property. For slots, this setter will likely be setting the
            ,(lambda (new-name old-name)
               (compile new-name (fdefinition old-name))))
     (:arguments ,(function-lambda-list* object))
+    (:compiled ,(compiled-function-p object))
     ,@(when (function-type* object)
         `((:ftype ,(function-type* object))))
     (:expression ,(function-lambda-expression* object)
@@ -505,8 +506,6 @@ modify the property. For slots, this setter will likely be setting the
                     (declare (ignorable _))
                     (compile (function-name* object)
                              new-value)))
-    ,@(when (typep object 'generic-function)
-        `((:methods ,(closer-mop:generic-function-methods object))))
     (:lambda-list-keywords ,lambda-list-keywords)))
 
 (deffields (object generic-function)
