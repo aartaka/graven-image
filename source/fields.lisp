@@ -376,6 +376,15 @@ modify the property. For slots, this setter will likely be setting the
      #+sbcl ,(sb-impl::hash-table-weakness object)
      #+clozure ,(ccl:hash-table-weak-p object)
      #+abcl ,(system:hash-table-weakness object))
+    #+clozure
+    ,@(get-ccl-props
+       object
+       'ccl::nhash.keytransF 'ccl::nhash.compareF 'ccl::nhash.rehash-bits 'ccl::nhash.vector
+       'ccl::nhash.lock 'ccl::nhash.owner 'ccl::nhash.grow-threshold 'ccl::nhash.puthash-count
+       'ccl::nhash.exclusion-lock 'ccl::nhash.find 'ccl::nhash.find-new 'ccl::nhash.read-only
+       'ccl::nhash.min-size)
+    #+sbcl
+    ,@(except-sbcl-props object)
     ,@(loop for key being the hash-key in object
               using (hash-value val)
             when (scalar-p key)
@@ -389,16 +398,7 @@ modify the property. For slots, this setter will likely be setting the
               collect key into complex-props
               and collect val into complex-props
             finally (return (append inline-props
-                                    (list (list 'other-pairs complex-props)))))
-    #+clozure
-    ,@(get-ccl-props
-       object
-       'ccl::nhash.keytransF 'ccl::nhash.compareF 'ccl::nhash.rehash-bits 'ccl::nhash.vector
-       'ccl::nhash.lock 'ccl::nhash.owner 'ccl::nhash.grow-threshold 'ccl::nhash.puthash-count
-       'ccl::nhash.exclusion-lock 'ccl::nhash.find 'ccl::nhash.find-new 'ccl::nhash.read-only
-       'ccl::nhash.min-size)
-    #+sbcl
-    ,@(except-sbcl-props object)))
+                                    (list (list 'other-pairs complex-props)))))))
 
 (deffields (object two-way-stream)
   `((:input ,(two-way-stream-input-stream object))
@@ -470,6 +470,12 @@ modify the property. For slots, this setter will likely be setting the
 (-> inspect-slots ((or standard-object structure-object)) list)
 (defun inspect-slots (object)
   (append
+   #+clozure
+   (get-ccl-props
+    object
+    'ccl::instance.hash 'ccl::instance.slots)
+   #+abcl
+   (abcl-props-except object "DOCUMENTATION" "DIRECT-SLOTS" "SLOTS")
    (mapcar (lambda (name)
              (list name (if (slot-boundp object name)
                             (slot-value object name)
@@ -479,13 +485,7 @@ modify the property. For slots, this setter will likely be setting the
                      (setf (slot-value object name) new-value))))
            (set-difference (object-slots object)
                            #+sbcl sbcl-props-to-ignore
-                           #-sbcl nil))
-   #+clozure
-   (get-ccl-props
-    object
-    'ccl::instance.hash 'ccl::instance.slots)
-   #+abcl
-   (abcl-props-except object "DOCUMENTATION" "DIRECT-SLOTS" "SLOTS")))
+                           #-sbcl nil))))
 
 (deffields (object standard-object)
   (inspect-slots object))
