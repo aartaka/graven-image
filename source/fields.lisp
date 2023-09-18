@@ -412,6 +412,9 @@ modify the property. For slots, this setter will likely be setting the
 (deffield concatenated-stream :concatenates concatenated-stream-streams)
 (deffield broadcast-stream :broadcasts broadcast-stream-streams)
 (deffield synonym-stream :synonym synonym-stream-symbol)
+;; TODO: string-stream. Somehow `get-output-stream-string` without
+;; clearing the stream. Maybe get the string and then re-output it to
+;; the stream.
 
 (deffields (object file-stream)
   `((:pathname ,(pathname object))
