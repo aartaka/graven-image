@@ -409,14 +409,9 @@ modify the property. For slots, this setter will likely be setting the
   `((:echo-input ,(echo-stream-input-stream object))
     (:echo-output ,(echo-stream-output-stream object))))
 
-(defproperty concatenated-stream
-  :concatenates concatenated-stream-streams)
-
-(defproperty broadcast-stream
-  :broadcasts broadcast-stream-streams)
-
-(defproperty synonym-stream
-  :synonym synonym-stream-symbol)
+(defproperty concatenated-stream :concatenates concatenated-stream-streams)
+(defproperty broadcast-stream :broadcasts broadcast-stream-streams)
+(defproperty synonym-stream :synonym synonym-stream-symbol)
 
 (deffields (object file-stream)
   `((:pathname ,(pathname object))
@@ -562,13 +557,12 @@ modify the property. For slots, this setter will likely be setting the
 (defproperty package-error :package package-error-package)
 (defproperty stream-error :stream stream-error-stream)
 (defproperty print-not-readable :object print-not-readable-object)
+(defproperty unbound-slot :instance unbound-slot-instance)
+(defproperty file-error :pathname file-error-pathname)
 
 (deffields (object type-error)
   `((:datum ,(type-error-datum object))
     (:expected ,(type-error-expected-type object))))
-
-(defproperty unbound-slot :instance unbound-slot-instance)
-(defproperty file-error :pathname file-error-pathname)
 
 (defmethod fields* reverse-append (object &key &allow-other-keys)
   (let ((slot-defs (ignore-errors (closer-mop:class-slots (class-of object)))))
