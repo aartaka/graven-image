@@ -81,10 +81,14 @@ Influenced by:
        (print-dribble "Finished")
        (force-output (slot-value *dribble-stream* 'actual-stream))
        (setf *dribble-pathname* nil
-             *standard-output* (first (remove-if #'dribble-stream-p (broadcast-stream-streams *standard-output*)))
-             ;; *error-output* (first (remove-if #'dribble-stream-p (broadcast-stream-streams *error-output*)))
-             *standard-input* (echo-stream-input-stream *standard-input*)
-             *dribble-stream* nil))
+             *dribble-stream* nil)
+       #-clozure
+       (setf *standard-output* (first (remove-if #'dribble-stream-p (broadcast-stream-streams *standard-output*)))
+             *error-output* (first (remove-if #'dribble-stream-p (broadcast-stream-streams *error-output*)))
+             *standard-input* (echo-stream-input-stream *standard-input*))
+       #+clozure
+       (setf *terminal-io* (echo-stream-input-stream (two-way-stream-input-stream *terminal-io*)))
+       nil)
       (*dribble-pathname*
        (cerror "Do nothing" "~%Already dribbling to ~a~%" *dribble-pathname*))
       (pathname
@@ -93,10 +97,18 @@ Influenced by:
                                    :if-exists if-exists
                                    :if-does-not-exist if-does-not-exist)))
          (setf *dribble-pathname* pathname
-               *dribble-stream* (make-instance 'dribble-out-stream :actual-stream actual-stream)
-               ;; *error-output* (make-broadcast-stream *error-output* *dribble-stream*)
+               *dribble-stream* (make-instance 'dribble-out-stream :actual-stream actual-stream))
+         #-clozure
+         (setf *error-output* (make-broadcast-stream *error-output* *dribble-stream*)
                *standard-output* (make-broadcast-stream *standard-output* *dribble-stream*)
                *standard-input* (make-echo-stream
                                  *standard-input*
-                                 (make-instance 'dribble-in-stream :actual-stream actual-stream))))
-       (print-dribble "Started")))))
+                                 (make-instance 'dribble-in-stream :actual-stream actual-stream)))
+         #+clozure
+         (setf *terminal-io* (make-two-way-stream
+                              (make-echo-stream
+                               *terminal-io*
+                               (make-instance 'dribble-in-stream :actual-stream actual-stream))
+                              (make-broadcast-stream *terminal-io* *dribble-stream*))))
+       (print-dribble "Started")
+       nil))))
