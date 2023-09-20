@@ -156,6 +156,7 @@ modify the property. For slots, this setter will likely be setting the
 (deffields (object null)
   (call-next-method))
 
+;; TODO: Extensible sequences' features?
 (deffields (object sequence)
   (unless (and (consp object)
                (dotted-p object))
