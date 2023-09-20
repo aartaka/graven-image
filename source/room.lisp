@@ -137,7 +137,7 @@ always the case that some are missing."
                         into type-data
                       sum (* 4096 npage)
                         into total-bytes
-                      finally (return (append (type-data)
+                      finally (return (append type-data
                                               (list (list t :bytes total-bytes))))))))
             #+clisp
             (multiple-value-bind (used room static gc-count gc-space gc-time)
