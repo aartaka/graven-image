@@ -156,26 +156,30 @@ modify the property. For slots, this setter will likely be setting the
 (deffields (object null)
   (call-next-method))
 
-(deffields (object list)
-  `((:length ,(length object))
-    ,@(loop for i from 0
-            for elem in object
-            collect (let ((i i)
-                          (elem elem))
-                      (list i elem (lambda (new-value _)
-                                     (declare (ignorable _))
-                                     (setf (nth i object) new-value)))))))
+(deffields (object sequence)
+  (unless (and (consp object)
+               (dotted-p object))
+    `((:length ,(length object)))))
 
 (deffields (object cons)
-  (when (dotted-p object)
-    `((:car ,(car object)
-            ,(lambda (new-value _)
-               (declare (ignorable _))
-               (rplaca object new-value)))
-      (:cdr ,(cdr object)
-            ,(lambda (new-value _)
-               (declare (ignorable _))
-               (rplacd object new-value))))))
+  (append
+   (loop for i from 0
+         for elem in (butlast object)
+         collect (let ((i i)
+                       (elem elem))
+                   (list i elem (lambda (new-value _)
+                                  (declare (ignorable _))
+                                  (setf (nth i object) new-value)))))
+   (let ((last-index (length (butlast object))))
+     `((,last-index ,(car (last object))
+                    ,(lambda (new-value _)
+                       (declare (ignorable _))
+                       (setf (car (last object)) new-value)))))
+   (when (dotted-p object)
+     `((:cdr ,(cdr (last object))
+             ,(lambda (new-value _)
+                (declare (ignorable _))
+                (setf (cdr (last object)) new-value)))))))
 
 
 (deffields (object complex)
