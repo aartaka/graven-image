@@ -112,7 +112,12 @@ always the case that some are missing."
               ;; l
               (declare (ignore ncbpage maxcbpage ncb holepage l))
               (append
-               (list :stack (ext:get-limit 'ext:lisp-stack))
+               ;; REVIEW: Which one of `ext:c-stack',
+               ;; `ext:binding-stack', `ext:frame-stack', and
+               ;; `ext:lisp-stack' is THE stack?  Other
+               ;; implementations have a clear notion of control
+               ;; stack...
+               (list :stack (ext:get-limit 'ext:frame-stack))
                (list :heap (* 4096 maxpage))
                (list :heap-used (* 4096 (- maxpage leftpage)))
                (list :gc-count cbgbccount)
