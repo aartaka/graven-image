@@ -60,6 +60,8 @@ image to reproduce the recorded session.
 Influenced by:
 - `*standard-output*'.
 - `*standard-input*'.
+- `*error-output*'.
+- `*terminal-io*'.
 - Trivial Gray Streams implementation."
   (declare (ignorable pathname pathname-p if-exists if-does-not-exist))
   #+abcl
