@@ -63,6 +63,20 @@ always the case that some are missing."
                           (list :stack stack)
                           (list :stack-used stack-used)
                           (list :static static)
+                          (list :types
+                                ;; FIXME: NIL for "logical size". What
+                                ;; is logical size?
+                                (loop for (type count nil physical-size)
+                                        in (ccl:collect-heap-utilization)
+                                      collect (list type
+                                                    :bytes physical-size
+                                                    :instances count)
+                                        into type-data
+                                      sum physical-size into total-bytes
+                                      sum count into total-instances
+                                      finally (return (append type-data
+                                                              (list (list t :bytes total-bytes
+                                                                            :instances total-instances))))))
                           (list :threads
                                 (map 'list
                                      (lambda (ti)
