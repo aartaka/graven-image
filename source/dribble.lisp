@@ -3,7 +3,6 @@
 
 (in-package :graven-image)
 
-
 (defclass dribble-stream (fundamental-character-output-stream)
   ((actual-stream
     :initform nil
