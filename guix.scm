@@ -47,8 +47,6 @@
    (build-system asdf-build-system/sbcl)
    (native-inputs
     (list sbcl-lisp-unit2 sbcl))
-   (inputs
-    (list sbcl-closer-mop))
    (synopsis "Common Lisp standard debugging utilities made more extensible and useful.")
    (home-page "https://github.com/atlas-engineer/graven-image")
    (description

@@ -184,7 +184,7 @@ Note that you can influence the printout by let-bindings:
             (format t " [~a~@[ ~s~]~@[ : ~a~]]"
                     'class
                     (mapcar #'class-name
-                            (closer-mop:class-direct-superclasses (find-class symbol nil)))
+                            (class-direct-superclasses (find-class symbol nil)))
                     (crop-docs
                      (or (documentation symbol 'type)
                          (documentation symbol 'structure)))))))))

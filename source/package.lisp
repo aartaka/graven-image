@@ -56,6 +56,28 @@
    #:fundamental-character-output-stream
    #:stream-line-column
    #:stream-write-char)
+  (:import-from
+   #+abcl      #:mop
+   #+allegro   #:mop
+   #+clisp     #:clos
+   #+clozure   #:ccl
+   #+cmu       #:clos-mop
+   #+ecl       #:clos
+   #+clasp     #:clos
+   #+lispworks #:clos
+   #+mcl       #:ccl
+   #+sbcl      #:sb-mop
+   #+scl       #:clos
+   #+mezzano   #:mezzano.clos
+   #+sicl      #:sicl-clos
+   #:class-direct-superclasses
+   #:class-slots
+   #:generic-function-lambda-list
+   #:generic-function-method-combination
+   #:generic-function-methods
+   #:method-generic-function
+   #:method-lambda-list
+   #:slot-definition-name)
   (:documentation "CL standard debugging utilities improved:
 - `y-or-n-p' -> `y-or-n-p*'.
 - `yes-or-no-p' -> `yes-or-no-p*'.

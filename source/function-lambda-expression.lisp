@@ -13,7 +13,7 @@
   ;; TODO: ECL returns closures somehow, but the implementation is
   ;; terribly obscure...
   (let ((function (if (typep function 'standard-method)
-                      (closer-mop:method-generic-function function)
+                      (method-generic-function function)
                       function)))
     (declare (ignorable function))
     #+clozure
@@ -77,7 +77,7 @@
 (-> function-name (function-designator) t)
 (defun function-name (function)
   (let ((function (if (typep function 'standard-method)
-                      (closer-mop:method-generic-function function)
+                      (method-generic-function function)
                       function)))
     (declare (ignorable function))
     #+allegro
@@ -165,9 +165,9 @@
   ;; dangerous recursive reference for us, thus
   ;; `old-function-lambda-expression'.
   (or (when (typep function 'generic-function)
-        (closer-mop:generic-function-lambda-list function))
+        (generic-function-lambda-list function))
       (when (typep function 'standard-method)
-        (closer-mop:method-lambda-list function))
+        (method-lambda-list function))
       (ignore-errors (second (funcall old-function-lambda-expression function)))
       (macrolet ((try-arglist (&rest vars)
                    `(or ,@(loop for var in vars
@@ -243,7 +243,7 @@
     `(lambda (,@arglist)
        ,@(let ((doc (or (documentation function t)
                         (when (typep function 'standard-method)
-                          (documentation (closer-mop:method-generic-function function) t))
+                          (documentation (method-generic-function function) t))
                         (documentation name 'function))))
            (when doc
              (list doc))))))

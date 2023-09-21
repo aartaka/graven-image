@@ -50,10 +50,7 @@ Clone the Git repository:
   git clone --recursive https://github.com/aartaka/graven-image ~/common-lisp/
 #+end_src
 
-Install dependencies:
-- [[https://github.com/pcostanza/closer-mop][Closer Mop]].
-
-And then load =:graven-image= in the REPL:
+And load =:graven-image= in the REPL:
 #+begin_src lisp
   (asdf:load-system :graven-image)
   ;; or, if you use Quicklisp

@@ -467,8 +467,8 @@ modify the property. For slots, this setter will likely be setting the
 
 (-> object-slots ((or standard-object structure-object)) list)
 (defun object-slots (object)
-  (mapcar #'closer-mop:slot-definition-name
-          (closer-mop:class-slots (class-of object))))
+  (mapcar #'slot-definition-name
+          (class-slots (class-of object))))
 
 (-> inspect-slots ((or standard-object structure-object)) list)
 (defun inspect-slots (object)
@@ -512,8 +512,8 @@ modify the property. For slots, this setter will likely be setting the
     (:lambda-list-keywords ,lambda-list-keywords)))
 
 (deffields (object generic-function)
-  `((:methods ,(closer-mop:generic-function-methods object))
-    (:method-combination ,(closer-mop:generic-function-method-combination object))
+  `((:methods ,(generic-function-methods object))
+    (:method-combination ,(generic-function-method-combination object))
     #+clozure
     ,@(get-ccl-props
        object
@@ -573,7 +573,7 @@ modify the property. For slots, this setter will likely be setting the
     (:expected ,(type-error-expected-type object))))
 
 (defmethod fields* reverse-append (object &key &allow-other-keys)
-  (let ((slot-defs (ignore-errors (closer-mop:class-slots (class-of object)))))
+  (let ((slot-defs (ignore-errors (class-slots (class-of object)))))
     `((:self ,object) ;; Inspired by CCL.
       (:id ,(id object))
       (:class ,(class-of object)
