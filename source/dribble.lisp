@@ -4,7 +4,7 @@
 (in-package :graven-image)
 
 
-(defclass dribble-stream (trivial-gray-streams:fundamental-character-output-stream)
+(defclass dribble-stream (fundamental-character-output-stream)
   ((actual-stream
     :initform nil
     :initarg :actual-stream)))
@@ -18,10 +18,10 @@
 
 (defvar starting-p nil)
 (defvar output-p nil)
-(defmethod trivial-gray-streams:stream-line-column ((stream dribble-stream))
+(defmethod stream-line-column ((stream dribble-stream))
   (when starting-p
     0))
-(defmethod trivial-gray-streams:stream-write-char ((stream dribble-out-stream) character)
+(defmethod stream-write-char ((stream dribble-out-stream) character)
   (setf output-p t)
   (cond
     ((and (not starting-p)
@@ -31,7 +31,7 @@
     (t
      (write-char character (slot-value stream 'actual-stream)))))
 
-(defmethod trivial-gray-streams:stream-write-char ((stream dribble-in-stream) character)
+(defmethod stream-write-char ((stream dribble-in-stream) character)
   (cond
     (output-p
      (force-output (slot-value stream 'actual-stream))

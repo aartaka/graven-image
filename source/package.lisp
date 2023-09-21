@@ -1,6 +1,21 @@
 ;;;; SPDX-FileCopyrightText: Artyom Bologov
 ;;;; SPDX-License-Identifier: BSD-3 Clause
 
+;;; From trivial-gray-streams
+#+:abcl
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (require :gray-streams))
+#+(or cmu genera)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (require :gray-streams))
+#+allegro
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (unless (fboundp 'excl:stream-write-string)
+    (require "streamc.fasl")))
+#+(or ecl clasp)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (gray::redefine-cl-functions))
+
 (uiop:define-package :graven-image
   (:use :common-lisp)
   (:nicknames :gimage)
@@ -28,6 +43,19 @@
    #+lispworks #:hcl
    #+allegro   #:excl
    #:package-local-nicknames)
+  (:import-from
+   #+sbcl :sb-gray
+   #+allegro :excl
+   #+cmu :ext
+   #+(or clisp ecl mkcl mocl clasp) :gray
+   #+openmcl :ccl
+   #+lispworks :stream
+   #+(or abcl genera) :gray-streams
+   #+mezzano :mezzano.gray
+   #-(or sbcl allegro cmu clisp openmcl lispworks ecl clasp mkcl abcl mocl genera mezzano) ...
+   #:fundamental-character-output-stream
+   #:stream-line-column
+   #:stream-write-char)
   (:documentation "CL standard debugging utilities improved:
 - `y-or-n-p' -> `y-or-n-p*'.
 - `yes-or-no-p' -> `yes-or-no-p*'.
