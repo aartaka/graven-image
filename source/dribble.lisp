@@ -60,7 +60,7 @@ Influenced by:
 - `*standard-input*'.
 - `*error-output*'.
 - `*terminal-io*'.
-- Trivial Gray Streams implementation."
+- Gray Streams implementation."
   (declare (ignorable pathname pathname-p if-exists if-does-not-exist))
   #+abcl
   (load-time-warn "Dribble* is not implemented for ABCL due to Trivial Gray Streams implementation specificities. Help in implementing it!")
