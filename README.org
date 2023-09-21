@@ -52,7 +52,6 @@ Clone the Git repository:
 
 Install dependencies:
 - [[https://github.com/pcostanza/closer-mop][Closer Mop]].
-- [[https://github.com/trivial-gray-streams/trivial-gray-streams][Trivial Gray Streams]].
 
 And then load =:graven-image= in the REPL:
 #+begin_src lisp
