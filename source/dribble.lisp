@@ -16,7 +16,6 @@
 (defvar *dribble-stream* nil "The outer dribble stream that the output is dispatched to.")
 (defvar *dribble-pathname* nil "The file we're dribbling to.")
 
-
 (defvar starting-p nil)
 (defvar output-p nil)
 (defmethod trivial-gray-streams:stream-line-column ((stream dribble-stream))
