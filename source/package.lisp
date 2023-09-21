@@ -72,5 +72,8 @@
   - Also see `function-lambda-list*', `function-name*'
     `function-type*'.
 - `time' -> `time*'.
+  - There's benchmarking-ready `benchmark*' too.
   - Also see `with-time*' with the exposed `time'-internal APIs.
+- `room' -> `room*'
+  - Also see `with-room*' exposing room APIs.
 - `dribble' -> `dribble*'."))
