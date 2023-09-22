@@ -108,7 +108,9 @@ Improvements are:
 - Both functions accept options from =graven-image:*yes-or-no-options*=, thus
   allowing for "nope" or "ay" to be valid responses too.
 - Both functions mean the same now, because it makes no sense in
-  differentiating them.
+  differentiating them (and because most Emacs users use a magical
+  =(fset 'yes-or-no-p 'y-or-n-p)= in their config, setting the
+  precedent for shorter yes/no queries).
 - No beeps (just define a =yes-or-no-p* :before= method to add beeps
   if you like 'em; see the "Customization" section below).
 
