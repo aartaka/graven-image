@@ -417,7 +417,9 @@ Influenced by:
                            ,(if return-type-p
                                 return-type
                                 t))))))
-        #-(or cmucl scl sbcl ecl gcl)
+	#+clozure
+	(ccl::find-ftype-decl (function-name-symbol function) ccl::*nx-lexical-environment*)
+        #-(or cmucl scl sbcl ecl gcl clozure)
         nil)))))
 
 ;;; Helpers
