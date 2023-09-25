@@ -131,19 +131,22 @@ Based on this foundation, =apropos*= lists symbols with their types,
 values, and documentation, so that implementation-specific formats are
 gone for a better and more unified listing:
 
-#+begin_src
-> (apropos* :max)
-MAX [FUNCTION (NUMBER &REST MORE-NUMBERS) : Return the greatest of its arguments; among EQUALP greatest, return...]
-:MAX [SELF-EVALUATING]
-...
-SB-C::MAXREST
-ALEXANDRIA:MAXF [MACRO : Modify-macro for MAX. Sets place designated by the first argument to the...]
-...
-SB-UNICODE::MAX-MATCH
-SB-C::MAX-VOP-TN-REFS [CONSTANT: 256]
-SB-LOOP::LOOP-MINIMAX [CLASS]
-SB-IMPL::HEAP-MAXIMUM [FUNCTION (HEAP)]
-...
+#+begin_src lisp
+  (apropos* :max)
+  ;; MAX                                            [FUNCTION (NUMBER &REST
+  ;;                                                           MORE-NUMBERS) : Return the greatest of its arguments; among EQUALP greatest, return...]
+  ;; :MAX                                           [SELF-EVALUATING]
+  ;; CFFI::MAX-ALIGN
+  ;; SB-ASSEM::MAX-ALIGNMENT                        [CONSTANT = 5]
+  ;; ...
+  ;; SB-C::MAXES
+  ;; ALEXANDRIA:MAXF                                [MACRO (#:PLACE &REST NUMBERS) : Modify-macro for MAX. Sets place designated by the first argument to the...]
+  ;; SB-KERNEL::MAXIMAL-BITMAP
+  ;; ...
+  ;; SB-LOOP::LOOP-ACCUMULATE-MINIMAX-VALUE         [MACRO (LM OPERATION FORM)]
+  ;; SB-LOOP::LOOP-MAXMIN-COLLECTION                [FUNCTION (SPECIFICALLY)]
+  ;; SB-LOOP::LOOP-MINIMAX                          [CLASS (STRUCTURE-OBJECT)]
+  ;; ...
 #+end_src
 
 ** =function-lambda-expression*= (generic function)
