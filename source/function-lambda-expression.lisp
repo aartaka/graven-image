@@ -347,6 +347,9 @@
 (-> ensure-function ((or symbol function-designator)) (or null function-designator))
 (defun ensure-function (function)
   (typecase function
+    ((and symbol
+	  (satisfies special-operator-p))
+     nil)
     (symbol
      (or (macro-function function)
          (symbol-function function)))
@@ -373,7 +376,9 @@ Influenced by:
 - MOP implementation.
 - Implementation support for name/closure/arglist/type inspection."
   (let* ((function (ensure-function function))
-         (definition (function-source-expression function force)))
+         (definition (ignore-errors (function-source-expression function force))))
+    (unless function
+      (return-from function-lambda-expression* (values nil nil nil nil)))
     (multiple-value-bind (expression closure-p name)
         (ignore-errors (funcall old-function-lambda-expression function))
       (values
