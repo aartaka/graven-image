@@ -557,35 +557,7 @@ Actually, one can try to write an =:around= method for regular
 =documentation=, but this modification is not guaranteed to work on
 all implementations.
 
-* Roadmap (contributions welcome!)
-- [ ] Improve:
-  - [X] =apropos=, =apropos-list=
-    - [X] Add a way to sort symbols by relevance/name match.
-      - Covered in the [[Customization]] section.
-  - [X] =inspect=,
-  - [X] =describe=,
-  - [X] =time=,
-  - [X] =dribble=,
-    - [ ] Make dribble file prettier, strip off the REPL prompt.
-    - [ ] Support ABCL somehow.
-  - [ ] =step=,
-  - [ ] =trace= and =untrace=
-    - Low priority due to complexity of implementation tracing.
-  - [X] =documentation=?
-  - [ ] =ed=.
-  - [ ] =disassemble=?
-  - [X] =room=
-    - [ ] Complete the implementation, dispatch the verbosity.
-- [X] Somehow hook into and improve over =*debugger-hook*= and/or =invoke-debugger=?
-  - Use [[https://github.com/atlas-engineer/ndebug/][Ndebug]] for that.
-- [ ] Test on more implementations.
-  - I'm currently testing Graven Image on SBCL, CCL, ECL, ABCL, CLISP,
-    Allegro, and sometimes GCL.
-  - I will be glad to accept patches/bug reports for other
-    implementations, like CLASP, CMUCL, Corman, or LispWorks!
-- [ ] Maybe add an interactive file manager?
-  - Yes, this is beyond the goal of nice portable standard debugging
-    facilities that Graven Image pursues. But it kinda is intuitive,
-    and most implementations have some form of directory switching and
-    other file operations.
-    - And there's a reasonably big portable file API in ANSI CL.
+* Contributing
+
+You can help with any of the [[https://github.com/aartaka/graven-image/issues?q=is%3Aopen+is%3Aissue][open issues]]—most are well-described and
+split into bite-sized tasks. See .github/CONTIBUTING.md for the
