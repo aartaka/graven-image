@@ -419,7 +419,9 @@ Influenced by:
                                 t))))))
 	#+clozure
 	(ccl::find-ftype-decl (function-name-symbol function) ccl::*nx-lexical-environment*)
-        #-(or cmucl scl sbcl ecl gcl clozure)
+	#+abcl
+	(sys::proclaimed-ftype (function-name-symbol function))
+        #-(or cmucl scl sbcl ecl gcl clozure abcl)
         nil)))))
 
 ;;; Helpers
