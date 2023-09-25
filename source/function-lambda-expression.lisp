@@ -426,7 +426,9 @@ Influenced by:
 	(ccl::find-ftype-decl (function-name-symbol function) ccl::*nx-lexical-environment*)
 	#+abcl
 	(sys::proclaimed-ftype (function-name-symbol function))
-        #-(or cmucl scl sbcl ecl gcl clozure abcl)
+	#+allegro
+	(compiler::declared-ftype-p (function-name-symbol function))
+        #-(or cmucl scl sbcl ecl gcl clozure abcl allegro)
         nil)))))
 
 ;;; Helpers
