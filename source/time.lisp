@@ -243,16 +243,18 @@ always the case that some are missing."
                (reduce
                 #'max (append real-times system-times user-times gc-times allocated-bytes)
                 :initial-value 15
-                :key #'(lambda (num) (length (princ-to-string num))))))
+                :key #'(lambda (num) (length (princ-to-string num)))))
+	     (unit-length 10))
         (format *trace-output*
                 "~&Benchmark for ~a runs of~
 ~&~s" repeat form)
-        (format *trace-output* "~&~a~vt~a~vt~a~vt~a~vt~a"
+        (format *trace-output* "~&~a~vt~a~vt~a~vt~a~vt~a~vt~a"
                 '-
-                30 'minimum
-                (+ 30 max-number-length) 'average
-                (+ 30 (* 2 max-number-length)) 'maximum
-                (+ 30 (* 3 max-number-length)) 'total)
+		20 'unit
+                (+ 20 unit-length) 'minimum
+                (+ 20 unit-length max-number-length) 'average
+                (+ 20 unit-length (* 2 max-number-length)) 'maximum
+                (+ 20 unit-length (* 3 max-number-length)) 'total)
         (loop for (name unit list)
                 in `((real-time "seconds" ,real-times)
                      (user-run-time "seconds" ,user-times)
@@ -261,17 +263,19 @@ always the case that some are missing."
                      (allocated "bytes" ,allocated-bytes))
               when list
                 do (format *trace-output*
-                           "~&~a (~a)~vt~f~vt~f~vt~f~vt~f"
-                           name unit
-                           30 (cond
-                                ((uiop:emptyp list) 0)
-                                ((= 1 (length list)) (first list))
-                                (t (reduce #'min list :initial-value most-positive-fixnum)))
-                           (+ 30 max-number-length) (avg list)
-                           (+ 30 (* 2 max-number-length)) (if list
+                           "~&~a~vt~a~vt~f~vt~f~vt~f~vt~f"
+                           name
+			   20 unit
+                           (+ 20 unit-length)
+			   (cond
+                             ((uiop:emptyp list) 0)
+                             ((= 1 (length list)) (first list))
+                             (t (reduce #'min list :initial-value most-positive-fixnum)))
+                           (+ unit-length 20 max-number-length) (avg list)
+                           (+ 20 unit-length (* 2 max-number-length)) (if list
                                                               (reduce #'max list :initial-value 0.0)
                                                               0)
-                           (+ 30 (* 3 max-number-length)) (reduce #'+ list)))
+                           (+ 20 unit-length (* 3 max-number-length)) (reduce #'+ list)))
         (values-list values)))))
 
 (defmacro benchmark* ((&optional (repeat 1000)) &body forms)
