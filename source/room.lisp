@@ -168,8 +168,14 @@ always the case that some are missing."
                                                             :instances total-instances))))))))
             #+sbcl
             ;; TODO: binding stack and thread-specific memory.
-            (flet ((get-type-memory (type)
-                     (funcall (third (find type sb-vm::+all-spaces+ :key #'first)))))
+            (labels ((find-symbol-value (symbol package)
+		       (ignore-errors (symbol-value (uiop:find-symbol* symbol package nil))))
+		     (get-type-memory (type)
+                       (funcall (third (find type (or (ignore-errors
+						       (find-symbol-value :+all-spaces+ :sb-vm))
+						      (append (find-symbol-value :+heap-spaces+ :sb-vm)
+							      (find-symbol-value :+stack-spaces+ :sb-vm)))
+					     :key #'first)))))
               (append
                (list :static (get-type-memory :static))
                (list :heap (sb-ext::dynamic-space-size))
