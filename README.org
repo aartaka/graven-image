@@ -1,7 +1,9 @@
 #+TITLE:Graven Image
 
 #+begin_quote
-Thou shalt not make unto thee any graven image, or any likeness of any thing that is in heaven above, or that is in the earth beneath, or that is in the water under the earth.
+Thou shalt not make unto thee any graven image, or any likeness of any
+thing that is in heaven above, or that is in the earth beneath, or
+that is in the water under the earth.
 #+end_quote
 
 Graven Image is a Common Lisp portability library for better
@@ -102,8 +104,9 @@ shorter Graven Image nickname:
 
 * Enhanced functions (mostly from ANSI CL [[https://cl-community-spec.github.io/pages/Debugging-Utilities.html][Debugging Utilities]] chapter)
 
-The functions that Graven Image exposes are safely =:use=-able star-appended functions/macros (i.e. =describe*= instead of
-  =describe=). Currently improved ones are:
+The functions that Graven Image exposes are safely =:use=-able
+star-appended functions/macros (i.e. =describe*= instead of
+=describe=). Currently improved ones are:
   - =y-or-n-p*= / =yes-or-no-p*=
   - =apropos*= / =apropos-list*=
   - =function-lambda-expression*=
@@ -213,7 +216,8 @@ Things that =function-lambda-expression*= now returns are:
 - Lambda expression.
   - For lambda functions, their source.
   - For regular functions, their =defun= turned into a =lambda=.
-  - For anything else, a constructed empty =(lambda (arglist...) documentation nil)= (only when =force= is T).
+  - For anything else, a constructed empty =(lambda (arglist...)
+    documentation nil)= (only when =force= is T).
   - Or, in case all the rest fails, NIL.
 - Whether the thing is a closure
   - If it is, might return an alist of the actual closed-over values,
@@ -445,9 +449,15 @@ Signature:
 dribble* &optional pathname (if-exists :append)
 #+end_src
 
-Dribble the REPL session to =pathname=. Unlike the implementation-specific =dribble=, this one formats all of the session as =load=-able Lisp file fully reproducing the session. So all the input forms are printed verbatim, and all the outputs are commented out.
+Dribble the REPL session to =pathname=. Unlike the
+implementation-specific =dribble=, this one formats all of the session
+as =load=-able Lisp file fully reproducing the session. So all the
+input forms are printed verbatim, and all the outputs are commented
+out.
 
-Beware: using any interactive function (like =inspect= etc.) breaks the dribble REPL. But then, it's unlikely one'd want to record interactive session into a dribble file.
+Beware: using any interactive function (like =inspect= etc.) breaks
+the dribble REPL. But then, it's unlikely one'd want to record
+interactive session into a dribble file.
 
 ** =documentation*= (generic function)
 
@@ -457,13 +467,24 @@ Signature:
   doc* object &optional (doc-type t)
 #+end_src
 
-Improved version of =documentation=. Two main improvements are: =doc-type= is now optional, and =doc*= alias is available for convenience.
+Improved version of =documentation=. Two main improvements are:
+=doc-type= is now optional, and =doc*= alias is available for
+convenience.
 
-documentation.lisp also defines more =documentation= methods (and respective =setf= method) to simplify documentation fetching and setting. In particular, method on =(symbol (eql t))= to simplify symbol documentation search; and =(t (eql 'package))= with a new doc-type for package documentation convenience.
+documentation.lisp also defines more =documentation= methods (and
+respective =setf= method) to simplify documentation fetching and
+setting. In particular, method on =(symbol (eql t))= to simplify
+symbol documentation search; and =(t (eql 'package))= with a new
+doc-type for package documentation convenience.
 
 * Customization
 
-Graven Image is made to be extensible. That's why most of the improved functions are generic: one can define special methods for their data and patch the behavior with =:before=, =:after=, and =:around= methods. Most of Graven Image functions mention the variables/things influencing them in the docstring. Here's a set of useful customizations:
+Graven Image is made to be extensible. That's why most of the improved
+functions are generic: one can define special methods for their data
+and patch the behavior with =:before=, =:after=, and =:around=
+methods. Most of Graven Image functions mention the variables/things
+influencing them in the docstring. Here's a set of useful
+customizations:
 
 ** Beeping before =yes-or-no-p*=
 
@@ -527,7 +548,9 @@ things by =string= occurence:
 
 ** Changing printer settings for Graven Image output
 
-Graven Image =inspect*= function uses =*interface-lines*= for the number of properties to list. If your screen is more than 20 lines high, you might want to add more lines:
+Graven Image =inspect*= function uses =*interface-lines*= for the
+number of properties to list. If your screen is more than 20 lines
+high, you might want to add more lines:
 
 #+begin_src lisp
   (defmethod gimage:inspect* :around (object)
@@ -579,6 +602,6 @@ all implementations.
 
 * Contributing
 
-You can help with any of the [[https://github.com/aartaka/graven-image/issues?q=is%3Aopen+is%3Aissue][open issues]]—most are well-described and
+You can help with any of the [[https://github.com/aartaka/graven-image/issues?q=is%3Aopen+is%3Aissue][open issues]] most are well-described and
 split into bite-sized tasks. See .github/CONTIBUTING.md for the
 contributing guidelines.
