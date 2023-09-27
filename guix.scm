@@ -54,9 +54,9 @@ The functions that Graven image adds:
 @item @code{apropos*} and @code{apropos-list*} for symbol search.
 @item @code{function-lambda-expression*} for function inspection.
 @item Helpers around @code{function-lambda-expression*}.
-@item @code{documentation*} for faster object documentation.
+@item @code{documentation*} for faster documentation fetching.
 @item @code{inspect*} and @code{describe*} for object inspection.
-@item @code{dribble*} for interactive REPL recording.
+@item @code{dribble*} for REPL session recording.
 @item @code{time*}, @code{benchmark*} and @code{with-time*} for code
 timing stats.
 @item @code{room*} and @code{with-room*} for memory consumption stats.
