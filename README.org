@@ -561,3 +561,4 @@ all implementations.
 
 You can help with any of the [[https://github.com/aartaka/graven-image/issues?q=is%3Aopen+is%3Aissue][open issues]]—most are well-described and
 split into bite-sized tasks. See .github/CONTIBUTING.md for the
+contributing guidelines.
