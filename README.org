@@ -60,8 +60,20 @@ And load =:graven-image= in the REPL:
   (ql:quickload :graven-image)
 #+end_src
 
+You can also install Graven Image via Guix, using the bundled
+=guix.scm= file:
+#+begin_src sh
+  guix package -f guix.scm
+#+end_src
+
+Someday (after at least minor version bump) I'll send a patch to Guix
+so that you can also install it with =guix install=. Until then—stay
+tuned (or send the patch yourself—I don't mind.)
+
+* Convenient =use=
+
 If you want your REPL to start with Graven Image constructs accessible
-without package prefix, then add this to your implementation config file:
+without package prefix, then simply use the package directly.
 #+begin_src lisp
   (asdf:load-system :graven-image)
   ;; Imports external symbols of Graven Image into the current package
@@ -77,6 +89,14 @@ you can safely do so with the familiar:
   (setf (fdefinition 'apropos) (fdefinition 'gimage:apropos*))
   ;; For macros
   (setf (macro-function 'time) (macro-function 'gimage:time*))
+#+end_src
+
+Or, if you're more orderly and disciplined about packages than I am,
+you can always use =trivial-package-local-nicknames= and define a
+shorter Graven Image nickname:
+#+begin_src lisp
+  (trivial-package-local-nicknames:add-package-local-nickname
+   :g :graven-image :cl-user)
 #+end_src
 
 
