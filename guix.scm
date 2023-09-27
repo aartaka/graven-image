@@ -24,7 +24,6 @@
              (guix build-system asdf)
              (gnu packages)
              (gnu packages lisp)
-             (gnu packages lisp-check)
              (gnu packages lisp-xyz))
 
 (define-public sbcl-graven-image
@@ -45,8 +44,6 @@
     ;;     "SPECIFY-HASH")))
     )
    (build-system asdf-build-system/sbcl)
-   (native-inputs
-    (list sbcl-lisp-unit2 sbcl))
    (synopsis "Common Lisp standard debugging utilities made more extensible and useful.")
    (home-page "https://github.com/atlas-engineer/graven-image")
    (description
