@@ -11,7 +11,7 @@
   :version "0.0.1"
   :serial t
   :pathname "source/"
-  :depends-on (#+sbcl "sb-introspect")
+  :depends-on ((:feature :sbcl (:require :sb-introspect)))
   :components ((:file "package")
                (:file "graven-image")
                (:file "function-lambda-expression")
