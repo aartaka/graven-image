@@ -266,7 +266,7 @@ And it also allows providing several forms, yay!
 
 Signature:
 #+begin_src lisp
-benchmark* (&optional (runs 1000)) &body forms => return-values
+benchmark* (&optional (repeat 1000)) &body forms => return-values
 #+end_src
 
 While =time*= is the standard benchmarking/profiling solution, it's
@@ -275,8 +275,12 @@ complex enough end up with some form of custom
 benchmarking. Shinmera's [[https://github.com/Shinmera/trivial-benchmark/][trivial-benchmark]] is one such example. Graven
 Image =benchmark*= is heavily inspired by =trivial-benchmark=, but has
 a more portable foundation in the form of =with-time*=.
+
+As many other benchmarking macros, =benchmark*= repeats its body a
+certain number of times, collecting timing stats for every run, and
+then prints aggregate statistics for the total runs.
 #+begin_src lisp
-  (gimage::benchmark* (20)
+  (gimage::benchmark* (20) ;; Repeat count.
     (loop for i below 1000 collect (make-list i) finally (return 1)))
   ;; Benchmark for 20 runs of
   ;; (LOOP FOR I BELOW 1000
