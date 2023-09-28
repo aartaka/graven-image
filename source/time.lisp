@@ -281,6 +281,8 @@ always the case that some are missing."
 (defmacro benchmark* ((&optional (repeat 1000)) &body forms)
   "Run FORMS REPEAT times, recording `time*'-ing data per every run.
 Print the total and average statistics across the runs.
+Return the values returned by the last evaluation of FORMS.
+
 REPEAT defaults to 1000.
 
 Influenced by:
