@@ -65,20 +65,22 @@ Influenced by:
   #+abcl
   (load-time-warn "Dribble* is not implemented for ABCL due to Trivial Gray Streams implementation specificities. Help in implementing it!")
   #-abcl
-  (labels ((print-dribble (action)
+  (labels ((print-dribble (started?)
              (multiple-value-bind (second minute hour date month year)
                  (decode-universal-time (get-universal-time))
                (format *standard-output*
                        "~%~a dribbling to ~A on ~2,'0d:~2,'0d:~2,'0d ~
 ~[~;Jan~;Feb~;Mar~;Apr~;May~;Jun~;Jul~;Aug~;Sep~;Oct~;Nov~;Dec~] ~
 ~a~[th~;st~;nd~;rd~:;th~] ~a (on ~a ~a).~%"
-                       action
+                       (if started?
+			   "Started"
+			   "Finished")
                        (uiop:native-namestring (translate-logical-pathname *dribble-pathname*))
                        hour minute second month date (mod date 10) year
                        (lisp-implementation-type) (lisp-implementation-version)))))
     (cond
       ((and *dribble-pathname* (not pathname-p))
-       (print-dribble "Finished")
+       (print-dribble nil)
        (force-output (slot-value *dribble-stream* 'actual-stream))
        (setf *dribble-pathname* nil
              *dribble-stream* nil)
@@ -110,5 +112,5 @@ Influenced by:
                                *terminal-io*
                                (make-instance 'dribble-in-stream :actual-stream actual-stream))
                               (make-broadcast-stream *terminal-io* *dribble-stream*))))
-       (print-dribble "Started")
+       (print-dribble t)
        nil))))
