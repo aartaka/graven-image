@@ -93,10 +93,11 @@ Influenced by:
         (reduce-old-apropos string packages))))))
 
 ;; Allegro has a different arglist, which Graven Image conflicts
-;; with. But let's say that's the fault of proprietary implementations
-;; ;) Some day, `apropos*' might have a fifth argument for
-;; CASE-INSENSITIVE search.
+;; with. But let's say that's the fault of proprietary
+;; implementations. Some day, `apropos*' might have a fifth argument
+;; for CASE-INSENSITIVE search.
 ;;
+;; Allegro arglist:
 ;; (STRING &OPTIONAL PACKAGE EXTERNAL-ONLY CASE-INSENSITIVE)
 (define-generic apropos* (string &optional package external-only docs-too)
   "Print a list of PACKAGE symbols with names (+docs when DOCS-TOO) containing STRING.
