@@ -21,10 +21,9 @@ used for OBJECT info.
 
 Influenced by:
 - `*standard-output*'.
-- `print-object' method for OBJECT.
-- Printer variables for the display of the field values.
 - `fields*' and `description*' methods on OBJECT.
-- `describe-object' methods (unless IGNORE-METHODS.)"
+- `describe-object' methods (unless IGNORE-METHODS.)
+- Printer variables for the display of the field values."
   (let* ((stream (etypecase stream
                    (null (make-string-output-stream))
                    ((eql t) *standard-output*)
