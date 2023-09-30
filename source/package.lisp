@@ -77,6 +77,7 @@
    #:generic-function-methods
    #:method-generic-function
    #:method-lambda-list
+   #:method-specializers
    #:slot-definition-name)
   (:documentation "CL standard debugging utilities improved:
 - `y-or-n-p' -> `y-or-n-p*'.

@@ -28,10 +28,11 @@ Influenced by:
                    (null (make-string-output-stream))
                    ((eql t) *standard-output*)
                    (stream object)))
-         (describe-object-method (find-method #'describe-object '()
-                                              (list (class-of object) (class-of stream)) nil)))
-    (if (and describe-object-method
-             (not ignore-methods))
+         (method-p (find-if (lambda (m)
+			      (subtypep (class-name (class-of object))
+					(class-name (first (method-specializers m)))))
+			    (generic-function-methods #'describe-object))))
+    (if (and method-p (not ignore-methods))
         (funcall #'describe-object object stream)
         (progn
           (fresh-line stream)
