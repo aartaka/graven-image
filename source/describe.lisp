@@ -23,7 +23,45 @@ Influenced by:
 - `*standard-output*'.
 - `fields*' and `description*' methods on OBJECT.
 - `describe-object' methods (unless IGNORE-METHODS.)
-- Printer variables for the display of the field values."
+- Printer variables for the display of the field values.
+
+Example from the spec:
+\(defclass spaceship ()
+  ((captain :initarg :captain :accessor spaceship-captain)
+   (serial# :initarg :serial-number :accessor spaceship-serial-number)))
+
+\(defclass federation-starship (spaceship) ())
+
+\(defmethod describe-object ((s spaceship) stream)
+  (with-slots (captain serial#) s
+    (format stream \"~&~S is a spaceship of type ~S,~
+                     ~%with ~A at the helm ~
+                       and with serial number ~D.~%\"
+	    s (type-of s) captain serial#)))
+
+\(defvar ship (make-instance 'federation-starship
+			    :captain \"Rachel Garrett\"
+			    :serial-number \"NCC-1701-C\"))
+
+\(describe ship)
+;; #<FEDERATION-STARSHIP {100456B353}> is a spaceship of type FEDERATION-STARSHIP,
+;; with Rachel Garrett at the helm and with serial number NCC-1701-C.
+
+\(describe* ship)
+;; #<FEDERATION-STARSHIP {100456B353}> is a spaceship of type FEDERATION-STARSHIP,
+;; with Rachel Garrett at the helm and with serial number NCC-1701-C.
+
+;; Ignore methods.
+\(describe* ship t t)
+;; Federation-starship #<FEDERATION-STARSHIP {100456B353}>
+;; SELF              = #<FEDERATION-STARSHIP {100456B353}>
+;; ID                = 68792267603
+;; CLASS             = #<STANDARD-CLASS COMMON-LISP-USER::FEDERATION-STARSHIP>
+;; SLOT-DEFINITIONS  = (#<SB-MOP:STANDARD-EFFECTIVE-SLOT-DEFINITION COMMON-LISP-USER::CAPTAIN>
+;;                      #<SB-MOP:STANDARD-EFFECTIVE-SLOT-DEFINITION COMMON-LISP-USER::|SERIAL#|>)
+;; TYPE              = FEDERATION-STARSHIP
+;; SERIAL#           = \"NCC-1701-C\"
+;; CAPTAIN           = \"Rachel Garrett\""
   (let* ((stream (etypecase stream
                    (null (make-string-output-stream))
                    ((eql t) *standard-output*)
