@@ -358,7 +358,7 @@
 (define-generic function-lambda-expression* (function &optional force)
   "Returns information about FUNCTION:
 - The defining lambda, suitable for `compile' (or the best guess at
-  getting one, if the FUNCTION is not a regular one).
+  getting one, if the FUNCTION is not a regular one and FORCE is on).
   - If there's any lambda, it is most likely to have an arglist which
     one can rely on as the arglist of the FUNCTION.
 - Whether the FUNCTION is closed over some values and what these
