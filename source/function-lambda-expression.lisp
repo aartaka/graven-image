@@ -359,8 +359,6 @@
   "Returns information about FUNCTION:
 - The defining lambda, suitable for `compile' (or the best guess at
   getting one, if the FUNCTION is not a regular one and FORCE is on).
-  - If there's any lambda, it is most likely to have an arglist which
-    one can rely on as the arglist of the FUNCTION.
 - Whether the FUNCTION is closed over some values and what these
   values are (when possible). Returns an alist of closed-over
   variables on most supported implementations.
@@ -374,7 +372,8 @@ better) or body, though. Use at your own risk!
 
 Influenced by:
 - MOP implementation.
-- Implementation support for name/closure/arglist/type inspection."
+- Implementation support for name/closure/arglist/type inspection.
+- Ability to find and parse sources for functions."
   (let* ((function (ensure-function function))
          (definition (ignore-errors (function-source-expression function force))))
     (unless function
