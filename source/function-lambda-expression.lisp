@@ -271,8 +271,7 @@
                     (when (and position file)
                       (ignore-errors
                        (with-open-file (f file)
-                         (loop repeat position
-                               do (read-char f nil nil))
+			 (file-position f position)
                          (maybe-unsafe-read f))))))
            #+clozure
            (let* ((note (or (ccl:function-source-note function)
