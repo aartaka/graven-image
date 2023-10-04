@@ -481,6 +481,16 @@ setting. In particular, method on =(symbol (eql t))= to simplify
 symbol documentation search; and =(t (eql 'package))= with a new
 doc-type for package documentation convenience.
 
+** =break*= (macro)
+
+Signature:
+#+begin_src lisp
+  break* &rest arguments
+#+end_src
+
+A more useful wrapper for =break=, listing the function it's called
+from and the provided symbol values. See examples in the docstring.
+
 * Customization
 
 Graven Image is made to be extensible. That's why most of the improved

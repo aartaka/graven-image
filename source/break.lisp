@@ -3,56 +3,67 @@
 
 (in-package :graven-image)
 
-(defvar old-break (symbol-function 'break))
+(defmacro break* (&rest arguments)
+  "A more useful wrapper around `break'.
+- Lists the name for the function/block `break*' is called from.
+- Lists symbol values when the quoted symbols are provided before the
+  actual `break' arguments.
+- And all the rest is regular `break' arguments.
 
-(define-generic break* (&optional datum &rest arguments)
-  "Smarter `break' lists the callee and variable values.
-Depends on DATUM type:
-- SYMBOL: Print the value of the DATUM-named symbol.
-- STRING: Print the string with function name prepended.
-- Nothing: print function name."
-  (declare (ignorable datum arguments))
-  #+(or sbcl ccl ecl abcl)
-  (let* ((current-function-name
-	   #+sbcl
-	   (sb-debug::frame-call
-	    (sb-di:frame-down
+Influenced by:
+- `break' implementation.
+- Backtrace fetching support.
+
+Examples:
+
+;; Compatible with the old BREAK:
+\(break*)
+;; = (break)
+\(break* \"hello\")
+;; = (break \"hello\")
+\(break* \"Format string with ~a value\" \"string\")
+;; = (break \"Format string with ~a value\" \"string\")
+
+;; Often lists the function it's called inside of:
+\(defun bar () (break*))
+\(bar)
+;; In BAR: Break
+
+;; And allows listing symbol values:
+\(defun foo (a b c)
+  (break* 'a 'b 'c \"Testing arguments\"))
+\(foo 1 2 3)
+;; In FOO: A=1 B=2 C=3 Testing arguments"
+  (let* ((symbols (loop for a in arguments
+			while (and (consp a)
+				   (eq 'quote (car a)))
+			collect (second a)))
+	 (rest (or (ignore-errors
+		     (subseq arguments (length symbols)))
+		   (list "Break")))
+	 (current-fn-var (gensym "CURRENT-FN")))
+    `(let ((,current-fn-var
+	    #+sbcl
+	    (sb-debug::frame-call
 	     (or (sb-debug::resolve-stack-top-hint)
-		 (sb-di:frame-down (sb-di:top-frame)))))
-	   #+ccl
-	   (block get-fn
-	     (ccl:map-call-frames
-	      (lambda (p c)
-		(return-from get-fn
-		  (function-name (ccl:frame-function p c))))
-	      :start-frame-number 1))
-	   #+ecl
-	   (function-name
-	    (system::ihs-fun (1- (system::ihs-top))))
-	   #+abcl
-	   (third (sys:backtrace)))
-	 (format-string
-	   (with-output-to-string (s)
-	     (when current-function-name
-	       (format s "~s: " current-function-name))
-	     (if (null datum)
-		 (format s "Break")
-		 (let* ((all-args (cons datum arguments))
-			(symbols (loop for a in all-args
-				       while (symbolp a)
-				       collect a))
-			(rest (ignore-errors
-			       (subseq all-args (length symbols)))))
-		   (when symbols
-		     (format s "~:{~s=~s~^, ~} "
-			     (mapcar (lambda (s)
-				       (list s (symbol-value s)))
-				     symbols)))
-		   (when rest
-		     (apply #'format s rest))))
-	     (fresh-line s))))
-    (funcall old-break format-string))
-  #-(or sbcl ccl ecl abcl)
-  (apply old-break
-	 (when datum
-	   (cons datum arguments))))
+		 (sb-di:frame-down (sb-di:top-frame))))
+	    #+ccl
+	    (block get-fn
+	      (ccl:map-call-frames
+	       (lambda (p c)
+		 (return-from get-fn
+		   (ignore-errors
+		     (function-name (ccl:frame-function p c)))))
+	       :start-frame-number 1))
+	    #+ecl
+	    (ignore-errors
+	      (function-name
+	       (system::ihs-fun (system::ihs-top))))
+	    #+abcl
+	    (first (sys:frame-to-list (second (sys:backtrace))))))
+       (break (format nil "~@[In ~s: ~]~@[~:{~s=~s ~}~]~a"
+		      ,current-fn-var
+		      (list ,@(mapcar (lambda (s)
+					`(list (quote ,s) ,s))
+				      symbols))
+		      (format nil ,@rest))))))

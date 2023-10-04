@@ -33,6 +33,7 @@
    #:dribble*
    #:documentation* #:doc*
    ;; #:step* #:trace* #:untrace*
+   #:break*
    )
   (:import-from
    #+sbcl      #:sb-ext
@@ -99,4 +100,5 @@
   - Also see `with-time*' with the exposed `time'-internal APIs.
 - `room' -> `room*'
   - Also see `with-room*' exposing room APIs.
-- `dribble' -> `dribble*'."))
+- `dribble' -> `dribble*'.
+- `break' -> `break*'."))

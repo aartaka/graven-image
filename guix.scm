@@ -60,6 +60,7 @@ The functions that Graven image adds:
 @item @code{time*}, @code{benchmark*} and @code{with-time*} for code
 timing stats.
 @item @code{room*} and @code{with-room*} for memory consumption stats.
+@itme @code{break*} for function/variable enriched breakpoints.
 @end itemize")
    (license license:bsd-3)))
 
