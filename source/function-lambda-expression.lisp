@@ -449,8 +449,7 @@ Depends on `function-lambda-expression*'."
   (nth-value 2 (function-lambda-expression* function)))
 
 (define-generic function-type* (function)
-  "Get the ftype of the FUNCTION.
-The return value is non-nil only on some implementations.
+  "Get the ftype of the FUNCTION, when available.
 Depends on `function-lambda-expression*'."
   (nth-value 3 (function-lambda-expression* function)))
 

@@ -119,13 +119,7 @@ PACKAGE can be:
 Influenced by:
 - Current list of packages and their contents.
 - `*standard-output*'.
-
-Note that you can influence the printout by let-bindings:
-- `*standard-output*',
-- `*print-case*'
-- `*print-level*'
-- `*print-length*'
-- and many other printer variables."
+- Printer variables for the display."
   ;; This is because function-* APIs often throw warnings for
   ;; non-implemented methods.
   (handler-bind ((warning #'muffle-warning))
