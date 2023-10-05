@@ -55,7 +55,7 @@ The file resulting from DRIBBLE* has:
 With such a format, dribble file can be loaded into the running Lisp
 image to reproduce the recorded session.
 
-Influenced by:
+Affected by:
 - `*standard-output*'.
 - `*standard-input*'.
 - `*error-output*'.

@@ -93,7 +93,7 @@ it?"
   "Get the documentation string of OBJECT.
 Like `documentation', but DOC-TYPE is optional and defaults to T.
 
-Influenced by:
+Affected by:
 - The current state of the image (defined functions, classes etc.)
 - `documentation' methods."
   (documentation object doc-type))

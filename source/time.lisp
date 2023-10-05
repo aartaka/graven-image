@@ -285,7 +285,7 @@ Return the values returned by the last evaluation of FORMS.
 
 REPEAT defaults to 1000.
 
-Influenced by:
+Affected by:
 - `with-time*' implementation support.
 - `*trace-output*' for printing.
 - Print variables for float format and form printing."
@@ -325,7 +325,7 @@ Influenced by:
   "Execute FORMS and print timing information for them.
 The values of last form in FORMS are returned unaltered.
 
-Influenced by:
+Affected by:
 - `with-time*' implementation support.
 - `*trace-output*' for printing.
 - Printer variables for float format and form printing."

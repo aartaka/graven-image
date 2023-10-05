@@ -369,7 +369,7 @@ or is otherwise not representing the FUNCTION truthfully. Might be
 useful to fetch the arglist (`function-lambda-list*' might work
 better) or body, though. Use at your own risk!
 
-Influenced by:
+Affected by:
 - MOP implementation.
 - Implementation support for name/closure/arglist/type inspection.
 - Ability to find and parse sources for functions."

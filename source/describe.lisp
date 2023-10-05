@@ -19,7 +19,7 @@ DESCRIBE-OBJECT methods are honored and used, unless IGNORE-METHODS is
 true. If IGNORE-METHODS, a regular summary+properties structure is
 used for OBJECT info.
 
-Influenced by:
+Affected by:
 - `*standard-output*'.
 - `fields*' and `description*' methods on OBJECT.
 - `describe-object' methods (unless IGNORE-METHODS.)

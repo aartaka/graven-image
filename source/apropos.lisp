@@ -66,7 +66,7 @@ PACKAGES can be:
 - A list of packages/symbols.
 - NIL (all the accessible packages are implied).
 
-Influenced by:
+Affected by:
 - Current list of packages and their contents."
   (declare (ignorable external-only docs-too))
   (let ((string (string string)))
@@ -116,7 +116,7 @@ PACKAGE can be:
 - A list of packages/symbols.
 - NIL (all the accessible packages are implied).
 
-Influenced by:
+Affected by:
 - Current list of packages and their contents.
 - `*standard-output*'.
 - Printer variables for the display."

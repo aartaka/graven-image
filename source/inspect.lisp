@@ -44,7 +44,7 @@ expressions/commands/indices/field names are read from
 
 Fields are paginated, with commands available to scroll.
 
-Influenced by:
+Affected by:
 - `*query-io*'.
 - `*interface-lines*' for page size.
 - Other printer variables for the display of the field values."

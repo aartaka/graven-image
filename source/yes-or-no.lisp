@@ -40,7 +40,7 @@ answers.")
   "Return a boolean for whether the user input is affirmative/negative.
 Prompt for input again if the answer is neither.
 
-Influenced by:
+Affected by:
 - `*query-io*' for the input/output.
 - `*yes-or-no-options*' for the possible answer values."
   (apply #'%y-or-n-p control arguments))
@@ -58,7 +58,7 @@ urgency anyway—one might ignore the beeps altogether.
 If you want beeps, though, you can always define a :before/:around
 method that beeps as much as you want it to :)
 
-Influenced by:
+Affected by:
 - `*query-io*' for the input/output.
 - `*yes-or-no-options*' for the possible answer values."
   (apply #'%y-or-n-p control arguments))

@@ -233,7 +233,7 @@ Output size/details depend on VERBOSE:
 - :DEFAULT --- moderate amount of information
 - NIL --- minimum necessary information.
 
-Influenced by:
+Affected by:
 - `with-room*' implementation support.
 - `*standard-output*' for printing (when DESTINATION is T).
 - Printer variables for float format and form printing."
