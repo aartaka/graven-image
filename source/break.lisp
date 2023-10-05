@@ -10,7 +10,7 @@
   actual `break' arguments.
 - And all the rest is regular `break' arguments.
 
-Influenced by:
+Affected by:
 - `break' implementation.
 - Backtrace fetching support.
 
