@@ -54,7 +54,6 @@ Example from the spec:
 ;; Ignore methods.
 \(describe* ship t t)
 ;; Federation-starship #<FEDERATION-STARSHIP {100456B353}>
-;; SELF              = #<FEDERATION-STARSHIP {100456B353}>
 ;; ID                = 68792267603
 ;; CLASS             = #<STANDARD-CLASS COMMON-LISP-USER::FEDERATION-STARSHIP>
 ;; SLOT-DEFINITIONS  = (#<SB-MOP:STANDARD-EFFECTIVE-SLOT-DEFINITION COMMON-LISP-USER::CAPTAIN>
@@ -76,7 +75,7 @@ Example from the spec:
           (fresh-line stream)
           (description* object stream)
           (fresh-line stream)
-          (loop with fields = (fields* object)
+          (loop with fields = (remove :self (fields* object) :key #'first)
                 with max-tab = (1+ (reduce #'max fields
                                            :key #'(lambda (f) (length (princ-to-string (first f))))))
                 for (name value) in fields
