@@ -1,0 +1,23 @@
+Tested with
+(print
+ (list *print-array*
+       *print-base*
+       *print-case*
+       *print-circle*
+       *print-escape*
+       *print-gensym*
+       *print-length*
+       *print-level*
+       *print-lines*
+       *print-miser-width*
+       *print-pretty*
+       *print-radix*
+       *print-readably*
+       *print-right-margin*))
+
+SBCL    (T 10 :UPCASE NIL T T NIL NIL NIL NIL T   NIL NIL NIL)
+CCL     (T 10 :UPCASE NIL T T NIL NIL NIL 40  NIL NIL NIL NIL)
+ECL     (T 10 :UPCASE NIL T T NIL NIL NIL NIL T   NIL NIL NIL)
+ABCL    (T 10 :UPCASE NIL T T NIL NIL NIL NIL NIL NIL NIL NIL)
+CLISP   (T 10 :UPCASE NIL T T NIL NIL NIL NIL T   NIL NIL NIL)
+Allegro (T 10 :UPCASE NIL T T NIL NIL NIL 40  T   NIL NIL NIL)
