@@ -83,6 +83,14 @@ without package prefix, then simply use the package directly.
   (use-package :graven-image)
 #+end_src
 
+Or, if you're more orderly and disciplined about packages than I am,
+you can always use =trivial-package-local-nicknames= and define a
+shorter Graven Image nickname:
+#+begin_src lisp
+  (trivial-package-local-nicknames:add-package-local-nickname
+   :g :graven-image :cl-user)
+#+end_src
+
 If you want to replace the standard utilities with Graven Image ones,
 you can safely do so with the familiar:
 #+begin_src lisp
@@ -91,14 +99,6 @@ you can safely do so with the familiar:
   (setf (fdefinition 'apropos) (fdefinition 'gimage:apropos*))
   ;; For macros
   (setf (macro-function 'time) (macro-function 'gimage:time*))
-#+end_src
-
-Or, if you're more orderly and disciplined about packages than I am,
-you can always use =trivial-package-local-nicknames= and define a
-shorter Graven Image nickname:
-#+begin_src lisp
-  (trivial-package-local-nicknames:add-package-local-nickname
-   :g :graven-image :cl-user)
 #+end_src
 
 
