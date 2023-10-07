@@ -321,9 +321,9 @@ garbage collection times when running a cons-heavy code:
               into lists
             finally (return (values lists t)))
     (unless aborted
-      (format t "Bytes allocated: ~a, GC run ~d times for ~a seconds"
+      (format t "Bytes allocated: ~a, GC ran ~d times for ~a seconds"
               allocated gc-count gc)))
-  ;; Bytes allocated: 7997952, GC run NIL times for 0 seconds
+  ;; Bytes allocated: 7997952, GC ran NIL times for 0 seconds
 #+end_src
 
 ** =describe*= (generic function)
