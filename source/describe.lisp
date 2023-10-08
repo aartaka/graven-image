@@ -3,7 +3,7 @@
 
 (in-package :graven-image)
 
-(define-generic describe* (object &optional (stream t) ignore-methods)
+(define-generic describe* (object &optional (stream t) respect-methods)
   "Display OBJECT information to a STREAM.
 
 Shows a summary of OBJECT features and then lists all the properties
@@ -15,14 +15,14 @@ STREAM could be:
   returned from DESCRIBE*.
 - Any stream --- information is printed there.
 
-DESCRIBE-OBJECT methods are honored and used, unless IGNORE-METHODS is
-true. If IGNORE-METHODS, a regular summary+properties structure is
-used for OBJECT info.
+DESCRIBE-OBJECT methods are honored and used when RESPECT-METHODS is
+true. Otherwise (NIL), a regular summary+properties structure is used
+for OBJECT info.
 
 Affected by:
 - `*standard-output*'.
 - `fields*' and `description*' methods on OBJECT.
-- `describe-object' methods (unless IGNORE-METHODS.)
+- `describe-object' methods (when RESPECT-METHODS.)
 - Printer variables for the display of the field values.
 
 Example from the spec:
@@ -47,12 +47,13 @@ Example from the spec:
 ;; #<FEDERATION-STARSHIP {100456B353}> is a spaceship of type FEDERATION-STARSHIP,
 ;; with Rachel Garrett at the helm and with serial number NCC-1701-C.
 
-\(describe* ship)
+;; Respect `describe-object' methods.
+\(describe* ship t t)
 ;; #<FEDERATION-STARSHIP {100456B353}> is a spaceship of type FEDERATION-STARSHIP,
 ;; with Rachel Garrett at the helm and with serial number NCC-1701-C.
 
 ;; Ignore methods.
-\(describe* ship t t)
+\(describe* ship)
 ;; Federation-starship #<FEDERATION-STARSHIP {100456B353}>
 ;; ID                = 68792267603
 ;; CLASS             = #<STANDARD-CLASS COMMON-LISP-USER::FEDERATION-STARSHIP>
@@ -69,7 +70,7 @@ Example from the spec:
 			      (subtypep (class-name (class-of object))
 					(class-name (first (method-specializers m)))))
 			    (generic-function-methods #'describe-object))))
-    (if (and method-p (not ignore-methods))
+    (if (and method-p respect-methods)
         (funcall #'describe-object object stream)
         (progn
           (fresh-line stream)

@@ -330,7 +330,7 @@ garbage collection times when running a cons-heavy code:
 
 Signature:
 #+begin_src lisp
-describe* object &optional (stream t) ignore-methods
+describe* object &optional (stream t) respect-methods
 #+end_src
 
 Describes the =object= to the stream, but this time with portable
@@ -340,10 +340,9 @@ properties (=graven-image:fields*=). In Graven Image, both
 =describe= and =inspect= have the same format and the same set of
 fields.
 
-As an homage to the original =describe=, Graven Image one respects the
-=describe-object= methods defined for user classes. If one needs to
-ignore these too, passing T to =ignore-methods= should be enough to
-get consistent Graven Image descriptions for all the objects.
+As a note of respect to the original =describe=, Graven Image one
+allows to reuse the =describe-object= methods defined for user
+classes. To enable this, pass T to =respect-methods=.
 
 *** =graven-image:fields*= (generic function)
 
