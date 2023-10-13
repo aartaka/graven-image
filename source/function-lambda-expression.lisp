@@ -271,7 +271,7 @@
                     (when (and position file)
                       (ignore-errors
                        (with-open-file (f file)
-			 (file-position f position)
+                         (file-position f position)
                          (maybe-unsafe-read f))))))
            #+clozure
            (let* ((note (or (ccl:function-source-note function)
@@ -347,7 +347,7 @@
 (defun ensure-function (function)
   (typecase function
     ((and symbol
-	  (satisfies special-operator-p))
+          (satisfies special-operator-p))
      nil)
     (symbol
      (or (macro-function function)
@@ -420,12 +420,12 @@ Affected by:
                            ,(if return-type-p
                                 return-type
                                 t))))))
-	#+clozure
-	(ccl::find-ftype-decl (function-name-symbol function) ccl::*nx-lexical-environment*)
-	#+abcl
-	(sys::proclaimed-ftype (function-name-symbol function))
-	#+allegro
-	(compiler::declared-ftype-p (function-name-symbol function))
+        #+clozure
+        (ccl::find-ftype-decl (function-name-symbol function) ccl::*nx-lexical-environment*)
+        #+abcl
+        (sys::proclaimed-ftype (function-name-symbol function))
+        #+allegro
+        (compiler::declared-ftype-p (function-name-symbol function))
         #-(or cmucl scl sbcl ecl gcl clozure abcl allegro)
         nil)))))
 

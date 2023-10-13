@@ -244,13 +244,13 @@ always the case that some are missing."
                 #'max (append real-times system-times user-times gc-times allocated-bytes)
                 :initial-value 15
                 :key #'(lambda (num) (length (princ-to-string num)))))
-	     (unit-length 10))
+             (unit-length 10))
         (format *trace-output*
                 "~&Benchmark for ~a runs of~
 ~&~s" repeat form)
         (format *trace-output* "~&~a~vt~a~vt~a~vt~a~vt~a~vt~a"
                 '-
-		20 'unit
+                20 'unit
                 (+ 20 unit-length) 'minimum
                 (+ 20 unit-length max-number-length) 'average
                 (+ 20 unit-length (* 2 max-number-length)) 'maximum
@@ -265,9 +265,9 @@ always the case that some are missing."
                 do (format *trace-output*
                            "~&~a~vt~a~vt~f~vt~f~vt~f~vt~f"
                            name
-			   20 unit
+                           20 unit
                            (+ 20 unit-length)
-			   (cond
+                           (cond
                              ((uiop:emptyp list) 0)
                              ((= 1 (length list)) (first list))
                              (t (reduce #'min list :initial-value most-positive-fixnum)))

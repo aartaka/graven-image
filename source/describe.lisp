@@ -37,11 +37,11 @@ Example from the spec:
     (format stream \"~&~S is a spaceship of type ~S,~
                      ~%with ~A at the helm ~
                        and with serial number ~D.~%\"
-	    s (type-of s) captain serial#)))
+            s (type-of s) captain serial#)))
 
 \(defvar ship (make-instance 'federation-starship
-			    :captain \"Rachel Garrett\"
-			    :serial-number \"NCC-1701-C\"))
+                             :captain \"Rachel Garrett\"
+                             :serial-number \"NCC-1701-C\"))
 
 \(describe ship)
 ;; #<FEDERATION-STARSHIP {100456B353}> is a spaceship of type FEDERATION-STARSHIP,
@@ -66,10 +66,11 @@ Example from the spec:
                    (null (make-string-output-stream))
                    ((eql t) *standard-output*)
                    (stream object)))
-         (method-p (find-if (lambda (m)
-			      (subtypep (class-name (class-of object))
-					(class-name (first (method-specializers m)))))
-			    (generic-function-methods #'describe-object))))
+         (method-p (find-if
+                    (lambda (m)
+                      (subtypep (class-name (class-of object))
+                                (class-name (first (method-specializers m)))))
+                    (generic-function-methods #'describe-object))))
     (if (and method-p respect-methods)
         (funcall #'describe-object object stream)
         (progn

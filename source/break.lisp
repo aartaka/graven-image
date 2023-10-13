@@ -74,12 +74,12 @@ Examples:
 \(foo 1 2 3)
 ;; In FOO: A=1 B=2 C=3 Testing arguments"
   (let* ((symbols (loop for a in arguments
-			            while (and (consp a)
-				                   (eq 'quote (car a)))
-			            collect (second a)))
-	     (rest (or (ignore-errors
-		            (subseq arguments (length symbols)))
-		           (list "Break"))))
+                        while (and (consp a)
+                                   (eq 'quote (car a)))
+                        collect (second a)))
+         (rest (or (ignore-errors
+                    (subseq arguments (length symbols)))
+                   (list "Break"))))
     `(break
       (%break
        (current-frame-name)

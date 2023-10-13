@@ -73,17 +73,17 @@ Affected by:
 ~[~;Jan~;Feb~;Mar~;Apr~;May~;Jun~;Jul~;Aug~;Sep~;Oct~;Nov~;Dec~] ~
 ~a~[th~;st~;nd~;rd~:;th~] ~a (on ~a ~a).~%"
                        (if started?
-			   "Started"
-			   "Finished")
+                           "Started"
+                           "Finished")
                        (uiop:native-namestring (translate-logical-pathname *dribble-pathname*))
                        hour minute second month date (mod date 10) year
                        (lisp-implementation-type) (lisp-implementation-version))
-	       (when started?
-		 (print `(in-package ,(package-name *package*))
-			(slot-value *dribble-stream* 'actual-stream))
-		 (print `(dribble* ,@(when pathname-p
-				       (list pathname if-exists if-does-not-exist)))
-			(slot-value *dribble-stream* 'actual-stream))))))
+       (when started?
+ (print `(in-package ,(package-name *package*))
+(slot-value *dribble-stream* 'actual-stream))
+ (print `(dribble* ,@(when pathname-p
+                       (list pathname if-exists if-does-not-exist)))
+        (slot-value *dribble-stream* 'actual-stream))))))
     (cond
       ((and *dribble-pathname* (not pathname-p))
        (print-dribble nil)
