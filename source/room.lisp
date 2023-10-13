@@ -298,10 +298,10 @@ Unconditionally prints the T type clause in the end."
                  (dolist (type types-to-print)
                    (destructuring-bind (name &key (bytes 0) (instances 0))
                        type
-                     (format destination "~&~s ~vt~d bytes, ~d objects" name max-name-length bytes instances)))
+                     (format destination "~&~s ~vt~:d bytes, ~:d objects" name max-name-length bytes instances)))
                  (destructuring-bind (&key (bytes 0) (instances 0))
                      (rest t-type)
-                   (format destination "~&Total ~vt~d bytes, ~d objects" max-name-length bytes instances))))))
+                   (format destination "~&Total ~vt~:d bytes, ~:d objects" max-name-length bytes instances))))))
       (unless params
         (format destination "~&No memory stats available, falling back to implementation-specific ROOM.~%")
         (return-from room* (values-list (multiple-value-list (funcall old-room)))))
