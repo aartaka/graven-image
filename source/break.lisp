@@ -3,6 +3,45 @@
 
 (in-package :graven-image)
 
+
+(-> %break (t list (cons string *)))
+(defun %break (current-fn-name variables args)
+  (let ((max-var-length (reduce #'max
+                                variables
+                                :initial-value 0
+                                :key (lambda (var)
+                                       (length (format nil "~s" (first var)))))))
+    (with-output-to-string (s)
+      (when current-fn-name
+        (format s "In ~s: " current-fn-name))
+      (when variables
+        (loop for (var val) in variables
+              do (format s "~& ~s~vt= ~s~%" var (+ 2 max-var-length) val)))
+      (apply #'format s args))))
+
+(defmacro current-frame-name ()
+  (quote
+   #+sbcl
+   (sb-debug::frame-call
+    (or (sb-debug::resolve-stack-top-hint)
+        (sb-di:frame-down (sb-di:top-frame))))
+   #+ccl
+   (block get-fn
+     (ccl:map-call-frames
+      (lambda (p c)
+        (return-from get-fn
+          (ignore-errors
+           (function-name (ccl:frame-function p c)))))
+      :start-frame-number 0))
+   #+ecl
+   (ignore-errors
+    (function-name
+     (system::ihs-fun (system::ihs-top))))
+   #+abcl
+   (first (sys:frame-to-list (second (sys:backtrace))))
+   #-(or sbcl ccl ecl abcl)
+   nil))
+
 (defmacro break* (&rest arguments)
   "A more useful wrapper around `break'.
 - Lists the name for the function/block `break*' is called from.
@@ -35,35 +74,16 @@ Examples:
 \(foo 1 2 3)
 ;; In FOO: A=1 B=2 C=3 Testing arguments"
   (let* ((symbols (loop for a in arguments
-			while (and (consp a)
-				   (eq 'quote (car a)))
-			collect (second a)))
-	 (rest (or (ignore-errors
-		     (subseq arguments (length symbols)))
-		   (list "Break")))
-	 (current-fn-var (gensym "CURRENT-FN")))
-    `(let ((,current-fn-var
-	    #+sbcl
-	    (sb-debug::frame-call
-	     (or (sb-debug::resolve-stack-top-hint)
-		 (sb-di:frame-down (sb-di:top-frame))))
-	    #+ccl
-	    (block get-fn
-	      (ccl:map-call-frames
-	       (lambda (p c)
-		 (return-from get-fn
-		   (ignore-errors
-		     (function-name (ccl:frame-function p c)))))
-	       :start-frame-number 1))
-	    #+ecl
-	    (ignore-errors
-	      (function-name
-	       (system::ihs-fun (system::ihs-top))))
-	    #+abcl
-	    (first (sys:frame-to-list (second (sys:backtrace))))))
-       (break (format nil "~@[In ~s: ~]~@[~:{~s=~s ~}~]~a"
-		      ,current-fn-var
-		      (list ,@(mapcar (lambda (s)
-					`(list (quote ,s) ,s))
-				      symbols))
-		      (format nil ,@rest))))))
+			            while (and (consp a)
+				                   (eq 'quote (car a)))
+			            collect (second a)))
+	     (rest (or (ignore-errors
+		            (subseq arguments (length symbols)))
+		           (list "Break"))))
+    `(break
+      (%break
+       (current-frame-name)
+       (list ,@(mapcar (lambda (s)
+                         `(list (quote ,s) ,s))
+                       symbols))
+       (list ,@rest)))))
