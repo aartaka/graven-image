@@ -25,7 +25,7 @@
    (sb-debug::frame-call
     (or (sb-debug::resolve-stack-top-hint)
         (sb-di:frame-down (sb-di:top-frame))))
-   #+ccl
+   #+clozure
    (block get-fn
      (ccl:map-call-frames
       (lambda (p c)
@@ -39,7 +39,7 @@
      (system::ihs-fun (system::ihs-top))))
    #+abcl
    (first (sys:frame-to-list (second (sys:backtrace))))
-   #-(or sbcl ccl ecl abcl)
+   #-(or sbcl clozure ecl abcl)
    nil))
 
 (defmacro break* (&rest arguments)
