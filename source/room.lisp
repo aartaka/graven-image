@@ -20,6 +20,187 @@
 ;; immfix size:          4611686018427387904 fixnums
 ;; physical memory:      4063824 pages
 
+#+clozure
+(defun room-stats ()
+  (multiple-value-bind (heap-used static-used staticlib-used frozen-space-size)
+      (ccl::%usedbytes)
+    (multiple-value-bind (stack stack-used)
+        (ccl::%stack-space)
+      (let* ((heap-free (ccl::%freebytes))
+             (heap (+ heap-used heap-free))
+             (static (+ static-used staticlib-used frozen-space-size))
+             (stack-used-by-thread (ccl::%stack-space-by-lisp-thread)))
+        ;; TODO: frozen/reserved
+        (append (list :heap heap)
+                (list :heap-used heap-used)
+                (list :stack stack)
+                (list :stack-used stack-used)
+                (list :static static)
+                (list :types
+                      ;; FIXME: NIL for "logical size". What
+                      ;; is logical size?
+                      (loop for (type count nil physical-size)
+                              in (ccl:collect-heap-utilization)
+                            collect (list type
+                                          :bytes physical-size
+                                          :instances count)
+                              into type-data
+                            sum physical-size into total-bytes
+                            sum count into total-instances
+                            finally (return (append type-data
+                                                    (list (list t :bytes total-bytes
+                                                                  :instances total-instances))))))
+                (list :threads
+                      (map 'list
+                           (lambda (ti)
+                             (destructuring-bind
+                                 (thread sp-free sp-used . rest)
+                                 ti
+                               (declare (ignorable rest))
+                               ;; TODO: vsp, tsp stack memory.
+                               (let ((process (find-if (lambda (p) (eq (ccl::process-thread p) thread))
+                                                       (ccl:all-processes))))
+                                 (list thread
+                                       :name (ccl:process-name process)
+                                       :control-stack (+ sp-free sp-used)
+                                       :control-stack-used sp-used))))
+                           stack-used-by-thread)))))))
+
+#+ecl
+(defun room-stats ()
+  #+boehm-gc
+  (list
+   :heap (ext:get-limit 'ext:heap-size)
+   :stack (ext:get-limit 'ext:lisp-stack))
+  #-boehm-gc
+  (multiple-value-bind
+        (maxpage leftpage ncbpage maxcbpage ncb cbgbccount holepage l)
+      (sys::room-report)
+    ;; maxpage---number of pages ECL can use.
+    ;; leftpage---number of available pages.
+    ;; ncbpage---number of pages actually allocated for
+    ;; contiguous blocks.
+    ;; maxcbpage---maximum number of pages for contiguous blocks.
+    ;; ncb---???
+    ;; cbgbccount---number of times the garbage collector.
+    ;; has been called to collect contiguous blocks.
+    ;; holepage---number of pages in the hole.
+    ;; l
+    (declare (ignore ncbpage maxcbpage ncb holepage l))
+    (append
+     ;; REVIEW: Which one of `ext:c-stack',
+     ;; `ext:binding-stack', `ext:frame-stack', and
+     ;; `ext:lisp-stack' is THE stack?  Other
+     ;; implementations have a clear notion of control
+     ;; stack...
+     (list :stack (ext:get-limit 'ext:frame-stack))
+     (list :heap (* 4096 maxpage))
+     (list :heap-used (* 4096 (- maxpage leftpage)))
+     (list :gc-count cbgbccount)
+     (list
+      :types
+      (loop for (nused nfree npage maxpage gbccount) on l
+              by (lambda (list) (nthcdr 5 list))
+            for type in '(cons
+                          ;; fixnum Beppe
+                          fixnum char
+                          bignum ratio short-float long-float complex
+                          symbol package hash-table
+                          array vector string bit-vector
+                          stream random-state readtable pathname
+                          bytecodes cfun cclosure
+                          #-clos structure #+clos instance #+clos generic-function
+                          #+threads mp::process #+threads mp::lock
+                          si::foreign)
+            collect (list type :bytes (* 4096 npage))
+              into type-data
+            sum (* 4096 npage)
+              into total-bytes
+            finally (return (append type-data
+                                    (list (list t :bytes total-bytes)))))))))
+
+#+clisp
+(defun room-stats ()
+  (multiple-value-bind (used room static gc-count gc-space gc-time)
+      (sys::%room)
+    (declare (ignorable gc-time))
+    (append
+     (list :heap (+ used room))
+     (list :heap-used used)
+     (list :static static)
+     (list :gc-count gc-count)
+     (list :gc gc-space)
+     (list
+      :types (let ((total-bytes 0)
+                   (total-instances 0))
+               (loop for (type instances . bytes)
+                       across (sort (sys::heap-statistics) #'> :key #'cddr)
+                     collect (list type
+                                   :bytes bytes
+                                   :instances instances)
+                       into types
+                     sum bytes into total-bytes
+                     sum instances into total-instances
+                     finally (return (append (remove t types :key #'first)
+                                             (list (list
+                                                    t
+                                                    :bytes total-bytes
+                                                    :instances total-instances))))))))))
+
+#+sbcl
+(defun room-stats ()
+  ;; TODO: binding stack and thread-specific memory.
+  (labels ((find-symbol-value (symbol package)
+             (ignore-errors (symbol-value (uiop:find-symbol* symbol package nil))))
+           (get-type-memory (type)
+             (funcall (third (find type (or (ignore-errors
+                                             (find-symbol-value :+all-spaces+ :sb-vm))
+                                            (append (find-symbol-value :+heap-spaces+ :sb-vm)
+                                                    (find-symbol-value :+stack-spaces+ :sb-vm)))
+                                   :key #'first)))))
+    (append
+     (list :static (get-type-memory :static))
+     (list :heap (sb-ext::dynamic-space-size))
+     (list :heap-used (get-type-memory :dynamic))
+     (list :stack (- sb-vm::*control-stack-end* sb-vm::*control-stack-start*))
+     (list :stack-used (get-type-memory :control-stack))
+     (list :read-only (get-type-memory :read-only))
+     (list
+      :types (let ((type-instances (make-hash-table))
+                   (type-total-bytes (make-hash-table)))
+               (sb-vm:map-allocated-objects
+                (lambda (obj type size)
+                  (declare (ignorable type))
+                  (incf (gethash (class-name (class-of obj)) type-instances 0))
+                  (incf (gethash (class-name (class-of obj)) type-total-bytes 0) size))
+                :dynamic)
+               (loop for type being the hash-key of type-instances
+                     for bytes = (gethash type type-total-bytes 0)
+                     for instances = (gethash type type-instances 0)
+                     sum bytes into total-bytes
+                     sum instances into total-instances
+                     collect (list type
+                                   :bytes bytes
+                                   :instances instances)
+                       into types
+                     finally (return
+                               (append
+                                types
+                                (list (list t
+                                            :bytes total-bytes
+                                            :instances total-instances))))))))))
+
+#+abcl
+(defun room-stats ()
+  ;; FIXME: Find more data!!!!!
+  (let* ((runtime (java:jstatic "getRuntime"
+                                (java:jclass "java.lang.Runtime")))
+         ;; TODO: maxMemory? What does this method mean?
+         (total-memory (java:jcall "totalMemory" runtime))
+         (free-memory (java:jcall "freeMemory" runtime)))
+    (list :heap total-memory
+          :heap-used (- total-memory free-memory))))
+
 (defmacro with-room* ((&rest room-keywords)
                       &body body)
   "Binds ROOM-KEYWORDS to memory statistics for the duration of BODY.
@@ -47,184 +228,16 @@ threads/types.
 
 Not all of properties are guaranteed to be there. More so: it's almost
 always the case that some are missing."
-  `(flet ((room-stats ()
-            #+clozure
-            (multiple-value-bind (heap-used static-used staticlib-used frozen-space-size)
-                (ccl::%usedbytes)
-              (multiple-value-bind (stack stack-used)
-                  (ccl::%stack-space)
-                (let* ((heap-free (ccl::%freebytes))
-                       (heap (+ heap-used heap-free))
-                       (static (+ static-used staticlib-used frozen-space-size))
-                       (stack-used-by-thread (ccl::%stack-space-by-lisp-thread)))
-                  ;; TODO: frozen/reserved
-                  (append (list :heap heap)
-                          (list :heap-used heap-used)
-                          (list :stack stack)
-                          (list :stack-used stack-used)
-                          (list :static static)
-                          (list :types
-                                ;; FIXME: NIL for "logical size". What
-                                ;; is logical size?
-                                (loop for (type count nil physical-size)
-                                        in (ccl:collect-heap-utilization)
-                                      collect (list type
-                                                    :bytes physical-size
-                                                    :instances count)
-                                        into type-data
-                                      sum physical-size into total-bytes
-                                      sum count into total-instances
-                                      finally (return (append type-data
-                                                              (list (list t :bytes total-bytes
-                                                                            :instances total-instances))))))
-                          (list :threads
-                                (map 'list
-                                     (lambda (ti)
-                                       (destructuring-bind
-                                           (thread sp-free sp-used . rest)
-                                           ti
-                                         (declare (ignorable rest))
-                                         ;; TODO: vsp, tsp stack memory.
-                                         (let ((process (find-if (lambda (p) (eq (ccl::process-thread p) thread))
-                                                                 (ccl:all-processes))))
-                                           (list thread
-                                                 :name (ccl:process-name process)
-                                                 :control-stack (+ sp-free sp-used)
-                                                 :control-stack-used sp-used))))
-                                     stack-used-by-thread))))))
-            #+(and ecl boehm-gc)
-            (list
-             :heap (ext:get-limit 'ext:heap-size)
-             :stack (ext:get-limit 'ext:lisp-stack))
-            #+(and ecl (not boehm-gc))
-            (multiple-value-bind
-                  (maxpage leftpage ncbpage maxcbpage ncb cbgbccount holepage l)
-                (sys::room-report)
-              ;; maxpage---number of pages ECL can use.
-              ;; leftpage---number of available pages.
-              ;; ncbpage---number of pages actually allocated for
-              ;; contiguous blocks.
-              ;; maxcbpage---maximum number of pages for contiguous blocks.
-              ;; ncb---???
-              ;; cbgbccount---number of times the garbage collector.
-              ;; has been called to collect contiguous blocks.
-              ;; holepage---number of pages in the hole.
-              ;; l
-              (declare (ignore ncbpage maxcbpage ncb holepage l))
-              (append
-               ;; REVIEW: Which one of `ext:c-stack',
-               ;; `ext:binding-stack', `ext:frame-stack', and
-               ;; `ext:lisp-stack' is THE stack?  Other
-               ;; implementations have a clear notion of control
-               ;; stack...
-               (list :stack (ext:get-limit 'ext:frame-stack))
-               (list :heap (* 4096 maxpage))
-               (list :heap-used (* 4096 (- maxpage leftpage)))
-               (list :gc-count cbgbccount)
-               (list
-                :types
-                (loop for (nused nfree npage maxpage gbccount) on l
-                        by (lambda (list) (nthcdr 5 list))
-                      for type in '(cons
-                                    ;; fixnum Beppe
-                                    fixnum char
-                                    bignum ratio short-float long-float complex
-                                    symbol package hash-table
-                                    array vector string bit-vector
-                                    stream random-state readtable pathname
-                                    bytecodes cfun cclosure
-                                    #-clos structure #+clos instance #+clos generic-function
-                                    #+threads mp::process #+threads mp::lock
-                                    si::foreign)
-                      collect (list type :bytes (* 4096 npage))
-                        into type-data
-                      sum (* 4096 npage)
-                        into total-bytes
-                      finally (return (append type-data
-                                              (list (list t :bytes total-bytes))))))))
-            #+clisp
-            (multiple-value-bind (used room static gc-count gc-space gc-time)
-                (sys::%room)
-              (declare (ignorable gc-time))
-              (append
-               (list :heap (+ used room))
-               (list :heap-used used)
-               (list :static static)
-               (list :gc-count gc-count)
-               (list :gc gc-space)
-               (list
-                :types (loop for (type instances . bytes)
-                               across (sort (sys::heap-statistics) #'> :key #'cddr)
-                             collect (list type
-                                           :bytes bytes
-                                           :instances instances)
-                               into types
-                             sum bytes into total-bytes
-                             sum instances into total-instances
-                             finally (return (append types
-                                                     (list (list
-                                                            t
-                                                            :bytes total-bytes
-                                                            :instances total-instances))))))))
-            #+sbcl
-            ;; TODO: binding stack and thread-specific memory.
-            (labels ((find-symbol-value (symbol package)
-		       (ignore-errors (symbol-value (uiop:find-symbol* symbol package nil))))
-		     (get-type-memory (type)
-                       (funcall (third (find type (or (ignore-errors
-						       (find-symbol-value :+all-spaces+ :sb-vm))
-						      (append (find-symbol-value :+heap-spaces+ :sb-vm)
-							      (find-symbol-value :+stack-spaces+ :sb-vm)))
-					     :key #'first)))))
-              (append
-               (list :static (get-type-memory :static))
-               (list :heap (sb-ext::dynamic-space-size))
-               (list :heap-used (get-type-memory :dynamic))
-               (list :stack (- sb-vm::*control-stack-end* sb-vm::*control-stack-start*))
-               (list :stack-used (get-type-memory :control-stack))
-               (list :read-only (get-type-memory :read-only))
-               (list
-                :types (let ((type-instances (make-hash-table))
-                             (type-total-bytes (make-hash-table)))
-                         (sb-vm:map-allocated-objects
-                          (lambda (obj type size)
-                            (declare (ignorable type))
-                            (incf (gethash (class-name (class-of obj)) type-instances 0))
-                            (incf (gethash (class-name (class-of obj)) type-total-bytes 0) size))
-                          :dynamic)
-                         (loop for type being the hash-key of type-instances
-                               for bytes = (gethash type type-total-bytes 0)
-                               for instances = (gethash type type-instances 0)
-                               sum bytes into total-bytes
-                               sum instances into total-instances
-                               collect (list type
-                                             :bytes bytes
-                                             :instances instances)
-                                 into types
-                               finally (return
-                                         (append
-                                          types
-                                          (list (list t
-                                                      :bytes total-bytes
-                                                      :instances total-instances)))))))))
-            #+abcl
-            ;; FIXME: Find more data!!!!!
-            (let* ((runtime (java:jstatic "getRuntime"
-                                          (java:jclass "java.lang.Runtime")))
-                   ;; TODO: maxMemory? What does this method mean?
-                   (total-memory (java:jcall "totalMemory" runtime))
-                   (free-memory (java:jcall "freeMemory" runtime)))
-              (list :heap total-memory
-                    :heap-used (- total-memory free-memory)))
-            #-(or clozure sbcl ecl clisp abcl)
-            (load-time-warn "Cannot fetch room statistics for this implementation. Help in fixing it!")))
-     (destructuring-bind (,@(unless (member (car room-keywords) '(&key &rest))
-                              (list '&key))
-                          ,@room-keywords
-                          ,@(unless (eq (car (last room-keywords)) '&allow-other-keys)
-                              (list '&allow-other-keys)))
-         (room-stats)
-       ,@body)))
+  `(destructuring-bind (,@(unless (member (car room-keywords) '(&key &rest))
+                            (list '&key))
+                        ,@room-keywords
+                        ,@(unless (eq (car (last room-keywords)) '&allow-other-keys)
+                            (list '&allow-other-keys)))
+       #+(or clozure sbcl ecl clisp abcl)
+     (room-stats)
+     #-(or clozure sbcl ecl clisp abcl)
+     (load-time-warn "Cannot fetch room statistics for this implementation. Help in fixing it!")
+     ,@body))
 
 (defun room* (&optional (verbose :default) (destination t))
   "Print memory usage statistics to DESTINATION.
