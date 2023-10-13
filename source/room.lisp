@@ -278,9 +278,8 @@ Unconditionally prints the T type clause in the end."
                     (types (remove t types :key #'first))
                     (types (sort (copy-list types) #'>
                                  :key (lambda (type)
-                                        (destructuring-bind (&key (bytes 0) &allow-other-keys)
-                                            (rest type)
-                                          bytes))))
+                                        (or (second (member :bytes type))
+                                            0))))
                     (max-name-length
                       (1+ (reduce #'max types
                                   :key (lambda (type) (length (string (first type))))
