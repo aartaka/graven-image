@@ -38,7 +38,10 @@
    ;; Hash-table
    'sb-impl::test 'sb-impl::rehash-size 'sb-impl::rehash-threshold 'sb-impl::%count
    ;; Stream
-   'sb-impl::file 'sb-impl::element-type 'sb-impl::dual-channel-p 'sb-impl::pathname))
+   'sb-impl::file 'sb-impl::element-type 'sb-impl::dual-channel-p 'sb-impl::pathname
+   ;; Method
+   'sb-pcl::%function 'sb-pcl::specializers 'sb-pcl::qualifiers
+   'sb-pcl::%generic-function 'sb-pcl::lambda-list))
 
 #+sbcl
 (defun except-sbcl-props (object)
@@ -528,6 +531,14 @@ modify the property. For slots, this setter will likely be setting the
     #+clozure
     ,@(when (typep object 'standard-generic-function)
         (get-ccl-props object 'ccl::sgf.method-class 'ccl::sgf.decls 'ccl::sgf.dependents))))
+
+(deffields (object standard-method)
+  `((:specializers ,(method-specializers object))
+    (:qualifiers ,(method-qualifiers object))
+    (:method-function ,(method-function object))
+    (:arguments ,(function-lambda-list* object))
+    (:ftype ,(function-type* object))
+    (:generic-function ,(method-generic-function object))))
 
 (-> restart-interactive (restart))
 (defun restart-interactive (restart)
