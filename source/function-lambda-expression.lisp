@@ -398,6 +398,13 @@ Affected by:
            (function-name function)
            (transform-definition-to-name definition))
        (or
+        (when (typep function 'standard-method)
+          (list 'function (mapcar (lambda (s)
+                                    (typecase s
+                                      ((or symbol list) s)
+                                      ((or standard-class built-in-class) (class-name s))
+                                      (t t)))
+                                  (method-specializers function))))
         #+sbcl
         (sb-introspect:function-type function)
         #+(or cmucl scl)
