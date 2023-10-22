@@ -537,7 +537,6 @@ modify the property. For slots, this setter will likely be setting the
     (:qualifiers ,(method-qualifiers object))
     (:method-function ,(method-function object))
     (:arguments ,(function-lambda-list* object))
-    (:ftype ,(function-type* object))
     (:generic-function ,(method-generic-function object))))
 
 (-> restart-interactive (restart))
