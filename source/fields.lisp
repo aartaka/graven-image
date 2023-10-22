@@ -252,9 +252,10 @@ modify the property. For slots, this setter will likely be setting the
     (:inherited-symbols ,(inherited-symbols object))
     (package-used-by-list ,(package-used-by-list object))
     (package-use-list ,(package-use-list object))
-    #+(or sb-package-locks package-locks)
+    #+(or sb-package-locks package-locks allegro)
     (locked #+sbcl ,(sb-ext:package-locked-p object)
             #+ecl ,(ext:package-locked-p object)
+            #+allegro ,(cadadr (allegro-fields object :lock))
             ,(lambda (new-value _)
                (declare (ignorable _))
                (if new-value
