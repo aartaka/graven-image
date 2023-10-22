@@ -38,10 +38,7 @@
    ;; Hash-table
    'sb-impl::test 'sb-impl::rehash-size 'sb-impl::rehash-threshold 'sb-impl::%count
    ;; Stream
-   'sb-impl::file 'sb-impl::element-type 'sb-impl::dual-channel-p 'sb-impl::pathname
-   ;; Method
-   'sb-pcl::%function 'sb-pcl::specializers 'sb-pcl::qualifiers
-   'sb-pcl::%generic-function 'sb-pcl::lambda-list))
+   'sb-impl::file 'sb-impl::element-type 'sb-impl::dual-channel-p 'sb-impl::pathname))
 
 #+sbcl
 (defun except-sbcl-props (object)
@@ -485,8 +482,6 @@ modify the property. For slots, this setter will likely be setting the
    (get-ccl-props
     object
     'ccl::instance.hash 'ccl::instance.slots)
-   #+abcl
-   (abcl-props-except object "DOCUMENTATION" "DIRECT-SLOTS" "SLOTS")
    (mapcar (lambda (name)
              (list name (if (slot-boundp object name)
                             (slot-value object name)
@@ -531,13 +526,6 @@ modify the property. For slots, this setter will likely be setting the
     #+clozure
     ,@(when (typep object 'standard-generic-function)
         (get-ccl-props object 'ccl::sgf.method-class 'ccl::sgf.decls 'ccl::sgf.dependents))))
-
-(deffields (object standard-method)
-  `((:specializers ,(method-specializers object))
-    (:qualifiers ,(method-qualifiers object))
-    (:method-function ,(method-function object))
-    (:arguments ,(function-lambda-list* object))
-    (:generic-function ,(method-generic-function object))))
 
 (-> restart-interactive (restart))
 (defun restart-interactive (restart)
