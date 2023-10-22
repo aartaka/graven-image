@@ -312,7 +312,7 @@ modify the property. For slots, this setter will likely be setting the
     (:graphic ,(every #'graphic-char-p object))))
 
 (deffields (object array)
-  `((array-dimension
+  `((array-dimensions
      ,(array-dimensions object)
      ,(lambda (new-value _)
         (declare (ignorable _))
