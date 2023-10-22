@@ -516,17 +516,6 @@ modify the property. For slots, this setter will likely be setting the
                  new-value)))
     (lambda-list-keywords ,lambda-list-keywords)))
 
-(deffields (object generic-function)
-  `((:methods ,(generic-function-methods object))
-    (:method-combination ,(generic-function-method-combination object))
-    #+clozure
-    ,@(get-ccl-props
-       object
-       'ccl::gf.code-vector 'ccl::gf.slots 'ccl::gf.dispatch-table 'ccl::gf.dcode 'ccl::gf.hash 'ccl::gf.bits)
-    #+clozure
-    ,@(when (typep object 'standard-generic-function)
-        (get-ccl-props object 'ccl::sgf.method-class 'ccl::sgf.decls 'ccl::sgf.dependents))))
-
 (-> restart-interactive (restart))
 (defun restart-interactive (restart)
   (declare (ignorable restart))
