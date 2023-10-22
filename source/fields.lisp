@@ -314,9 +314,10 @@ modify the property. For slots, this setter will likely be setting the
 (deffields (object array)
   `((array-dimensions
      ,(array-dimensions object)
-     ,(lambda (new-value _)
-        (declare (ignorable _))
-        (adjust-array object new-value)))
+     ,(when (adjustable-array-p object)
+        (lambda (new-value _)
+          (declare (ignorable _))
+          (adjust-array object new-value))))
     (array-rank ,(array-rank object))
     (array-element-type ,(array-element-type object))
     (upgraded-array-element-type ,(upgraded-array-element-type (type-of object)))
