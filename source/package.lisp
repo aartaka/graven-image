@@ -78,7 +78,6 @@
    #:generic-function-methods
    #:method-generic-function
    #:method-lambda-list
-   #:method-qualifiers
    #:method-specializers
    #:method-function
    #:slot-definition-name)
