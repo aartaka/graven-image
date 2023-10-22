@@ -401,7 +401,8 @@ modify the property. For slots, this setter will likely be setting the
       (pathname-directory ,(pathname-directory object))
       (pathname-name ,(pathname-name object))
       (pathname-type ,(pathname-type object))
-      (pathname-version (pathname-version object))
+      (pathname-version ,(pathname-version object))
+      (directory-namestring ,(directory-namestring object))
       ,@(when (uiop:file-pathname-p object)
           `((file-author ,(file-author object))
             (file-write-date ,(file-write-date object))))
@@ -563,7 +564,9 @@ modify the property. For slots, this setter will likely be setting the
                  new-value)))
     #+allegro
     ,@(allegro-fields object :start :code :gc-info :immed-args :locals)
-    (lambda-list-keywords ,lambda-list-keywords)))
+    (lambda-list-keywords ,lambda-list-keywords)
+    (call-arguments-limit ,call-arguments-limit)
+    (lambda-parameters-limit ,lambda-parameters-limit)))
 
 (-> restart-interactive (restart))
 (defun restart-interactive (restart)
