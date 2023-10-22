@@ -402,6 +402,7 @@ modify the property. For slots, this setter will likely be setting the
       (pathname-name ,(pathname-name object))
       (pathname-type ,(pathname-type object))
       (pathname-version ,(pathname-version object))
+      ;; Other namestrings: host, file, enough.
       (directory-namestring ,(directory-namestring object))
       ,@(when (uiop:file-pathname-p object)
           `((file-author ,(file-author object))
