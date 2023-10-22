@@ -573,9 +573,10 @@ modify the property. For slots, this setter will likely be setting the
       (:id ,(id object))
       (class-of
        ,(class-of object)
-       ,(lambda (new-value _)
-          (declare (ignorable _))
-          (change-class object (find-class new-value))))
+       ,(unless (typep (class-of object) 'built-in-class)
+          (lambda (new-value _)
+            (declare (ignorable _))
+            (change-class object (find-class new-value)))))
       ,@(when slot-defs
           (list (list :slot-definitions slot-defs)))
       (type-of ,(type-of object))
