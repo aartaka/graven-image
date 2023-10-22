@@ -72,3 +72,8 @@ Otherwise every call to an unimplemented function spams warnings all
 over the REPL."
   (apply #'warn args)
   nil)
+
+(defun make-keyword (string)
+  "Convert STRING (a valid string designator) into a keyword symbol."
+  (let ((*package* (find-package :keyword)))
+    (read-from-string (string string))))

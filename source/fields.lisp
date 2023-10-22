@@ -71,6 +71,41 @@
         unless (member name except :test #'string=)
           collect (list (intern name :keyword) value)))
 
+#+allegro
+(defun value (def object)
+  (let ((type (inspect::field-def-type def))
+        (name (inspect::field-def-name def))
+        (access (inspect::field-def-access def)))
+    (ecase type
+      ((:unsigned-word :unsigned-byte :unsigned-natural
+                       :unsigned-long :unsigned-half-long
+                       :unsigned-3byte :unsigned-long32)
+       (list name (inspect::component-ref-v object access type)))
+      ((:lisp :value :func)
+       (list name (inspect::component-ref object access)))
+      (:indirect
+       (destructuring-bind (prefix count ref set) access
+         (declare (ignore set prefix))
+         (loop for i below (funcall count object)
+               append (list (format nil "~A-~D" name i)
+                            (funcall ref object i))))))))
+
+#+allegro
+(defun all-allegro-fields (o)
+  (ignore-errors
+   (loop for (d dd) on (inspect::inspect-ctl o)
+         for (name value) = (value d o)
+         for keyword = (make-keyword name)
+         until (eq d dd)
+         collect (list keyword value))))
+
+#+allegro
+(defun allegro-fields (o &rest fields)
+  (remove-if-not
+   (lambda (field)
+     (member (first field) fields))
+   (all-allegro-fields o)))
+
 (defun reverse-append (&rest lists)
   (remove-duplicates (reduce #'append (nreverse lists))
                      :key #'first
@@ -269,7 +304,10 @@ modify the property. For slots, this setter will likely be setting the
     ,@(get-ccl-props
        object 'ccl::pkg.itab 'ccl::pkg.etab 'ccl::pkg.shadowed 'ccl::pkg.lock 'ccl::pkg.intern-hook)
     #+sbcl
-    ,@(except-sbcl-props object)))
+    ,@(except-sbcl-props object)
+    #+allegro
+    ,@(allegro-fields
+       object :tables :mode :direct-parent :direct-children :foreign-protocol :flat)))
 
 (deffields (object readtable)
   `((readtable-case
@@ -290,13 +328,17 @@ modify the property. For slots, this setter will likely be setting the
     #+clozure
     ,@(get-ccl-props object 'ccl::rdtab.ttab 'ccl::rdtab.macros)
     #+sbcl
-    ,@(except-sbcl-props object)))
+    ,@(except-sbcl-props object)
+    #+allegro
+    ,@(allegro-fields object :attr :macros :dispatch)))
 
 (deffields (object random-state)
   `(#+clozure
     ,@(get-ccl-props object 'ccl::random.mrg31k3p-state)
     #+sbcl
-    ,@(except-sbcl-props object)))
+    ,@(except-sbcl-props object)
+    #+allegro
+    ,@(allegro-fields object :smplocker :mti :fixseed)))
 
 (deffields (object character)
   `((char-code ,(char-code object))
@@ -373,7 +415,9 @@ modify the property. For slots, this setter will likely be setting the
       (user-homedir-pathname ,(user-homedir-pathname))
       (:cwd ,(uiop:getcwd))
       #+sbcl
-      ,@(except-sbcl-props object))))
+      ,@(except-sbcl-props object)
+      #+allegro
+      ,@(allegro-fields object :dir-namestring))))
 
 (deffields (object hash-table)
   `((hash-table-test ,(hash-table-test object))
@@ -493,7 +537,8 @@ modify the property. For slots, this setter will likely be setting the
                      (setf (slot-value object name) new-value))))
            (set-difference (object-slots object)
                            #+sbcl sbcl-props-to-ignore
-                           #-sbcl nil))))
+                           #+allegro '(excl::plist excl::flags)
+                           #-(or sbcl allegro) nil))))
 
 (deffields (object standard-object)
   (inspect-slots object))
@@ -516,6 +561,8 @@ modify the property. For slots, this setter will likely be setting the
         (declare (ignorable _))
         (compile (function-name* object)
                  new-value)))
+    #+allegro
+    ,@(allegro-fields object :start :code :gc-info :immed-args :locals)
     (lambda-list-keywords ,lambda-list-keywords)))
 
 (-> restart-interactive (restart))
@@ -582,4 +629,6 @@ modify the property. For slots, this setter will likely be setting the
           (list (list :slot-definitions slot-defs)))
       (type-of ,(type-of object))
       #+clozure
-      (:wrapper ,(ccl::%class-own-wrapper (class-of object))))))
+      (:wrapper ,(ccl::%class-own-wrapper (class-of object)))
+      #+allegro
+      ,@(allegro-fields :lock-index :hash :type :flags :xflags :excl-type :plist))))
