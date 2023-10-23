@@ -207,8 +207,8 @@ always the case that some are missing."
              ,values
            ,@body)))))
 
+(-> %benchmark ((integer 1) function t))
 (defun %benchmark (repeat thunk form)
-  (check-type repeat (integer 1))
   (let (real-times
         system-times user-times
         gc-times allocated-bytes)
@@ -294,6 +294,7 @@ Affected by:
                   (cons 'progn forms))))
     `(%benchmark ,repeat (lambda () ,form) (quote ,form))))
 
+(-> %time (function t))
 (defun %time (thunk form)
   (let ((decimal-length (ceiling (log internal-time-units-per-second 10))))
     (with-time* (&key aborted real system user cycles gc-count gc allocated faults)
