@@ -273,8 +273,8 @@ always the case that some are missing."
                              (t (reduce #'min list :initial-value most-positive-fixnum)))
                            (+ unit-length 20 max-number-length) (avg list)
                            (+ 20 unit-length (* 2 max-number-length)) (if list
-                                                              (reduce #'max list :initial-value 0.0)
-                                                              0)
+                                                                          (reduce #'max list :initial-value 0.0)
+                                                                          0)
                            (+ 20 unit-length (* 3 max-number-length)) (reduce #'+ list)))
         (values-list values)))))
 
