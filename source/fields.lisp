@@ -532,7 +532,6 @@ modify the property. For slots, this setter will likely be setting the
   (mapcar #'slot-definition-name
           (class-slots (class-of object))))
 
-;; Handle SYSTEM::DEFSTRUCT-SLOT-DESCRIPTION on ECL.
 (-> inspect-slots ((or standard-object structure-object)) list)
 (defun inspect-slots (object)
   (append
