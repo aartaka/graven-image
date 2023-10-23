@@ -20,6 +20,7 @@
 ;; immfix size:          4611686018427387904 fixnums
 ;; physical memory:      4063824 pages
 
+(-> room-stats () list)
 #+clozure
 (defun room-stats ()
   (multiple-value-bind (heap-used static-used staticlib-used frozen-space-size)
@@ -65,7 +66,6 @@
                                        :control-stack (+ sp-free sp-used)
                                        :control-stack-used sp-used))))
                            stack-used-by-thread)))))))
-
 #+ecl
 (defun room-stats ()
   #+boehm-gc
@@ -118,7 +118,6 @@
               into total-bytes
             finally (return (append type-data
                                     (list (list t :bytes total-bytes)))))))))
-
 #+clisp
 (defun room-stats ()
   (multiple-value-bind (used room static gc-count gc-space gc-time)
@@ -146,7 +145,6 @@
                                                     t
                                                     :bytes total-bytes
                                                     :instances total-instances))))))))))
-
 #+sbcl
 (defun room-stats ()
   ;; TODO: binding stack and thread-specific memory.
@@ -189,7 +187,6 @@
                                 (list (list t
                                             :bytes total-bytes
                                             :instances total-instances))))))))))
-
 #+abcl
 (defun room-stats ()
   ;; FIXME: Find more data!!!!!
@@ -200,6 +197,9 @@
          (free-memory (java:jcall "freeMemory" runtime)))
     (list :heap total-memory
           :heap-used (- total-memory free-memory))))
+#-(or clozure sbcl ecl clisp abcl)
+(defun room-stats ()
+  (list))
 
 (defmacro with-room* ((&rest room-keywords)
                       &body body)
