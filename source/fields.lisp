@@ -134,17 +134,21 @@ modify the property. For slots, this setter will likely be setting the
       :uninterned))
 
 (defmacro deffields ((name specifier) &body fields)
-  `(defmethod fields* reverse-append ((,name ,specifier) &key &allow-other-keys)
-     ;; Don't want to duplicate fields for MOP-inspectable objects.
-     (unless (or (subtypep ',specifier 'structure-object)
-                 (subtypep ',specifier 'standard-object))
+  (unless (and (not (member specifier '(structure-object standard-object)))
+               (or (subtypep specifier 'structure-object)
+                   (subtypep specifier 'standard-object)))
+    `(defmethod fields* reverse-append ((,name ,specifier) &key &allow-other-keys)
+       ;; Don't want to duplicate fields for MOP-inspectable objects.
        ,@fields)))
 
 (defmacro deffield (specifier name function)
-  `(defmethod fields* reverse-append ((object ,specifier) &key &allow-other-keys)
-     (unless (or (subtypep ',specifier 'structure-object)
-                 (subtypep ',specifier 'standard-object))
-       (list (list ,name (,function object))))))
+  (unless (and (not (member specifier '(structure-object standard-object)))
+               (or (subtypep specifier 'structure-object)
+                   (subtypep specifier 'standard-object)))
+    `(defmethod fields* reverse-append ((object ,specifier) &key &allow-other-keys)
+       (unless (or (subtypep ',specifier 'structure-object)
+                   (subtypep ',specifier 'standard-object))
+         (list (list ,name (,function object)))))))
 
 (deffields (object symbol)
   `((symbol-name ,(symbol-name object))
