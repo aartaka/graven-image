@@ -35,10 +35,12 @@ always the case that some are missing."
                       #+sbcl
                       (sb-ext::call-with-timing
                        (lambda (&key real-time-ms user-run-time-us system-run-time-us
-                                  gc-run-time-ms processor-cycles eval-calls
+                                  gc-real-time-ms gc-run-time-ms processor-cycles eval-calls
                                   lambdas-converted (page-faults 0) bytes-consed
                                   aborted)
-                         (declare (ignorable processor-cycles eval-calls lambdas-converted))
+                         (declare (ignorable processor-cycles eval-calls lambdas-converted
+                                             ;; TODO
+                                             gc-real-time-ms))
                          (push (cons :aborted aborted) ,props)
                          (when real-time-ms
                            (push (cons :real (/ real-time-ms 1000)) ,props))
