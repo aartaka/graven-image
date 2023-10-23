@@ -26,13 +26,16 @@
     (or (sb-debug::resolve-stack-top-hint)
         (sb-di:frame-down (sb-di:top-frame))))
    #+clozure
-   (block get-fn
-     (ccl:map-call-frames
-      (lambda (p c)
-        (return-from get-fn
-          (ignore-errors
-           (function-name (ccl:frame-function p c)))))
-      :start-frame-number 0))
+   (or
+    (and ccl::*nx-current-function*
+         (ccl::afunc-name ccl::*nx-current-function*))
+    (block get-fn
+      (ccl:map-call-frames
+       (lambda (p c)
+         (return-from get-fn
+           (ignore-errors
+            (function-name (ccl:frame-function p c)))))
+       :start-frame-number 0)))
    #+ecl
    (ignore-errors
     (function-name
