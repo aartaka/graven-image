@@ -135,11 +135,16 @@ modify the property. For slots, this setter will likely be setting the
 
 (defmacro deffields ((name specifier) &body fields)
   `(defmethod fields* reverse-append ((,name ,specifier) &key &allow-other-keys)
-     ,@fields))
+     ;; Don't want to duplicate fields for MOP-inspectable objects.
+     (unless (or (subtypep ',specifier 'structure-object)
+                 (subtypep ',specifier 'standard-object))
+       ,@fields)))
 
 (defmacro deffield (specifier name function)
   `(defmethod fields* reverse-append ((object ,specifier) &key &allow-other-keys)
-     (list (list ,name (,function object)))))
+     (unless (or (subtypep ',specifier 'structure-object)
+                 (subtypep ',specifier 'standard-object))
+       (list (list ,name (,function object))))))
 
 (deffields (object symbol)
   `((symbol-name ,(symbol-name object))
