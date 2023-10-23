@@ -527,36 +527,6 @@ modify the property. For slots, this setter will likely be setting the
     #+sbcl
     ,@(except-sbcl-props object)))
 
-(-> object-slots ((or standard-object structure-object)) list)
-(defun object-slots (object)
-  (mapcar #'slot-definition-name
-          (class-slots (class-of object))))
-
-(-> inspect-slots ((or standard-object structure-object)) list)
-(defun inspect-slots (object)
-  (append
-   #+clozure
-   (get-ccl-props
-    object
-    'ccl::instance.hash 'ccl::instance.slots)
-   (mapcar (lambda (name)
-             (list name (if (slot-boundp object name)
-                            (slot-value object name)
-                            :unbound)
-                   (lambda (new-value _)
-                     (declare (ignorable _))
-                     (setf (slot-value object name) new-value))))
-           (set-difference (object-slots object)
-                           #+sbcl sbcl-props-to-ignore
-                           #+allegro '(excl::plist excl::flags)
-                           #-(or sbcl allegro) nil))))
-
-(deffields (object standard-object)
-  (inspect-slots object))
-
-(deffields (object structure-object)
-  (inspect-slots object))
-
 (deffields (object function)
   `((:name
      ,(function-name* object)
@@ -627,6 +597,36 @@ modify the property. For slots, this setter will likely be setting the
 (deffields (object type-error)
   `((:datum ,(type-error-datum object))
     (:expected ,(type-error-expected-type object))))
+
+(-> object-slots ((or standard-object structure-object)) list)
+(defun object-slots (object)
+  (mapcar #'slot-definition-name
+          (class-slots (class-of object))))
+
+(-> inspect-slots ((or standard-object structure-object)) list)
+(defun inspect-slots (object)
+  (append
+   #+clozure
+   (get-ccl-props
+    object
+    'ccl::instance.hash 'ccl::instance.slots)
+   (mapcar (lambda (name)
+             (list name (if (slot-boundp object name)
+                            (slot-value object name)
+                            :unbound)
+                   (lambda (new-value _)
+                     (declare (ignorable _))
+                     (setf (slot-value object name) new-value))))
+           (set-difference (object-slots object)
+                           #+sbcl sbcl-props-to-ignore
+                           #+allegro '(excl::plist excl::flags)
+                           #-(or sbcl allegro) nil))))
+
+(deffields (object standard-object)
+  (inspect-slots object))
+
+(deffields (object structure-object)
+  (inspect-slots object))
 
 (defmethod fields* reverse-append (object &key &allow-other-keys)
   (let ((slot-defs (ignore-errors (class-slots (class-of object)))))
