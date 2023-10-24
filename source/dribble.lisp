@@ -62,9 +62,6 @@ Affected by:
 - `*terminal-io*'.
 - Gray Streams implementation (broken on ABCL, in particular)."
   (declare (ignorable pathname pathname-p if-exists if-does-not-exist))
-  #+abcl
-  (load-time-warn "Dribble* is not implemented for ABCL due to Trivial Gray Streams implementation specificities. Help in implementing it!")
-  #-abcl
   (labels ((print-dribble (started?)
              (multiple-value-bind (second minute hour date month year)
                  (decode-universal-time (get-universal-time))
