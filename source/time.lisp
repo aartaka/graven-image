@@ -17,8 +17,8 @@ TIME-KEYWORDS is a &KEY destructuring list, but one may omit &KEY and
 
 TIME-KEYWORDS are destructuring a keyword-indexed property list with:
 - :REAL --- for real time (in seconds, float).
-- :USER --- for user run time (in seconds, float).
-- :SYSTEM --- for system run time (in seconds, float).
+- :USER --- for user-space CPU use/run time (in seconds, float).
+- :SYSTEM --- for system-space CPU use/run time (in seconds, float).
 - :CYCLES --- for CPU cycles spent.
 - :GC-COUNT --- for the times GC was invoked.
 - :GC --- for time spend on GC (in seconds, float).
