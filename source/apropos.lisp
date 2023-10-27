@@ -160,11 +160,11 @@ Affected by:
               (format t " [~a~@[ ~a~]~@[ : ~a~]]"
                       (cond
                         ((special-operator-p symbol)
-                         'special-operator)
+                         'special)
                         ((macro-function symbol)
                          'macro)
                         ((typep (symbol-function symbol) 'generic-function)
-                         'generic-function)
+                         'generic)
                         (t 'function))
                       (unless (special-operator-p symbol)
                         (function-lambda-list* (or (macro-function symbol)
