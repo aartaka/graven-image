@@ -176,10 +176,10 @@ Affected by:
                                        (ignore-errors (when (symbol-function symbol)
                                                         (documentation (symbol-function symbol) t)))))))))
           (when (ignore-errors (find-class symbol nil))
-            (format t " [~a~@[ ~s~]~@[ : ~a~]]"
-                    'class
-                    (mapcar #'class-name
-                            (class-direct-superclasses (find-class symbol nil)))
+            (format t " [~a~@[ : ~a~]]"
+                    (if (subtypep (find-class symbol nil) 'structure-object)
+                        'structure
+                        'class)
                     (crop-docs
                      (or (documentation symbol 'type)
                          (documentation symbol 'structure)))))))))
