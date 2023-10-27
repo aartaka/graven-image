@@ -15,6 +15,16 @@
 (defvar *dribble-stream* nil "The outer dribble stream that the output is dispatched to.")
 (defvar *dribble-pathname* nil "The file we're dribbling to.")
 
+#+abcl
+(defmethod gray-streams::gray-stream-element-type ((stream dribble-stream))
+  'character)
+#+abcl
+(defmethod gray-streams::gray-stream-element-type ((stream dribble-out-stream))
+  'character)
+#+abcl
+(defmethod gray-streams::gray-stream-element-type ((stream dribble-in-stream))
+  'character)
+
 (defvar starting-p nil)
 (defvar output-p nil)
 (defmethod stream-line-column ((stream dribble-stream))
