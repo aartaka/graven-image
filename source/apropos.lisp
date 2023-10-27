@@ -130,17 +130,18 @@ Affected by:
                                        (length (prin1-to-string sym))))))))
       (dolist (symbol syms)
         (flet ((crop-docs (docs)
-                 (let ((line (when docs
-                               (first (uiop:split-string docs :separator '(#\newline))))))
+                 (let* ((first-line (when docs
+                                      (first (uiop:split-string docs :separator '(#\newline)))))
+                        (cropped-line (when docs
+                                        (subseq first-line 0 (min *print-right-margin*
+                                                                  (length first-line))))))
                    (cond
-                     ((equal line docs)
-                      line)
-                     ;; If it's a finished sentence, then return.
-                     ((uiop:string-suffix-p line ".")
-                      line)
+                     ((or (equal cropped-line docs)
+                          (equal cropped-line first-line))
+                      cropped-line)
                      ;; If unfinished, add ellipsis.
-                     (t
-                      (uiop:strcat line "..."))))))
+                     (cropped-line
+                      (uiop:strcat cropped-line "..."))))))
           (fresh-line)
           (format t "~s~vt" symbol max)
           (when (boundp symbol)
