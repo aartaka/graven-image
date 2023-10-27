@@ -157,7 +157,7 @@ Affected by:
           (when (fboundp symbol)
             ;; For prettier arglists.
             (let ((*package* (symbol-package symbol)))
-              (format t " [~a~@[ ~s~]~@[ : ~a~]]"
+              (format t " [~a~@[ ~a~]~@[ : ~a~]]"
                       (cond
                         ((special-operator-p symbol)
                          'special-operator)
