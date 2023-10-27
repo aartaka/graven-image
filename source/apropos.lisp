@@ -125,9 +125,9 @@ Affected by:
   (handler-bind ((warning #'muffle-warning))
     (let* ((syms (apropos-list* string package external-only docs-too))
            (max (when syms
-                  (reduce #'max syms
-                          :key #'(lambda (sym)
-                                   (length (prin1-to-string sym)))))))
+                  (1+ (reduce #'max syms
+                              :key #'(lambda (sym)
+                                       (length (prin1-to-string sym))))))))
       (dolist (symbol syms)
         (flet ((crop-docs (docs)
                  (let ((line (when docs
