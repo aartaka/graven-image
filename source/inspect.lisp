@@ -66,7 +66,7 @@ Non-trivial, because some of the FIELDS have integer keys."
 
 (defun width (new)
   "Change the page size."
-  (setf *interface-lines* new)
+  (setf *inspect-lines* new)
   (print-fields))
 
 (defun self ()
@@ -191,7 +191,7 @@ interacting with."
 (defun istep (key)
   "Inspect the object under KEY."
   (%inspect
-   (second (find-command-or-prop key nil (funcall *fields-fn* *)))))
+   (second (find-command-or-prop key nil (fields* *)))))
 
 (defun print-fields ()
   (loop with fields = (fields* *)

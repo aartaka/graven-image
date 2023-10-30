@@ -22,7 +22,6 @@
                (:file "room")
                (:file "fields")
                (:file "description")
-               (:file "interface")
                (:file "describe")
                (:file "inspect")
                (:file "dribble")
