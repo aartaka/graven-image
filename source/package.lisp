@@ -24,7 +24,9 @@
    #:apropos-list* #:apropos* #:apropod*
    ;; #:ed*
    #:fields* #:description*
-   #:describe* #:$ #:@ #:inspect*
+   #:describe* #:$
+   #-ccl #:@
+   #:inspect*
    #:function-lambda-expression* #:function-lambda-list* #:function-name* #:function-type*
    #:lambda-expression* #:function-arglist* #:lambda-list* #:arglist*
    #:time* #:benchmark* #:with-time*

@@ -220,6 +220,7 @@ interacting with."
   (catch 'internal
     (let* ((* object)
            (@ object)
+           #+ccl (ccl:@ object)
            (fields (fields* @))
            (*offset* 0)
            (*inspect-lines* (or *inspect-lines*
