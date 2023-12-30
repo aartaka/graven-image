@@ -162,6 +162,10 @@ interacting with."
             (second (find-command-or-prop key nil (fields* *))))
           keys))
 
+(defun @@ (&rest keys)
+  "Alias for `$'"
+  (apply #'$ keys))
+
 (defun read-maybe-spaced (stream)
   (let ((first (read-line stream nil "")))
     (if (equal "" first)
