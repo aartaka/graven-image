@@ -26,7 +26,9 @@
   'character)
 
 (defvar starting-p nil)
-(defvar output-p nil)
+(defvar output-p nil
+  "Whether the dribble stream is outputting characters.
+If NIL, it's currently reading user input.")
 (defmethod stream-line-column ((stream dribble-stream))
   (when starting-p
     0))
