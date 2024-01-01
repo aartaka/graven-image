@@ -38,7 +38,7 @@
    )
   (:import-from
    #+sbcl      #:sb-ext
-   #+clozure       #:ccl
+   #+clozure   #:ccl
    #+ecl       #:ext
    #+abcl      #:ext
    #+clasp     #:ext
