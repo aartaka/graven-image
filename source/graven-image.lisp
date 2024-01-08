@@ -16,7 +16,7 @@ Also muffle redefinition warnings."
        ,@body)
      #+clisp
      ;; WHAT, CLISP HAS PACKAGE LOCKS!!!!
-     (ext:without-package-lock ("COMMON-LISP")
+     (ext:without-package-lock ()
        ,@body)
      #-(or (and sbcl sb-package-locks)
            (and ecl package-locks)
