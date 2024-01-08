@@ -30,9 +30,7 @@ Also muffle redefinition warnings."
 
 ;; Stolen from Serapeum.
 (defmacro -> (name (&rest arg-types) &optional return-type)
-  "Shorter ftype declaration for NAME.
-Idea stolen from Serapeum, but the implementation is much simpler and
-unsafer."
+  "Shorter ftype declaration for NAME."
   `(declaim (ftype (function (,@arg-types) ,@(when return-type
                                                (list return-type)))
                    ,name)))
@@ -48,14 +46,15 @@ unsafer."
   (when (functionp maybe-fn)
     (apply maybe-fn args)))
 
+;; Stolen from Nclasses.
 (defmacro define-generic (name (&rest method-args) &body (documentation . body))
   `(let ((generic (defgeneric ,name (,@(mapcar #'first (mapcar #'uiop:ensure-list method-args)))
-                    (:method (,@method-args)
-                      ,@body)
-                    (:documentation ,documentation))))
+                              (:method (,@method-args)
+                                       ,@body)
+                              (:documentation ,documentation))))
      (setf (documentation (fdefinition ',name) t) ,documentation)
      (ignore-errors
-      (setf (documentation ',name 'function) ,documentation))
+       (setf (documentation ',name 'function) ,documentation))
      generic))
 
 (defmacro defalias (new-name old-name)
@@ -73,6 +72,7 @@ over the REPL."
   (apply #'warn args)
   nil)
 
+;; Stolen from Alexandria.
 (defun make-keyword (string)
   "Convert STRING (a valid string designator) into a keyword symbol."
   (let ((*package* (find-package :keyword)))
