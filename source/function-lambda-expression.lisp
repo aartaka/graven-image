@@ -436,6 +436,14 @@ Affected by:
         #-(or cmucl scl sbcl ecl gcl clozure abcl allegro)
         nil)))))
 
+(define-generic (setf function-lambda-expression*) ((value list) function &optional force)
+  "Setter for `function-lambda-expression*'."
+  (declare (ignorable force))
+  (let ((name (if (symbolp function)
+                  function
+                  (function-name* function))))
+    (function-lambda-expression* (compile name value))))
+
 ;;; Helpers
 
 (define-generic function-lambda-list* (function)
@@ -461,6 +469,7 @@ Depends on `function-lambda-expression*'."
   (nth-value 3 (function-lambda-expression* function)))
 
 (defalias lambda-expression* function-lambda-expression*)
+(defalias (setf lambda-expression*) (setf function-lambda-expression*))
 (defalias function-arglist* function-lambda-list*)
 (defalias lambda-list* function-lambda-list*)
 (defalias arglist* function-lambda-list*)
