@@ -33,6 +33,7 @@
    #:room* #:with-room*
    #:dribble*
    #:documentation* #:doc*
+   #:documentation1* #:doc1*
    ;; #:step* #:trace* #:untrace*
    #:break*
    )
