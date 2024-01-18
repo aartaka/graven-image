@@ -136,9 +136,8 @@ Affected by:
                         (cropped-line (when docs
                                         (subseq first-line
                                                 0 (min (length first-line)
-                                                       (- *print-right-margin* max 10))))))
-                   (when docs
-                     (break* 'docs 'first-line 'cropped-line))
+                                                       (max 0
+                                                            (- *print-right-margin* max 10)))))))
                    (cond
                      ((equal cropped-line docs)
                       cropped-line)
