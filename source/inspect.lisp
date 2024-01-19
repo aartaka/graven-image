@@ -10,15 +10,14 @@ Implies that FIELDS have a (KEY VALUE . ARGS) structure
 Non-trivial, because some of the FIELDS have integer keys."
   (loop with taken = (remove-if-not #'integerp (mapcar #'first fields))
         for (name) in fields
-        for index from 0
         when (integerp name)
           collect name
         else
-          collect (loop for i from index
+          collect (loop for i from 0
                         while (member i taken)
                         finally (return (prog1
                                             i
-                                          (setf index i))))))
+                                          (push i taken))))))
 
 (defvar *commands* '()
   "All the commands accessible in the inspector.")
@@ -203,7 +202,7 @@ interacting with."
         with max-field-length
           = (reduce #'max fields :key (lambda (f) (length (princ-to-string (first f)))))
         with real-page-len = (min length (+ *offset* *inspect-lines*))
-        for index from *offset* below real-page-len
+        for index in (subseq (field-indices fields) *offset*)
         for (key value . args) in (subseq fields *offset*)
         do (format *query-io* "~&[~d]~:[ ~:[~s~;~a~]~;~2*~]~vt =~:[=~;!~]= ~s"
                    index (integerp key) (symbolp key) key
