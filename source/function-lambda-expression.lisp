@@ -66,7 +66,7 @@
                   by #'cddr
               while name
               collect (cons name value))))
-    #-(or clozure cmucl scl sbcl abcl allegro clisp)
+    #-(or clozure cmucl scl sbcl abcl allegro clisp ecl)
     (prog1
         t
       (load-time-warn "closure inspection is not implemented for this CL, help in implementing it!"))))
