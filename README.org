@@ -580,7 +580,7 @@ around Graven Image functions helps that too:
 
 #+begin_src lisp
   (defmethod gimage:apropos* :around (string &optional package external-only docs-too)
-    (declare (ignore string  package external-only docs-too))
+    (declare (ignore string package external-only docs-too))
     ;; Note that you can also use
     ;; `sb-ext:*compiler-print-variable-alist*' and
     ;; `sb-ext:*debug-print-variable-alist*' on SBCL.
