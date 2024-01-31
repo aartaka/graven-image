@@ -19,7 +19,7 @@ Non-trivial, because some of the FIELDS have integer keys."
                                             i
                                           (push i taken))))))
 
-(defvar *commands* '()
+(defvar *inspect-commands* '()
   "All the commands accessible in the inspector.")
 (defvar *inspect-lines* 20
   "Number of fields displayed in one screen.")
@@ -108,7 +108,7 @@ Possible inputs are:
                               (or (documentation function t)
                                   (ignore-errors
                                    (documentation (function-name function) 'function))))))
-                    *commands*)))
+                    *inspect-commands*)))
 
 (defun find-command-or-prop (key commands fields)
   "Find the KEY in COMMANDS/FIELDS by its prefix/value.
@@ -225,7 +225,7 @@ interacting with."
            (*inspect-lines* (or *inspect-lines*
                                 (parse-integer (uiop:getenv "LINES") :junk-allowed t)
                                 20))
-           (*commands*
+           (*inspect-commands*
              `((:? ,#'inspect-help)
                (:help ,#'inspect-help)
                (:quit ,#'inspect-exit)
@@ -263,7 +263,7 @@ interacting with."
         (finish-output *query-io*)
         (let ((forms (read-maybe-spaced *query-io*)))
           (multiple-value-bind (result command-p)
-              (find-command-or-prop (first forms) *commands* fields)
+              (find-command-or-prop (first forms) *inspect-commands* fields)
             (restart-case
                 (cond
                   ((and result command-p)
