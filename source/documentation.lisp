@@ -106,9 +106,9 @@ Affected by:
 (defalias doc* documentation*)
 (defalias (setf doc*) (setf documentation*))
 
-(define-generic documentation1* (object &optional (doc-type t))
+(define-generic documentation-1 (object &optional (doc-type t))
   "Get the first line of OBJECT's `documentation*'."
   (first (uiop:split-string (documentation* object doc-type)
                             :separator '(#\Newline))))
 
-(defalias doc1* documentation1*)
+(defalias doc1 documentation-1)
