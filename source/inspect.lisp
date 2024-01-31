@@ -147,10 +147,10 @@ Search is different for different KEY types:
             ;; Inspired by SBCL.
             (warn "Several matches found with prefix ~s:~@[~&Commands: ~{~A~^, ~}~]~@[~&Fields: ~{~A~^, ~}~]"
                   key (mapcar #'first command-matches) (mapcar #'first field-matches))
-            (values `(:nothing ,#'nothing) t))
+            (values `(:nothing ,#'inspect-nothing) t))
            (t
             (warn "No property with name ~s" key)
-            (values `(:nothing ,#'nothing) t))))))
+            (values `(:nothing ,#'inspect-nothing) t))))))
     (t (find key fields :key #'first :test #'equal))))
 
 (defun $ (&rest keys)
