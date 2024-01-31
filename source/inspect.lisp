@@ -26,59 +26,59 @@ Non-trivial, because some of the FIELDS have integer keys."
 (defvar *offset* 0
   "The current offset into the object fields.")
 
-(defun nothing ()
+(defun inspect-nothing ()
   "Command that does nothing."
   nil)
 
-(defun exit ()
+(defun inspect-exit ()
   "Exit the interface."
   (throw 'toplevel (values)))
 
-(defun up ()
+(defun inspect-up ()
   "Go up to the previous level of the interface."
   (throw 'internal (values)))
 
-(defun next-page ()
+(defun inspect-next-page ()
   "Show the next page of fields (if any)."
   (if (>= (+ *offset* *inspect-lines*) (length (fields* *)))
       (format *query-io* "~&Nowhere to scroll, already at the last page.")
       (progn
         (setf *offset* (+ *offset* *inspect-lines*))
-        (print-fields))))
+        (inspect-print-fields))))
 
-(defun previous-page ()
+(defun inspect-previous-page ()
   "Show the previous page of fields (if any)."
   (if (zerop *offset*)
       (format *query-io* "~&Nowhere to scroll, already at the first page.")
       (progn
         (setf *offset* (max 0 (- *offset* *inspect-lines*)))
-        (print-fields))))
+        (inspect-print-fields))))
 
-(defun home ()
+(defun inspect-home ()
   "Scroll back to the first page of fields."
   (if (zerop *offset*)
       (format *query-io* "~&Nowhere to scroll, already at the first page.")
       (progn
         (setf *offset* 0)
         (description* * *query-io*)
-        (print-fields))))
+        (inspect-print-fields))))
 
-(defun width (new)
+(defun inspect-width (new)
   "Change the page size."
   (setf *inspect-lines* new)
-  (print-fields))
+  (inspect-print-fields))
 
-(defun self ()
+(defun inspect-self ()
   "Show the currently inspected object."
   (description* * *query-io*)
-  (print-fields))
+  (inspect-print-fields))
 
-(defun evaluate (expression)
+(defun inspect-evaluate (expression)
   "Evaluate the EXPRESSION."
   (dolist (val (multiple-value-list (eval expression)))
     (print val *query-io*)))
 
-(defun help ()
+(defun inspect-help ()
   "Show the instructions for using this interface."
   (format *query-io*
           "~&This is an interactive interface for ~a~%~
@@ -180,7 +180,7 @@ interacting with."
                         (with-input-from-string (str-stream string)
                           (uiop:slurp-stream-forms str-stream)))))))
 
-(defun set-field (key value)
+(defun inspect-set-field (key value)
   "Set the KEY-ed field to VALUE."
   (let ((prop (find-command-or-prop key nil (fields* *))))
     (cond
@@ -191,12 +191,12 @@ interacting with."
       (t
        (format *query-io* "~&No such field found.")))))
 
-(defun istep (key)
+(defun inspect-istep (key)
   "Inspect the object under KEY."
   (%inspect
    (second (find-command-or-prop key nil (fields* *)))))
 
-(defun print-fields ()
+(defun inspect-print-fields ()
   (loop with fields = (fields* *)
         with length = (length fields)
         with max-field-length
@@ -226,38 +226,38 @@ interacting with."
                                 (parse-integer (uiop:getenv "LINES") :junk-allowed t)
                                 20))
            (*commands*
-             `((:? ,#'help)
-               (:help ,#'help)
-               (:quit ,#'exit)
-               (:exit ,#'exit)
-               (:length ,#'width)
-               (:width ,#'width)
-               (:widen ,#'width)
-               (:next ,#'next-page)
-               (:previous ,#'previous-page)
-               (:print ,#'print-fields)
-               (:page ,#'print-fields)
-               (:home ,#'home)
-               (:reset ,#'home)
-               (:top ,#'home)
-               (:this ,#'self)
-               (:self ,#'self)
-               (:redisplay ,#'self)
-               (:show ,#'self)
-               (:current ,#'self)
-               (:again ,#'self)
-               (:eval ,#'evaluate)
-               (:up ,#'up)
-               (:pop ,#'up)
-               (:back ,#'up)
-               (:set ,#'set-field)
-               (:modify ,#'set-field)
-               (:istep ,#'istep)
-               (:inspect ,#'istep)
-               (:standard ,#'standard-print)
-               (:aesthetic ,#'aesthetic-print))))
+             `((:? ,#'inspect-help)
+               (:help ,#'inspect-help)
+               (:quit ,#'inspect-exit)
+               (:exit ,#'inspect-exit)
+               (:length ,#'inspect-width)
+               (:width ,#'inspect-width)
+               (:widen ,#'inspect-width)
+               (:next ,#'inspect-next-page)
+               (:previous ,#'inspect-previous-page)
+               (:print ,#'inspect-print-fields)
+               (:page ,#'inspect-print-fields)
+               (:home ,#'inspect-home)
+               (:reset ,#'inspect-home)
+               (:top ,#'inspect-home)
+               (:this ,#'inspect-self)
+               (:self ,#'inspect-self)
+               (:redisplay ,#'inspect-self)
+               (:show ,#'inspect-self)
+               (:current ,#'inspect-self)
+               (:again ,#'inspect-self)
+               (:eval ,#'inspect-evaluate)
+               (:up ,#'inspect-up)
+               (:pop ,#'inspect-up)
+               (:back ,#'inspect-up)
+               (:set ,#'inspect-set-field)
+               (:modify ,#'inspect-set-field)
+               (:istep ,#'inspect-istep)
+               (:inspect ,#'inspect-istep)
+               (:standard ,#'inspect-standard-print)
+               (:aesthetic ,#'inspect-aesthetic-print))))
       (description* object *query-io*)
-      (print-fields)
+      (inspect-print-fields)
       (loop
         (format *query-io* "~&~a> " 'inspect*)
         (finish-output *query-io*)
@@ -272,7 +272,7 @@ interacting with."
                   ((and result (not command-p))
                    (%inspect (second result))
                    (description* object *query-io*)
-                   (print-fields))
+                   (inspect-print-fields))
                   (t (dolist (val (multiple-value-list (eval (first forms))))
                        (print val *query-io*))))
               (back-to-inspect ()
@@ -299,10 +299,10 @@ Influenced by:
       (when (yes-or-no-p* "Quit inspection of ~s?"  object)
         (throw 'toplevel (values))))))
 
-(defun standard-print ()
+(defun inspect-standard-print ()
   "Print the inspected object readably."
   (format *query-io* "~&~s" *))
 
-(defun aesthetic-print ()
+(defun inspect-aesthetic-print ()
   "Print the inspected object aesthetically."
   (format *query-io* "~&~a" *))
