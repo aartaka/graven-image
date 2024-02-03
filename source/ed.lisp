@@ -67,7 +67,29 @@ Possible inputs are:
 
 (defun ed-print ()
   "Print the current form."
-  (print (elt %^ %^-index) *query-io*))
+  (funcall
+   (if (eq %ed-mode :forms)
+       #'print
+       #'princ)
+   (elt %^ %^-index) *query-io*))
+
+(defun ed-next ()
+  "Go to the next form."
+  (when (< %^-index (1- (length %^)))
+    (incf %^-index))
+  (ed-print))
+
+(defun ed-previous ()
+  "Go to the next form."
+  (unless (zerop %^-index)
+    (decf %^-index))
+  (ed-print))
+
+(defun ed-into ()
+  (if (and (eq %ed-mode :forms)
+           (listp (elt %^ %^-index)))
+      (%ed (elt %^ %^-index))
+      (warn "Cannot edit into ~s" (elt %^ %^-index))))
 
 (defun %%ed ()
   (let ((*ed-lines* (or *ed-lines*
@@ -80,25 +102,34 @@ Possible inputs are:
             (:exit ,#'ed-exit)
             (:scroll ,#'ed-zoom)
             (:zoom ,#'ed-zoom)
-            (:print ,#'ed-print))))
+            (:print ,#'ed-print)
+            (:next ,#'ed-next)
+            (:forward ,#'ed-next)
+            (:previous ,#'ed-previous)
+            (:back ,#'ed-previous)
+            (:into ,#'ed-into)
+            (:edit ,#'ed-into))))
     (ed-print-forms)
-    (loop
-      (format *query-io* "~&~a> " 'ed*)
-      (finish-output *query-io*)
-      (let* ((forms (read-maybe-spaced *query-io*))
-             (head (first forms)))
-        (typecase head
-          (keyword (let ((matching-commands
-                           (remove-if (complement (lambda (c-key)
-                                                    (uiop:string-prefix-p head c-key)))
-                                      *ed-commands* :key #'first)))
-                     (if matching-commands
-                         (apply (cadar matching-commands)
-                                (rest forms))
-                         (print head))))
-          (integer (setf %^-index head))
-          (t (dolist (val (multiple-value-list (eval head)))
-               (print val *query-io*))))))))
+    (catch 'inner
+      (loop
+        (format *query-io* "~&~a> " 'ed*)
+        (finish-output *query-io*)
+        (let* ((forms (read-maybe-spaced *query-io*))
+               (head (first forms)))
+          (typecase head
+            (keyword (let ((matching-commands
+                             (remove-if (complement (lambda (c-key)
+                                                      (uiop:string-prefix-p head c-key)))
+                                        *ed-commands* :key #'first)))
+                       (if matching-commands
+                           (apply (cadar matching-commands)
+                                  (rest forms))
+                           (print head))))
+            (integer
+             (setf %^-index (min head (1- (length %^))))
+             (ed-print))
+            (t (dolist (val (multiple-value-list (eval head)))
+                 (print val *query-io*)))))))))
 
 (defgeneric %ed (object)
   (:method ((object string))
