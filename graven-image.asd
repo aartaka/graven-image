@@ -25,4 +25,5 @@
                (:file "describe")
                (:file "inspect")
                (:file "dribble")
-               (:file "documentation")))
+               (:file "documentation")
+               (:file "ed")))
