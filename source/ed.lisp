@@ -3,7 +3,7 @@
 
 (in-package :graven-image)
 
-(defvar %ed-mode :line
+(defvar %ed-mode :lines
   "The current editing mode `ed*' is in.
 :LINES is line editing, `%^' is a list of string.
 :FORMS is s-expressions editing, and `%^' is a list of expressions.")
@@ -21,7 +21,7 @@
   (if (<= to-scroll 1)
       (format *query-io* "~&Nowhere to scroll, already at the last form.")
       (dotimes (i to-scroll)
-        (format *query-io* (if (eq %ed-mode :line)
+        (format *query-io* (if (eq %ed-mode :lines)
                                "~&~vd: ~a"
                                "~&~vd: ~s")
                 (floor (log (+ *ed-lines* %^-index) 10))
@@ -104,7 +104,7 @@ Possible inputs are:
   (:method ((object string))
     (let* ((%^ (uiop:split-string object :separator '(#\Newline)))
            (%^-index 0)
-           (%ed-mode :line))
+           (%ed-mode :lines))
       (%%ed)))
   (:method ((object cons))
     (let* ((%^ object)
