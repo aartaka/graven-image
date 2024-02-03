@@ -52,16 +52,21 @@
             (:exit ,#'ed-exit)
             (:scroll ,#'ed-zoom)
             (:zoom ,#'ed-zoom))))
+    (ed-print-forms)
     (loop
-      (ed-print-forms)
       (format *query-io* "~&~a> " 'ed*)
       (finish-output *query-io*)
       (let* ((forms (read-maybe-spaced *query-io*))
              (head (first forms)))
-        (case head
-          (keyword (if (member head *ed-commands*)
-                       (apply head (rest forms))
-                       (print head)))
+        (typecase head
+          (keyword (let ((matching-commands
+                           (remove-if (complement (lambda (c-key)
+                                                    (uiop:string-prefix-p head c-key)))
+                                      *ed-commands* :key #'first)))
+                     (if matching-commands
+                         (apply (cadar matching-commands)
+                                (rest forms))
+                         (print head))))
           (integer (setf %^-index head))
           (t (dolist (val (multiple-value-list (eval head)))
                (print val *query-io*))))))))
