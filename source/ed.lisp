@@ -17,29 +17,57 @@
 (defvar *ed-commands* 20
   "Commands for editing.")
 
-(defun ed-print-forms ()
-  (dotimes (i (min *ed-lines* (length %^)))
-    (format *query-io* (if (eq %ed-mode :line)
-                           "~&~vd: ~a"
-                         "~&~vd: ~s")
-            (floor (log (+ *ed-lines* %^-index) 10))
-            (+ i %^-index)
-            (elt %^ (+ %^-index i)))))
+(defun ed-print-forms (&optional (to-scroll (min *ed-lines* (- (length %^) %^-index))))
+  (if (<= to-scroll 1)
+      (format *query-io* "~&Nowhere to scroll, already at the last form.")
+      (dotimes (i to-scroll)
+        (format *query-io* (if (eq %ed-mode :line)
+                               "~&~vd: ~a"
+                               "~&~vd: ~s")
+                (floor (log (+ *ed-lines* %^-index) 10))
+                (+ i %^-index)
+                (elt %^ (+ %^-index i))))))
 
 (defun ed-zoom ()
+  "Scroll the editor window, printing the forms."
   (ed-print-forms)
-  (incf %^-index *ed-lines*))
+  (setf %^-index
+        (min (1- (length %^))
+             (+ %^-index *ed-lines*))))
 
 (defun ed-nothing ()
   "Command that does nothing."
   nil)
 
 (defun ed-help ()
-  "Does nothing at the moment")
+  "Show the instructions for using the editor."
+  (format *query-io*
+        "~&This is ED*~%~
+~&Available commands are:
+~:{~&~:[~s~*~;~s~{ ~a~}~]~30t~@[~a~]~}
+
+Possible inputs are:
+- Blank line: scroll down.
+- Mere symbols: run one of the commands above, matching the symbol.
+  - If no command matches, evaluate the symbol.
+- Evaluate the provided code otherwise.~%"
+        (mapcar (lambda (command)
+                  (destructuring-bind (name function)
+                      command
+                    (list (function-lambda-list* function)
+                          name (function-lambda-list* function)
+                          (or (documentation function t)
+                              (ignore-errors
+                               (documentation (function-name function) 'function))))))
+                *ed-commands*)))
 
 (defun ed-exit ()
-  "Exit the interface."
+  "Exit the editor."
   (throw 'toplevel (values)))
+
+(defun ed-print ()
+  "Print the current form."
+  (print (elt %^ %^-index) *query-io*))
 
 (defun %%ed ()
   (let ((*ed-lines* (or *ed-lines*
@@ -51,7 +79,8 @@
             (:quit ,#'ed-exit)
             (:exit ,#'ed-exit)
             (:scroll ,#'ed-zoom)
-            (:zoom ,#'ed-zoom))))
+            (:zoom ,#'ed-zoom)
+            (:print ,#'ed-print))))
     (ed-print-forms)
     (loop
       (format *query-io* "~&~a> " 'ed*)
