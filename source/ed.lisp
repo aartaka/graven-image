@@ -19,7 +19,7 @@
 
 (defun ed-print-forms (&optional (to-scroll (min *ed-lines* (- (length %^) %^-index))))
   (if (<= to-scroll 1)
-      (format *query-io* "~&Nowhere to scroll, already at the last form.")
+      (warn "Nowhere to scroll, already at the last form.")
       (dotimes (i to-scroll)
         (format *query-io* (if (eq %ed-mode :lines)
                                "~&~vd: ~a"
