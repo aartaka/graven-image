@@ -14,13 +14,15 @@
   "Currently `ed*'-ited object.")
 (defvar *ed-lines* 20
   "Number of expressions/lines to zoom through.")
+(defvar *ed-commands* 20
+  "Commands for editing.")
 
 (defun ed-print-forms ()
-  (dotimes (i *ed-lines*)
+  (dotimes (i (min *ed-lines* (length %^)))
     (format *query-io* (if (eq %ed-mode :line)
-                           "~vd: ~a"
-                           "~vd: ~s")
-            (ceiling (log (+ *ed-lines* %^-index) 10))
+                           "~&~vd: ~a"
+                         "~&~vd: ~s")
+            (floor (log (+ *ed-lines* %^-index) 10))
             (+ i %^-index)
             (elt %^ (+ %^-index i)))))
 
@@ -32,12 +34,14 @@
   "Command that does nothing."
   nil)
 
+(defun ed-help ()
+  "Does nothing at the moment")
+
 (defun ed-exit ()
   "Exit the interface."
   (throw 'toplevel (values)))
 
 (defun %%ed ()
-  (ed-zoom)
   (let ((*ed-lines* (or *ed-lines*
                         (parse-integer (uiop:getenv "LINES") :junk-allowed t)
                         10))
@@ -46,9 +50,6 @@
             (:help ,#'ed-help)
             (:quit ,#'ed-exit)
             (:exit ,#'ed-exit)
-            (:up ,#'ed-up)
-            (:pop ,#'ed-up)
-            (:back ,#'ed-up)
             (:scroll ,#'ed-zoom)
             (:zoom ,#'ed-zoom))))
     (loop
@@ -72,7 +73,7 @@
            (%ed-mode :line))
       (%%ed)))
   (:method ((object cons))
-    (let* ((%^ (uiop:split-string object :separator '(#\Newline)))
+    (let* ((%^ object)
            (%^-index 0)
            (%ed-mode :forms))
       (%%ed))))
