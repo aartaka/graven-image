@@ -86,10 +86,15 @@ Possible inputs are:
   (ed-print))
 
 (defun ed-into ()
+  "Edit the current form."
   (if (and (eq %ed-mode :forms)
            (listp (elt %^ %^-index)))
       (%ed (elt %^ %^-index))
       (warn "Cannot edit into ~s" (elt %^ %^-index))))
+
+(defun ed-out ()
+  "Leave the current editor level."
+  (throw 'inner t))
 
 (defun %%ed ()
   (let ((*ed-lines* (or *ed-lines*
@@ -108,7 +113,13 @@ Possible inputs are:
             (:previous ,#'ed-previous)
             (:back ,#'ed-previous)
             (:into ,#'ed-into)
-            (:edit ,#'ed-into))))
+            (:down ,#'ed-into)
+            (:edit ,#'ed-into)
+            (:descend ,#'ed-into)
+            (:out ,#'ed-out)
+            (:pop ,#'ed-out)
+            (:up ,#'ed-out)
+            (:ascend ,#'ed-out))))
     (ed-print-forms)
     (catch 'inner
       (loop
