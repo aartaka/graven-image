@@ -96,6 +96,19 @@ Possible inputs are:
   "Leave the current editor level."
   (throw 'inner t))
 
+(defun ed-append ()
+  (ecase %ed-mode
+    (:forms
+     (let ((form-to-append (read *query-io*)))
+       (setf (cdr (nthcdr %^-index %^))
+             (cons form-to-append (cdr (nthcdr %^-index %^))))))
+    (:lines
+     (let ((lines (loop for line = (read-line *query-io*)
+                        until (equal line ".")
+                        collect line)))
+       (setf (cdr (nthcdr %^-index %^))
+             (append lines (cdr (nthcdr %^-index %^))))))))
+
 (defun %%ed ()
   (let ((*ed-lines* (or *ed-lines*
                         (parse-integer (uiop:getenv "LINES") :junk-allowed t)
@@ -119,7 +132,10 @@ Possible inputs are:
             (:out ,#'ed-out)
             (:pop ,#'ed-out)
             (:up ,#'ed-out)
-            (:ascend ,#'ed-out))))
+            (:ascend ,#'ed-out)
+            (:append ,#'ed-append)
+            (:suffix ,#'ed-append)
+            (:annex ,#'ed-append))))
     (ed-print-forms)
     (catch 'inner
       (loop
