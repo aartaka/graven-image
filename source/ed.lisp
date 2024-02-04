@@ -97,6 +97,10 @@ Possible inputs are:
   (throw 'inner t))
 
 (defun ed-append ()
+  "Add more forms/lines after the current one.
+In case of :FORMS, reads one s-expression and appends it.
+In case of :LINES, reads several lines until the line with a dot on
+its own. Appends the lines read to the buffer."
   (ecase %ed-mode
     (:forms
      (let ((form-to-append (read *query-io*)))
