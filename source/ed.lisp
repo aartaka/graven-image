@@ -128,6 +128,9 @@ its own. Appends the lines read to the buffer."
         (append (subseq %^ 0 %^-index)
                 (cdr (nthcdr %^-index %^)))))
 
+(defun limited (low num high)
+  (max low (min high num)))
+
 (defun %%ed ()
   (let ((*ed-lines* (or *ed-lines*
                         (parse-integer (uiop:getenv "LINES") :junk-allowed t)
@@ -180,7 +183,7 @@ its own. Appends the lines read to the buffer."
                                   (rest forms))
                            (print head))))
             (integer
-             (setf %^-index (min head (1- (length %^))))
+             (setf %^-index (limited 0 head (1- (length %^))))
              (ed-print))
             (t (dolist (val (multiple-value-list (eval head)))
                  (print val *query-io*)))))))))
