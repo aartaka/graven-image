@@ -17,16 +17,17 @@
 (defvar *ed-commands* 20
   "Commands for editing.")
 
-(defun ed-print-forms (&optional (to-scroll (min *ed-lines* (- (length %^) %^-index))))
-  (if (<= to-scroll 1)
-      (warn "Nowhere to scroll, already at the last form.")
-      (dotimes (i to-scroll)
-        (format *query-io* (if (eq %ed-mode :lines)
-                               "~&~vd: ~a"
-                               "~&~vd: ~s")
-                (floor (log (+ *ed-lines* %^-index) 10))
-                (+ i %^-index)
-                (elt %^ (+ %^-index i))))))
+(defun ed-print-forms (&optional (to-scroll *ed-lines*))
+  (let ((to-scroll (min to-scroll (- (length %^) %^-index))))
+    (if (<= to-scroll 1)
+        (warn "Nowhere to scroll, already at the last form.")
+        (dotimes (i to-scroll)
+          (format *query-io* (if (eq %ed-mode :lines)
+                                 "~&~vd: ~a"
+                                 "~&~vd: ~s")
+                  (floor (log (+ *ed-lines* %^-index) 10))
+                  (+ i %^-index)
+                  (elt %^ (+ %^-index i)))))))
 
 (defun ed-zoom ()
   "Scroll the editor window, printing the forms."
