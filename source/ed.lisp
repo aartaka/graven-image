@@ -102,17 +102,14 @@ Possible inputs are:
 In case of :FORMS, reads one s-expression and appends it.
 In case of :LINES, reads several lines until the line with a dot on
 its own. Appends the lines read to the buffer."
-  (ecase %ed-mode
-    (:forms
-     (let ((form-to-append (read *query-io*)))
-       (setf (cdr (nthcdr %^-index %^))
-             (cons form-to-append (cdr (nthcdr %^-index %^))))))
-    (:lines
-     (let ((lines (loop for line = (read-line *query-io*)
-                        until (equal line ".")
-                        collect line)))
-       (setf (cdr (nthcdr %^-index %^))
-             (append lines (cdr (nthcdr %^-index %^))))))))
+  (let ((to-append
+          (ecase %ed-mode
+            (:forms (list (read *query-io*)))
+            (:lines (loop for line = (read-line *query-io*)
+                          until (equal line ".")
+                          collect line)))))
+    (setf (cdr (nthcdr %^-index %^))
+          (append to-append (cdr (nthcdr %^-index %^))))))
 
 (defun %%ed ()
   (let ((*ed-lines* (or *ed-lines*
