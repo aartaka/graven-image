@@ -111,6 +111,17 @@ its own. Appends the lines read to the buffer."
     (setf (cdr (nthcdr %^-index %^))
           (append to-append (cdr (nthcdr %^-index %^))))))
 
+(defun ed-change ()
+  "Add more forms/lines, replacing the current ones, if present."
+  (let ((to-add
+          (ecase %ed-mode
+            (:forms (list (read *query-io*)))
+            (:lines (loop for line = (read-line *query-io*)
+                          until (equal line ".")
+                          collect line)))))
+    (setf (subseq %^ %^-index)
+          (append to-add (subseq %^ (+ (length to-add) %^-index))))))
+
 (defun %%ed ()
   (let ((*ed-lines* (or *ed-lines*
                         (parse-integer (uiop:getenv "LINES") :junk-allowed t)
@@ -137,7 +148,11 @@ its own. Appends the lines read to the buffer."
             (:ascend ,#'ed-out)
             (:append ,#'ed-append)
             (:suffix ,#'ed-append)
-            (:annex ,#'ed-append))))
+            (:annex ,#'ed-append)
+            (:change ,#'ed-change)
+            (:replace ,#'ed-change)
+            (:modify ,#'ed-change)
+            (:rewrite ,#'ed-change))))
     (ed-print-forms)
     (catch 'inner
       (loop
