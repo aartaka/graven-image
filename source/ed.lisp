@@ -122,6 +122,12 @@ its own. Appends the lines read to the buffer."
     (setf (subseq %^ %^-index)
           (append to-add (subseq %^ (+ (length to-add) %^-index))))))
 
+(defun ed-delete ()
+  "Remove the current form/line."
+  (setf %^
+        (append (subseq %^ 0 %^-index)
+                (cdr (nthcdr %^-index %^)))))
+
 (defun %%ed ()
   (let ((*ed-lines* (or *ed-lines*
                         (parse-integer (uiop:getenv "LINES") :junk-allowed t)
@@ -152,7 +158,11 @@ its own. Appends the lines read to the buffer."
             (:change ,#'ed-change)
             (:replace ,#'ed-change)
             (:modify ,#'ed-change)
-            (:rewrite ,#'ed-change))))
+            (:rewrite ,#'ed-change)
+            ;; Kill/cut/copy?
+            (:delete ,#'ed-delete)
+            (:kill ,#'ed-delete)
+            (:remove ,#'ed-delete))))
     (ed-print-forms)
     (catch 'inner
       (loop
