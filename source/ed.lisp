@@ -184,6 +184,7 @@ its own. Appends the lines read to the buffer."
                            (apply (cadar matching-commands)
                                   (rest forms))
                            (print head))))
+            ;; TODO: Allow shortcut queries of type 1 :print ...
             (integer
              (setf %^-index (limited 0 head (1- (length %^))))
              (ed-print))
