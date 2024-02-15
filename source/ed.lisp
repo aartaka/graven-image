@@ -30,6 +30,7 @@
                   (= (+ i %^-index) %^-index)
                   (elt %^ (+ %^-index i)))))))
 
+;; Make it list the lines around the current one instead.
 (defun ed-zoom ()
   "Scroll the editor window, printing the forms."
   (ed-print-forms)
