@@ -23,10 +23,11 @@
         (warn "Nowhere to scroll, already at the last form.")
         (dotimes (i to-scroll)
           (format *query-io* (if (eq %ed-mode :lines)
-                                 "~&~vd: ~a"
-                                 "~&~vd: ~s")
+                                 "~&~vd~:[:~;>~] ~a"
+                                 "~&~vd~:[:~;>~] ~s")
                   (floor (log (+ *ed-lines* %^-index) 10))
                   (+ i %^-index)
+                  (= (+ i %^-index) %^-index)
                   (elt %^ (+ %^-index i)))))))
 
 (defun ed-zoom ()
