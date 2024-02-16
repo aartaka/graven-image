@@ -99,28 +99,30 @@ Possible inputs are:
   "Leave the current editor level."
   (throw 'inner t))
 
-(defun ed-append ()
+(defun ed-append (&rest forms)
   "Add more forms/lines after the current one.
 In case of :FORMS, reads one s-expression and appends it.
 In case of :LINES, reads several lines until the line with a dot on
 its own. Appends the lines read to the buffer."
   (let ((to-append
-          (ecase %ed-mode
-            (:forms (list (read *query-io*)))
-            (:lines (loop for line = (read-line *query-io*)
-                          until (equal line ".")
-                          collect line)))))
+          (or forms
+              (ecase %ed-mode
+                (:forms (list (read *query-io*)))
+                (:lines (loop for line = (read-line *query-io*)
+                              until (equal line ".")
+                              collect line))))))
     (setf (cdr (nthcdr %^-index %^))
           (append to-append (cdr (nthcdr %^-index %^))))))
 
-(defun ed-change ()
+(defun ed-change (&rest forms)
   "Add more forms/lines, replacing the current ones, if present."
   (let ((to-add
-          (ecase %ed-mode
-            (:forms (list (read *query-io*)))
-            (:lines (loop for line = (read-line *query-io*)
-                          until (equal line ".")
-                          collect line)))))
+          (or forms
+              (ecase %ed-mode
+                (:forms (list (read *query-io*)))
+                (:lines (loop for line = (read-line *query-io*)
+                              until (equal line ".")
+                              collect line))))))
     (setf (subseq %^ %^-index)
           (append to-add (subseq %^ (+ (length to-add) %^-index))))))
 
