@@ -177,6 +177,12 @@ its own. Appends the lines read to the buffer."
         (finish-output *query-io*)
         (let* ((forms (read-maybe-spaced *query-io*))
                (head (first forms)))
+          (when (integerp head)
+            (setf %^-index (limited 0 head (1- (length %^)))
+                  head (second forms)
+                  forms (rest forms))
+            (unless (rest forms)
+              (ed-print)))
           (typecase head
             (keyword (let ((matching-commands
                              (remove-if (complement (lambda (c-key)
@@ -186,10 +192,7 @@ its own. Appends the lines read to the buffer."
                            (apply (cadar matching-commands)
                                   (rest forms))
                            (print head))))
-            ;; TODO: Allow shortcut queries of type 1 :print ...
-            (integer
-             (setf %^-index (limited 0 head (1- (length %^))))
-             (ed-print))
+            (null nil)
             (t (dolist (val (multiple-value-list (eval head)))
                  (print val *query-io*)))))))))
 
