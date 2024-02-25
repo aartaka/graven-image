@@ -26,10 +26,11 @@ answers.")
            (finish-output *query-io*)))
     (print-prompt)
     (loop for answer = (read-line *query-io* nil nil)
-          for matches = (remove-if #'(lambda (option)
-                                       ;; Maybe case-sensitive?
-                                       (uiop:string-prefix-p (string-upcase answer)
-                                                             (string-upcase (car option))))
+          for matches = (remove-if (complement
+                                    #'(lambda (option)
+                                        ;; Maybe case-sensitive?
+                                        (uiop:string-prefix-p (string-upcase answer)
+                                                              (string-upcase (car option)))))
                                    *yes-or-no-options*)
           until (or (= 1 (length matches))
                     (= 1 (length (remove-duplicates (mapcar #'cdr matches)))))
