@@ -72,7 +72,7 @@ Affected by:
   (let ((string (string string))
         (packages (if (eq t packages)
                       (list-all-packages)
-                      packages)))
+                      (uiop:ensure-list packages))))
     (remove-duplicates
      (cond
        ;; NOTE: Reusing built-in external-only functionality of SBCL/Allegro.
@@ -140,7 +140,7 @@ Affected by:
                                         (subseq first-line
                                                 0 (min (length first-line)
                                                        (max 0
-                                                            (- *print-right-margin* max 10)))))))
+                                                            (- (or *print-right-margin* 100) max 10)))))))
                    (cond
                      ((equal cropped-line docs)
                       cropped-line)

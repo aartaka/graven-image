@@ -168,6 +168,7 @@
         (generic-function-lambda-list function))
       (when (typep function 'standard-method)
         (method-lambda-list function))
+      #-ecl
       (ignore-errors (second (funcall old-function-lambda-expression function)))
       (macrolet ((try-arglist (&rest vars)
                    `(or ,@(loop for var in vars
