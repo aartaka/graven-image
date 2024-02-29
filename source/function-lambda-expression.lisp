@@ -168,8 +168,9 @@
         (generic-function-lambda-list function))
       (when (typep function 'standard-method)
         (method-lambda-list function))
-      #-ecl
-      (ignore-errors (second (funcall old-function-lambda-expression function)))
+      (let ((old-expression (ignore-errors (funcall old-function-lambda-expression function))))
+        (when (eq 'lambda (first old-expression))
+          (second old-expression)))
       (macrolet ((try-arglist (&rest vars)
                    `(or ,@(loop for var in vars
                                 collect `(ignore-errors
