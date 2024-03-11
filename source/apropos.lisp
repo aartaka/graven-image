@@ -61,7 +61,7 @@ When EXTERNAL-ONLY, only search the external symbols of
 PACKAGES (ported from SBCL/Allegro).
 
 PACKAGES can be:
-- T or NIL for all the accessible packages.
+- NIL for all the accessible packages.
 - A package.
 - A symbol denoting a package.
 - A list of packages/symbols.
@@ -70,9 +70,7 @@ Affected by:
 - Current list of packages and their contents."
   (declare (ignorable external-only docs-too))
   (let ((string (string string))
-        (packages (if (eq t packages)
-                      (list-all-packages)
-                      (uiop:ensure-list packages))))
+        (packages (uiop:ensure-list packages)))
     (remove-duplicates
      (cond
        ;; NOTE: Reusing built-in external-only functionality of SBCL/Allegro.
@@ -116,8 +114,8 @@ PACKAGE (ported from SBCL).
 PACKAGE can be:
 - A package.
 - A symbol denoting a package.
-- A list of packages/symbols or T for all packages.
-- NIL (all the accessible packages are implied).
+- A list of packages/symbols.
+- NIL all the accessible packages.
 
 Affected by:
 - Current list of packages and their contents.
