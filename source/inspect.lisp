@@ -207,7 +207,7 @@ interacting with."
         do (format *query-io* "~&~d~:[ ~:[~s~;~a~]~;~2*~]~vt = ~s"
                    index (integerp key) (symbolp key) key
                    (+ 4 (floor (log length 10)) max-field-length)
-                   (first args) value)
+                   value)
         finally (if (= real-page-len length)
                     (format *query-io* "~&[Last page, fields ~d-~d out of ~d]"
                             *offset* (1- length) (1- length))
