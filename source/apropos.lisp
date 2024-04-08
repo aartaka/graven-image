@@ -162,6 +162,7 @@ Affected by:
           (when (fboundp symbol)
             ;; For prettier arglists.
             (let ((*package* (symbol-package symbol)))
+              (format t "~vt" max)
               (format t " [~a~@[ ~a~]~@[ : ~a~]]"
                       (cond
                         ((special-operator-p symbol)
@@ -181,6 +182,7 @@ Affected by:
                             (ignore-errors (when (symbol-function symbol)
                                              (crop-docs (symbol-function symbol) t))))))))
           (when (ignore-errors (find-class symbol nil))
+            (format t "~vt" max)
             (format t " [~a~@[ : ~a~]]"
                     (if (subtypep (find-class symbol nil) 'structure-object)
                         'structure
