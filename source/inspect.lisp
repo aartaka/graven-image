@@ -204,7 +204,7 @@ interacting with."
         with real-page-len = (min length (+ *offset* *inspect-lines*))
         for index in (subseq (field-indices fields) *offset* real-page-len)
         for (key value . args) in (subseq fields *offset*)
-        do (format *query-io* "~&[~d]~:[ ~:[~s~;~a~]~;~2*~]~vt =~:[=~;!~]= ~s"
+        do (format *query-io* "~&~d~:[ ~:[~s~;~a~]~;~2*~]~vt = ~s"
                    index (integerp key) (symbolp key) key
                    (+ 4 (floor (log length 10)) max-field-length)
                    (first args) value)
