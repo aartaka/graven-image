@@ -202,7 +202,7 @@ interacting with."
         with max-field-length
           = (reduce #'max fields :key (lambda (f) (length (princ-to-string (first f)))))
         with real-page-len = (min length (+ *offset* *inspect-lines*))
-        for index in (subseq (field-indices fields) *offset*)
+        for index in (subseq (field-indices fields) *offset* real-page-len)
         for (key value . args) in (subseq fields *offset*)
         do (format *query-io* "~&[~d]~:[ ~:[~s~;~a~]~;~2*~]~vt =~:[=~;!~]= ~s"
                    index (integerp key) (symbolp key) key
