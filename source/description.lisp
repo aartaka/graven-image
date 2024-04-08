@@ -106,7 +106,10 @@ not suitable for the `fields*' key-value format."))
 (defmethod description* ((object hash-table) &optional stream)
   (format stream "[~a, ~d/~d]~:[
  ~s~;~*~]"
-          (function-name-symbol (hash-table-test object))
+          (let ((test (hash-table-test object)))
+            (typecase test
+              (function (function-name-symbol test))
+              (t test)))
           (hash-table-count object) (hash-table-size object)
           (zerop (hash-table-count object))
           (loop for key being the hash-key in object
