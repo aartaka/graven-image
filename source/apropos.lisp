@@ -130,21 +130,19 @@ Affected by:
                               :key #'(lambda (sym)
                                        (length (prin1-to-string sym))))))))
       (dolist (symbol syms)
-        (flet ((crop-docs (thing type)
+        (flet ((summary-docs (thing type)
                  (let* ((docs (documentation thing type))
                         (first-line (when docs
                                       (first (uiop:split-string docs :separator '(#\newline)))))
-                        (cropped-line (when docs
-                                        (subseq first-line
-                                                0 (min (length first-line)
-                                                       (max 0
-                                                            (- (or *print-right-margin* 100) max 10)))))))
+                        (first-line (when docs
+                                        (first
+                                         (uiop:split-string docs :separator '(#\Newline))))))
                    (cond
-                     ((equal cropped-line docs)
-                      cropped-line)
+                     ((equal first-line docs)
+                      first-line)
                      ;; If unfinished, add ellipsis.
-                     (cropped-line
-                      (uiop:strcat cropped-line "..."))))))
+                     (first-line
+                      (uiop:strcat first-line "..."))))))
           (fresh-line)
           (format t "~s" symbol)
           (when (boundp symbol)
@@ -156,9 +154,9 @@ Affected by:
                (format t " [~a]" 'self-evaluating))
               ((constantp symbol)
                (format t " [~a = ~s~@[ : ~a~]]"
-                       'constant (symbol-value symbol) (crop-docs symbol 'variable)))
+                       'constant (symbol-value symbol) (summary-docs symbol 'variable)))
               (t (format t " [~a = ~s~@[ : ~a~]]"
-                         'variable (symbol-value symbol) (crop-docs symbol 'variable)))))
+                         'variable (symbol-value symbol) (summary-docs symbol 'variable)))))
           (when (fboundp symbol)
             ;; For prettier arglists.
             (let ((*package* (symbol-package symbol)))
@@ -176,19 +174,19 @@ Affected by:
                         (function-lambda-list* (or (macro-function symbol)
                                                    (symbol-function symbol))))
                       (unless (special-operator-p symbol)
-                        (or (crop-docs symbol 'function)
+                        (or (summary-docs symbol 'function)
                             (ignore-errors (when (macro-function symbol)
-                                             (crop-docs (macro-function symbol) t)))
+                                             (summary-docs (macro-function symbol) t)))
                             (ignore-errors (when (symbol-function symbol)
-                                             (crop-docs (symbol-function symbol) t))))))))
+                                             (summary-docs (symbol-function symbol) t))))))))
           (when (ignore-errors (find-class symbol nil))
             (format t "~vt" max)
             (format t " [~a~@[ : ~a~]]"
                     (if (subtypep (find-class symbol nil) 'structure-object)
                         'structure
                         'class)
-                    (or (crop-docs symbol 'type)
-                        (crop-docs symbol 'structure))))))))
+                    (or (summary-docs symbol 'type)
+                        (summary-docs symbol 'structure))))))))
   (values))
 
 ;;; Helpers
