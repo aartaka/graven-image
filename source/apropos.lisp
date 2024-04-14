@@ -39,18 +39,20 @@
         with symbols = (unless external-only
                          (reduce-old-apropos string package))
         when external-only
-          nconc (loop for sym being the external-symbol in package
-                      when (or (search string (symbol-name sym) :test #'string-equal)
-                               (and docs-too
-                                    (search string (all-docs sym) :test #'string-equal)))
-                        do (push sym symbols))
-        else
-          do (loop for sym being the present-symbol in package
-                   when (and
-                         (eq (symbol-package sym) (find-package package))
+          do (do-external-symbols (sym package)
+               (when (or (search string (symbol-name sym) :test #'equalp)
                          (and docs-too
-                              (search string (all-docs sym) :test #'string-equal)))
-                     do (pushnew sym symbols))))
+                              (search string (all-docs sym) :test #'equalp)))
+                 (pushnew sym symbols)))
+        else
+          do (do-symbols (sym package)
+               (when (or (search string (symbol-name sym) :test #'equalp)
+                         (and
+                          (eq (symbol-package sym) (find-package package))
+                          (and docs-too
+                               (search string (all-docs sym) :test #'equalp))))
+                 (pushnew sym symbols)))
+        finally (return symbols)))
 
 (define-generic apropos-list* (string &optional (packages (list-all-packages)) external-only docs-too)
   "Search for symbols in PACKAGES with names (+docs when DOCS-TOO) containing STRING.
