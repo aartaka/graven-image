@@ -133,10 +133,7 @@ Affected by:
         (flet ((summary-docs (thing type)
                  (let* ((docs (documentation thing type))
                         (first-line (when docs
-                                      (first (uiop:split-string docs :separator '(#\newline)))))
-                        (first-line (when docs
-                                        (first
-                                         (uiop:split-string docs :separator '(#\Newline))))))
+                                      (first (uiop:split-string docs :separator '(#\newline))))))
                    (cond
                      ((equal first-line docs)
                       first-line)
