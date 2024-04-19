@@ -453,8 +453,7 @@ Affected by:
 Depends on `function-lambda-expression*', but has an
 implementation-dependent fallback."
   (let ((expression (function-lambda-expression* function)))
-    (if expression
-        #-ecl
+    (if #-ecl expression #+ecl nil
         (second expression)
         ;; INTERNAL APIS!
         (let ((fn (ensure-function function)))
