@@ -40,12 +40,6 @@ Also muffle redefinition warnings."
   "Shortened FORMAT."
   (apply #'format nil control arguments))
 
-;; Stolen from Nyxt with slight alternations.
-(defun funcall* (maybe-fn args)
-  "Only funcall MAYBE-FN on ARGS when it's actually a function."
-  (when (functionp maybe-fn)
-    (apply maybe-fn args)))
-
 ;; Stolen from Nclasses.
 (defmacro define-generic (name (&rest method-args) &body (documentation . body))
   `(let ((generic (defgeneric ,name (,@(mapcar #'first (mapcar #'uiop:ensure-list method-args)))
