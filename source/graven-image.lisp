@@ -62,8 +62,7 @@ Also muffle redefinition warnings."
     (setf (fdefinition ',new-name) (fdefinition ',old-name)
           (documentation (fdefinition ',new-name) t) (documentation (fdefinition ',old-name) t))
     ;; For (setf function) fdefinitions.
-    (ignore-errors
-     (setf (documentation ',new-name 'function) (documentation ',old-name 'function)))))
+    (setf (documentation ',new-name 'function) (documentation ',old-name 'function))))
 
 (defmacro load-time-warn (&rest args)
   "A macro to warn about ARGS only once: while loading Graven Image.
