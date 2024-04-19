@@ -35,11 +35,6 @@ Also muffle redefinition warnings."
                                                (list return-type)))
                    ,name)))
 
-;; Stolen from Serapeum.
-(defun fmt (control &rest arguments)
-  "Shortened FORMAT."
-  (apply #'format nil control arguments))
-
 ;; Stolen from Nclasses.
 (defmacro define-generic (name (&rest method-args) &body (documentation . body))
   `(let ((generic (defgeneric ,name (,@(mapcar #'first (mapcar #'uiop:ensure-list method-args)))
