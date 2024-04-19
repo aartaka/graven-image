@@ -197,9 +197,6 @@ modify the property. For slots, this setter will likely be setting the
 (defun dotted-p (cons)
   (not (null (cdr (last cons)))))
 
-(deffields (object null)
-  (call-next-method))
-
 ;; TODO: Extensible sequences' features?
 (deffields (object sequence)
   (unless (and (consp object)
