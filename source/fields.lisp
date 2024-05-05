@@ -378,9 +378,9 @@ modify the property. For slots, this setter will likely be setting the
     ,@(when (array-has-fill-pointer-p object)
         `((fill-pointer
            ,(fill-pointer object)
-           (lambda (new-value _)
-             (declare (ignorable _))
-             (setf (fill-pointer object) new-value)))))
+           ,(lambda (new-value _)
+              (declare (ignorable _))
+              (setf (fill-pointer object) new-value)))))
     ,@(loop for elt across object
             for i from 0
             collect (list i elt
