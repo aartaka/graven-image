@@ -20,6 +20,8 @@ or otherwise hacky implementation.)
 
 NOTE: Graven Image is currently being refactored into more focused libraries.
 Like [[https://github.com/aartaka/trivial-time][trivial-time]] and [[https://github.com/aartaka/trivial-inspect][trivial-inspect]].
+All the development will happen there, and the fixes are unlikely to be backported.
+Still, Graven Image is a good source for your personal Lisp configuration if you’re into such stuff.
 
 The library is purposefully limited in scope:
 - Improving the standard functions has a priority over introducing new
