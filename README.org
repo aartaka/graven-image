@@ -7,7 +7,7 @@ that is in the water under the earth.
 #+end_quote
 
 Graven Image is a Common Lisp portability library (a less fancier name
-might've been =trivial-debugging=) for better interaction and
+might’ve been =trivial-debugging=) for better interaction and
 debugging of a running Lisp image. One can inspect and debug all the
 things under heaven and [[https://www.corecursive.com/lisp-in-space-with-ron-garret/][above it]]—all in their own REPL-resident Lisp
 image!
@@ -30,7 +30,7 @@ The library is purposefully limited in scope:
     but these are merely aliases/one-liners over standard/improved
     functions.
     - I get carried away sometimes, though. =benchmark*= is one of
-      such [[https://xkcd.com/356/][nerd snipes]]. But still, it's quite close to the underlying
+      such [[https://xkcd.com/356/][nerd snipes]]. But still, it’s quite close to the underlying
       =with-time*= 😉
 - The interaction paradigm of the improved functions should stay
   standard (i.e. use =*query-io*= where standard requires
@@ -72,9 +72,9 @@ You can also install Graven Image via Guix, using the bundled
   guix package -f guix.scm
 #+end_src
 
-Someday (after at least minor version bump) I'll send a patch to Guix
+Someday (after at least minor version bump) I’ll send a patch to Guix
 so that you can also install it with =guix install=. Until then—stay
-tuned (or send the patch yourself—I don't mind.)
+tuned (or send the patch yourself—I don’t mind.)
 
 * Convenient =use=
 
@@ -87,7 +87,7 @@ without package prefix, then simply use the package directly.
   (use-package :graven-image)
 #+end_src
 
-Or, if you're more orderly and disciplined about packages than I am,
+Or, if you’re more orderly and disciplined about packages than I am,
 you can always use =trivial-package-local-nicknames= and define a
 shorter Graven Image nickname:
 #+begin_src lisp
@@ -139,7 +139,7 @@ Improvements are:
   =(fset 'yes-or-no-p 'y-or-n-p)= in their config, setting the
   precedent for shorter yes/no queries).
 - No beeps (just define a =yes-or-no-p* :before= method to add beeps
-  if you like 'em; see the "Customization" section below).
+  if you like ’em; see the "Customization" section below).
 
 ** =apropos-list*=, =apropos*= (generic functions)
 
@@ -211,7 +211,7 @@ Which means:
   we build a dummy lambda for it when =force= argument is provided.
   - This might be a questionable choice, but it at least allows us to
     get function arglists from =function-lambda-expression= in a
-    portable-ish way. The standard doesn't provide us with much ways
+    portable-ish way. The standard doesn’t provide us with much ways
     to know an arglist of a function beside this.
 
 *** Return values
@@ -227,7 +227,7 @@ Things that =function-lambda-expression*= now returns are:
   - If it is, might return an alist of the actual closed-over values,
     whenever accessible (not for all implementations).
   - If closed-over values are not accessible, returns T.
-  - If it's not a closure, returns NIL.
+  - If it’s not a closure, returns NIL.
 - Function name. Mostly falls back to the standard
   =function-lambda-expression=, but also inspects
   implementation-specific function objects if necessary.
@@ -273,10 +273,10 @@ Signature:
 benchmark* (&optional (repeat 1000)) &body forms => return-values
 #+end_src
 
-While =time*= is the standard benchmarking/profiling solution, it's
+While =time*= is the standard benchmarking/profiling solution, it’s
 almost always too simple for proper benchmarking. Most systems getting
 complex enough end up with some form of custom
-benchmarking. Shinmera's [[https://github.com/Shinmera/trivial-benchmark/][trivial-benchmark]] is one such example. Graven
+benchmarking. Shinmera’s [[https://github.com/Shinmera/trivial-benchmark/][trivial-benchmark]] is one such example. Graven
 Image =benchmark*= is heavily inspired by =trivial-benchmark=, but has
 a more portable foundation in the form of =with-time*=.
 
@@ -315,7 +315,7 @@ querying. =time-keywords= allow =&key=-matching the timing data (like
 values. This flexibility enables =time*=, with its requirements of
 printing the data and returning the original values at the same time.
 
-For example, here's how one would track the allocated bytes and
+For example, here’s how one would track the allocated bytes and
 garbage collection times when running a cons-heavy code:
 #+begin_src lisp
   (gimage:with-time* (&key aborted gc-count gc allocated)
@@ -381,7 +381,7 @@ Signature:
 inspect* object &optional strip-null
 #+end_src
 
-New'n'shiny =inspect*= has:
+New’n’shiny =inspect*= has:
 - Most commands found in other implementation, with familiar names.
 - Abbreviations like =H -> HELP= (inspired by SBCL).
 - Ability to set object field values with =(:set key value)= command
@@ -393,10 +393,10 @@ New'n'shiny =inspect*= has:
 - Ability to ignore =nil= properties with =strip-null= argument
   (inspired by SBCL). On by default!
 - And the ability to evaluate arbitrary expressions (with =:evaluate=
-  command or simply by inputting something that doesn't match any
+  command or simply by inputting something that doesn’t match any
   command).
 
-And here's a help menu of the new =inspect*= (in this case, inspecting
+And here’s a help menu of the new =inspect*= (in this case, inspecting
 =*readtable*=), just to get you teased:
 
 #+begin_src
@@ -435,7 +435,7 @@ Available commands are:
 
 Possible inputs are:
 - Mere symbols: run one of the commands above, matching the symbol.
-  - If there's no matching command, then match against fields.
+  - If there’s no matching command, then match against fields.
     - If nothing matches, evaluate the symbol.
 - Integer: act on the field indexed by this integer.
   - If there are none, evaluate the integer.
@@ -463,7 +463,7 @@ input forms are printed verbatim, and all the outputs are commented
 out.
 
 Beware: using any interactive function (like =inspect= etc.) breaks
-the dribble REPL. But then, it's unlikely one'd want to record
+the dribble REPL. But then, it’s unlikely one’d want to record
 interactive session into a dribble file.
 
 ** =documentation*= (generic function)
@@ -491,16 +491,16 @@ Signature:
   break* &rest arguments
 #+end_src
 
-A more useful wrapper for =break=, listing the function it's called
+A more useful wrapper for =break=, listing the function it’s called
 from and the provided symbol values. See examples in the docstring.
 
 * Customization
 
-Graven Image is made to be extensible. That's why most of the improved
+Graven Image is made to be extensible. That’s why most of the improved
 functions are generic: one can define special methods for their data
 and patch the behavior with =:before=, =:after=, and =:around=
 methods. Most of Graven Image functions mention the variables/things
-influencing them in the docstring. Here's a set of useful
+influencing them in the docstring. Here’s a set of useful
 customizations:
 
 ** Beeping before =yes-or-no-p*=
@@ -541,7 +541,7 @@ Restoring the standard-ish (beeping with bell (ASCII 7) character) behavior:
 
 Implementations are not good at sorting things, and their results are
 not often useful. Sorting things the way one needs is a useful
-extension. Here's a simple yet effective =:around= method that sorts
+extension. Here’s a simple yet effective =:around= method that sorts
 things by =string= occurence:
 #+begin_src lisp
   (defmethod gimage:apropos-list* :around (string &optional packages external-only docs-too)
@@ -606,7 +606,7 @@ x86::*x86-operand-type-names* [variable = ((:reg8 . 1) (:reg16 . 2) (:reg32 . 4)
 ** Suppressing documentation errors in =documentation*=
 
 Several implementations throw errors when trying to get documentation
-for non-existent method combinations, classes, etc. It's convenient to
+for non-existent method combinations, classes, etc. It’s convenient to
 suppress these:
 #+begin_src lisp
   (defmethod gimage:documentation* :around (object &optional doc-type)
